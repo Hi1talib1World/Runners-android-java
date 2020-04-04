@@ -1,4 +1,4 @@
-package com.denzo.runners.ui.dashboard;
+package com.denzo.runners.ui.myjourney;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
