@@ -12,6 +12,11 @@
         android:title="@string/my_journey" />
 
     <item
+        android:id="@+id/nav_star"
+        android:icon="@drawable/ic_dashboard_black_24dp"
+        android:title="@string/my_journey" />
+
+    <item
         android:id="@+id/navigation_notifications"
         android:icon="@drawable/gear"
         android:title="@string/settings" />
