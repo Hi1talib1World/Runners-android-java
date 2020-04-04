@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="https://schemas.android.com/apk/res/android"
-    xmlns:app="https://schemas.android.com/apk/res-auto"
-    xmlns:tools="https://schemas.android.com/tools"
-    tools:context=".MainActivity">
-    <item android:id="@+id/add_item"
-        android:title="Add"
-        android:orderInCategory="100"
-        app:showAsAction="always"/>
-</menu>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+
+    tools:context=".HomeFragment">
+        <item android:id="@+id/add_item"
+            android:title="Add"
+            android:orderInCategory="100"
+            app:showAsAction="always"/>
+    </menu>
+
