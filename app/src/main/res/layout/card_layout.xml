@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
 
-</LinearLayout>
+<androidx.cardview.widget.CardView android:layout_width="410dp"
+    android:layout_height="100dp"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    card_view:cardCornerRadius="50dp"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+        <TextView
+            android:id="@+id/info_text"
+            android:text="sadeeeem"
+            android:paddingVertical="36dp"
+            android:paddingHorizontal="26dp"
+            android:textSize="23dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+
+    </androidx.cardview.widget.CardView>
