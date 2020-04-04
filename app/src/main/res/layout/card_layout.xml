@@ -10,8 +10,9 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="103dp"
+        android:layout_height="78dp"
+        android:layout_gravity="right"
         tools:srcCompat="@tools:sample/avatars" />
 
     <TextView
@@ -24,6 +25,7 @@
         android:textColor="#fff"
         android:textStyle="bold"
         android:textSize="23dp" />
+
     <TextView
         android:id="@+id/info_text2"
         android:layout_width="match_parent"
@@ -32,7 +34,7 @@
         android:paddingVertical="36dp"
         android:text="sadeeeem"
         android:textColor="#fff"
-        android:textStyle="bold"
-        android:textSize="23dp" />
+        android:textSize="23dp"
+        android:textStyle="bold" />
 
 </androidx.cardview.widget.CardView>
