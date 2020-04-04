@@ -1,11 +1,12 @@
 package com.denzo.runners.CardView;
 
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.denzo.runners.MainActivity;
 import com.denzo.runners.R;
@@ -24,8 +25,8 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
 
         public MyViewHolder(View itemView) {
             super(itemView);
-            this.textViewName = (TextView) itemView.findViewById(R.id.textViewName);
-            this.textViewVersion = (TextView) itemView.findViewById(R.id.textViewVersion);
+            this.textViewName = (TextView) itemView.findViewById(R.id.info_text);
+            this.textViewVersion = (TextView) itemView.findViewById(R.id.info_text2);
             this.imageViewIcon = (ImageView) itemView.findViewById(R.id.imageView);
         }
     }
