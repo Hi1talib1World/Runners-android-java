@@ -5,9 +5,11 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
+import android.widget.TextView;
 
 import com.denzo.runners.CardView.CustomAdapter;
 import com.denzo.runners.CardView.DataModel;
@@ -73,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
             RecyclerView.ViewHolder viewHolder
                     = recyclerView.findViewHolderForPosition(selectedItemPosition);
             TextView textViewName
-                    = (TextView) viewHolder.itemView.findViewById(R.id.textViewName);
+                    = (TextView) viewHolder.itemView.findViewById(R.id.info_text);
             String selectedName = (String) textViewName.getText();
             int selectedItemId = -1;
             for (int i = 0; i < MyData.nameArray.length; i++) {
@@ -87,36 +89,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        super.onOptionsItemSelected(item);
-        if (item.getItemId() == R.id.add_item) {
-            //check if any items to add
-            if (removedItems.size() != 0) {
-                addRemovedItemToList();
-            } else {
-                Toast.makeText(this, "Nothing to add", Toast.LENGTH_SHORT).show();
-            }
-        }
-        return true;
-    }
 
-    private void addRemovedItemToList() {
-        int addItemAtListPosition = 3;
-        data.add(addItemAtListPosition, new DataModel(
-                MyData.nameArray[removedItems.get(0)],
-                MyData.versionArray[removedItems.get(0)],
-                MyData.id_[removedItems.get(0)],
-                MyData.drawableArray[removedItems.get(0)]
-        ));
-        adapter.notifyItemInserted(addItemAtListPosition);
-        removedItems.remove(0);
-    }
+
+
+
 }
