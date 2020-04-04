@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager layoutManager;
     private static RecyclerView recyclerView;
     private static ArrayList<DataModel> data;
-    static View.OnClickListener myOnClickListener;
+    public static View.OnClickListener myOnClickListener;
     private static ArrayList<Integer> removedItems;
 
     @Override
