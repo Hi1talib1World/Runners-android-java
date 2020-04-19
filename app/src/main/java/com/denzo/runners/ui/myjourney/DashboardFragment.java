@@ -48,18 +48,15 @@ public class DashboardFragment extends Fragment {
             // Create a new Tab named "First"
                     TabLayout.Tab firstTab = tabLayout.newTab();
                     firstTab.setText("First"); // set the Text for the first Tab
-                    firstTab.setIcon(R.drawable.ic_launcher); // set an icon for the
             // first tab
                     tabLayout.addTab(firstTab); // add  the tab at in the TabLayout
             // Create a new Tab named "Second"
                     TabLayout.Tab secondTab = tabLayout.newTab();
                     secondTab.setText("Second"); // set the Text for the second Tab
-                    secondTab.setIcon(R.drawable.ic_launcher); // set an icon for the second tab
                     tabLayout.addTab(secondTab); // add  the tab  in the TabLayout
             // Create a new Tab named "Third"
                     TabLayout.Tab thirdTab = tabLayout.newTab();
                     thirdTab.setText("Third"); // set the Text for the first Tab
-                    thirdTab.setIcon(R.drawable.ic_launcher); // set an icon for the first tab
                     tabLayout.addTab(thirdTab); // add  the tab at in the TabLayout
 
                     PagerAdapter adapter = new PagerAdapter
