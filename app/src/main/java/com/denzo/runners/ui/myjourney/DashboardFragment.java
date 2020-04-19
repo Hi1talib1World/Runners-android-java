@@ -21,12 +21,15 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.hadiidbouk.charts.ChartProgressBar;
 
 import java.util.ArrayList;
 
 public class DashboardFragment extends Fragment {
 
     private DashboardViewModel dashboardViewModel;
+    private ChartProgressBar mChart;
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -43,31 +46,32 @@ public class DashboardFragment extends Fragment {
             }
         });
 
-        BarChart barChart = (BarChart) root.findViewById(R.id.barchart);
+        ArrayList<BarData> dataList = new ArrayList<>();
 
-        ArrayList<BarEntry> entries = new ArrayList<>();
-        entries.add(new BarEntry(8f, 0));
-        entries.add(new BarEntry(2f, 1));
-        entries.add(new BarEntry(5f, 2));
-        entries.add(new BarEntry(20f, 3));
-        entries.add(new BarEntry(15f, 4));
-        entries.add(new BarEntry(19f, 5));
+        BarData data = new BarData("Sep", 3.4f, "3.4€");
+        dataList.add(data);
 
-        BarDataSet bardataset = new BarDataSet(entries, "Cells");
+        data = new BarData("Oct", 8.0f, "8.0€");
+        dataList.add(data);
 
-        ArrayList<String> labels = new ArrayList<String>();
-        labels.add("2016");
-        labels.add("2015");
-        labels.add("2014");
-        labels.add("2013");
-        labels.add("2012");
-        labels.add("2011");
+        data = new BarData("Nov", 1.8f, "1.8€");
+        dataList.add(data);
 
-        BarData data = new BarData(labels, bardataset);
-        barChart.setData(data); // set the data and list of labels into chart
-        barChart.setDescription("Set Bar Chart Description Here");  // set the description
-        bardataset.setColors(ColorTemplate.COLORFUL_COLORS);
-        barChart.animateY(5000);
+        data = new BarData("Dec", 7.3f, "7.3€");
+        dataList.add(data);
+
+        data = new BarData("Jan", 6.2f, "6.2€");
+        dataList.add(data);
+
+        data = new BarData("Feb", 3.3f, "3.3€");
+        dataList.add(data);
+
+        mChart = (ChartProgressBar) root.findViewById(R.id.ChartProgressBar);
+
+        mChart.setDataList(dataList);
+        mChart.build();
+        mChart.setOnBarClickedListener(this);
+        mChart.disableBar(dataList.size() - 1);
 
 
         return root;
