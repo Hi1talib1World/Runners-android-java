@@ -22,6 +22,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'com.github.dyguests:FlameBarChart:x.x.x'
     implementation 'com.android.support:cardview-v7:29.0.0'
     implementation 'com.android.support:recyclerview-v7:29.0.0-rc1'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
