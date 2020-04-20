@@ -74,32 +74,7 @@ public class DashboardFragment extends Fragment {
             }
         });
 
-        ArrayList<BarData> dataList = new ArrayList<>();
 
-        BarData data = new BarData("Sep", 3.4f, "3.4€");
-        dataList.add(data);
-
-        data = new BarData("Oct", 8.0f, "8.0€");
-        dataList.add(data);
-
-        data = new BarData("Nov", 1.8f, "1.8€");
-        dataList.add(data);
-
-        data = new BarData("Dec", 7.3f, "7.3€");
-        dataList.add(data);
-
-        data = new BarData("Jan", 6.2f, "6.2€");
-        dataList.add(data);
-
-        data = new BarData("Feb", 3.3f, "3.3€");
-        dataList.add(data);
-
-        mChart = (ChartProgressBar) root.findViewById(R.id.ChartProgressBar);
-
-        mChart.setDataList(dataList);
-        mChart.build();
-        mChart.setOnBarClickedListener(this);
-        mChart.disableBar(dataList.size() - 1);
 
 
         return root;
