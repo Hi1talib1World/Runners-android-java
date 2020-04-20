@@ -12,10 +12,11 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.viewpager.widget.PagerAdapter;
+
 import androidx.viewpager.widget.ViewPager;
 
 import com.denzo.runners.R;
+import com.denzo.runners.ui.myjourney.tabs.PagerAdapter;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
@@ -57,7 +58,7 @@ public class DashboardFragment extends Fragment {
                     tabLayout.addTab(thirdTab); // add  the tab at in the TabLayout
 
                     PagerAdapter adapter = new PagerAdapter
-                            (getSupportFragmentManager(), tabLayout.getTabCount());
+                            (getChildFragmentManager(), tabLayout.getTabCount());
                     simpleViewPager.setAdapter(adapter);
             // addOnPageChangeListener event change the tab on slide
                     simpleViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
