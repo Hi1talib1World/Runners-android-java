@@ -1,4 +1,4 @@
-package com.denzo.runners.tabs;
+package com.denzo.runners.ui.myjourney.tabs;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

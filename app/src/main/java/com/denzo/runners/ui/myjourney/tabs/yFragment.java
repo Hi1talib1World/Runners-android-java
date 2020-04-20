@@ -1,6 +1,7 @@
-package com.denzo.runners.tabs;
+package com.denzo.runners.ui.myjourney.tabs;
 
 import android.os.Bundle;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,8 +10,9 @@ import androidx.fragment.app.Fragment;
 
 import com.denzo.runners.R;
 
-public class mFragment extends Fragment {
-    public mFragment() {
+public class yFragment extends Fragment {
+
+    public yFragment() {
 // Required empty public constructor
     }
 

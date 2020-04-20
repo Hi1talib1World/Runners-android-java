@@ -1,4 +1,4 @@
-package com.denzo.runners.tabs;
+package com.denzo.runners.ui.myjourney.tabs;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
