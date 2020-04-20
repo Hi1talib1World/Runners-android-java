@@ -47,16 +47,13 @@ public class DashboardFragment extends Fragment {
                     tabLayout = (TabLayout) root.findViewById(R.id.simpleTabLayout);
             // Create a new Tab named "First"
                     TabLayout.Tab firstTab = tabLayout.newTab();
-                    firstTab.setText("First"); // set the Text for the first Tab
             // first tab
                     tabLayout.addTab(firstTab); // add  the tab at in the TabLayout
             // Create a new Tab named "Second"
                     TabLayout.Tab secondTab = tabLayout.newTab();
-                    secondTab.setText("Second"); // set the Text for the second Tab
                     tabLayout.addTab(secondTab); // add  the tab  in the TabLayout
             // Create a new Tab named "Third"
                     TabLayout.Tab thirdTab = tabLayout.newTab();
-                    thirdTab.setText("Third"); // set the Text for the first Tab
                     tabLayout.addTab(thirdTab); // add  the tab at in the TabLayout
 
                     PagerAdapter adapter = new PagerAdapter
