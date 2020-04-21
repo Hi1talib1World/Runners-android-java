@@ -9,9 +9,13 @@ import androidx.fragment.app.Fragment;
 
 import com.denzo.runners.R;
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
@@ -64,6 +68,41 @@ public class wFragment extends Fragment {
         BarData data = new BarData(year, bardataset);
         bardataset.setColors(ColorTemplate.COLORFUL_COLORS);
         chart.setData(data);
+
+
+
+
+        PieChart pieChart2 = root.findViewById(R.id.piechart);
+        ArrayList NoOfEmp2 = new ArrayList();
+
+        NoOfEmp2.add(new Entry(945f, 0));
+        NoOfEmp2.add(new Entry(1040f, 1));
+        NoOfEmp2.add(new Entry(1133f, 2));
+        NoOfEmp2.add(new Entry(1240f, 3));
+        NoOfEmp2.add(new Entry(1369f, 4));
+        NoOfEmp2.add(new Entry(1487f, 5));
+        NoOfEmp2.add(new Entry(1501f, 6));
+        NoOfEmp2.add(new Entry(1645f, 7));
+        NoOfEmp2.add(new Entry(1578f, 8));
+        NoOfEmp2.add(new Entry(1695f, 9));
+        PieDataSet dataSet = new PieDataSet(NoOfEmp2, "Number Of Employees");
+
+        ArrayList year2 = new ArrayList();
+
+        year2.add("2008");
+        year2.add("2009");
+        year2.add("2010");
+        year2.add("2011");
+        year2.add("2012");
+        year2.add("2013");
+        year2.add("2014");
+        year2.add("2015");
+        year2.add("2016");
+        year2.add("2017");
+        PieData data2 = new PieData(year2, dataSet);
+        pieChart2.setData(data2);
+        dataSet.setColors(ColorTemplate.COLORFUL_COLORS);
+        pieChart2.animateXY(5000, 5000);
         return root;
 
     }
