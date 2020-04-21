@@ -1,4 +1,6 @@
 package com.denzo.runners.ui.star;
 
-public class StarViewModel {
+import androidx.lifecycle.ViewModel;
+
+public class StarViewModel extends ViewModel {
 }
