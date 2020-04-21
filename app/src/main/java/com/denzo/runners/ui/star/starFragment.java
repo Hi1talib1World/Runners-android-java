@@ -59,7 +59,7 @@ public class starFragment extends Fragment  implements OnMapReadyCallback {
             // in a raw resource file.
             boolean success = googleMap.setMapStyle(
                     MapStyleOptions.loadRawResourceStyle(
-                            this, R.raw.style_json));
+                            getActivity(), R.raw.style_json));
 
             if (!success) {
                 Log.e(TAG, "Style parsing failed.");
