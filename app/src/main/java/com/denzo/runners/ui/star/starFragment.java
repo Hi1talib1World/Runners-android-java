@@ -1,5 +1,6 @@
 package com.denzo.runners.ui.star;
 
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,11 +28,13 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class starFragment extends Fragment  implements OnMapReadyCallback {
     StarViewModel starViewModel;
     static final String TAG = starFragment.class.getSimpleName();
 
+    FloatingActionButton fab;
 
     private MapView mapView;
 
@@ -40,7 +43,13 @@ public class starFragment extends Fragment  implements OnMapReadyCallback {
         starViewModel =
                 ViewModelProviders.of(this).get(StarViewModel.class);
         View root = inflater.inflate(R.layout.fragment_star, container, false);
+        fab = (FloatingActionButton) root.findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
+            }
+        });
 
 // Get the SupportMapFragment and register for the callback
         // when the map is ready for use.
