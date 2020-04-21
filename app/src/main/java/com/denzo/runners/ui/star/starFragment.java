@@ -19,6 +19,7 @@ import com.denzo.runners.ui.home.HomeViewModel;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
 public class starFragment extends Fragment  implements OnMapReadyCallback {
@@ -35,7 +36,12 @@ public class starFragment extends Fragment  implements OnMapReadyCallback {
         View root = inflater.inflate(R.layout.fragment_star, container, false);
 
 
-
+// Get the SupportMapFragment and register for the callback
+        // when the map is ready for use.
+        SupportMapFragment mapFragment =
+                (SupportMapFragment) getChildFragmentManager()
+                        .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
 
         return root;
     }
