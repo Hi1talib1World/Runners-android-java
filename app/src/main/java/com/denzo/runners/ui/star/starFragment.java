@@ -1,6 +1,8 @@
 package com.denzo.runners.ui.star;
 
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,10 +16,15 @@ import com.carto.layers.CartoOnlineVectorTileLayer;
 import com.carto.ui.MapView;
 import com.denzo.runners.R;
 import com.denzo.runners.ui.home.HomeViewModel;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
 
-public class starFragment extends Fragment {
+public class starFragment extends Fragment  implements OnMapReadyCallback {
     private StarViewModel starViewModel;
-    final String LICENSE = "d7280c6faa60d9673f1737227f7cf9b2708f9b8b";
+    private static final String TAG = starFragment.class.getSimpleName();
+
 
     private MapView mapView;
 
@@ -29,15 +36,26 @@ public class starFragment extends Fragment {
 
 
 
-        // Register the license so that CARTO online services can be used
-        MapView.registerLicense(LICENSE);
 
-        // Get 'mapView' object from the application layout
-        mapView = (MapView) root.findViewById(R.id.mapView);
-
-        // Add basemap layer to mapView
-        CartoOnlineVectorTileLayer baseLayer = new CartoOnlineVectorTileLayer(CartoBaseMapStyle.CARTO_BASEMAP_STYLE_VOYAGER);
-        mapView.getLayers().add(baseLayer);
         return root;
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        try {
+            // Customise the styling of the base map using a JSON object defined
+            // in a raw resource file.
+            boolean success = googleMap.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                            this, R.raw.style_json));
+
+            if (!success) {
+                Log.e(TAG, "Style parsing failed.");
+            }
+        } catch (Resources.NotFoundException e) {
+            Log.e(TAG, "Can't find style. Error: ", e);
+        }
+        // Position the map's camera near Sydney, Australia.
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(-34, 151)));
     }
 }
