@@ -17,7 +17,7 @@ import com.denzo.runners.ui.home.HomeViewModel;
 
 public class starFragment extends Fragment {
     private StarViewModel starViewModel;
-    final String LICENSE = "YOUR_LICENSE_KEY";
+    final String LICENSE = "d7280c6faa60d9673f1737227f7cf9b2708f9b8b";
 
     private MapView mapView;
 
