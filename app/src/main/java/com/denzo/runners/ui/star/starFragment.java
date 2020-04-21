@@ -29,8 +29,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
 public class starFragment extends Fragment  implements OnMapReadyCallback {
-    private StarViewModel starViewModel;
-    private static final String TAG = starFragment.class.getSimpleName();
+    StarViewModel starViewModel;
+    static final String TAG = starFragment.class.getSimpleName();
 
 
     private MapView mapView;
