@@ -30,6 +30,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.jetbrains.annotations.NotNull;
@@ -49,9 +50,15 @@ public class starFragment extends Fragment  implements OnMapReadyCallback, Modal
                 ViewModelProviders.of(this).get(StarViewModel.class);
         View root = inflater.inflate(R.layout.fragment_star, container, false);
         fab = (FloatingActionButton) root.findViewById(R.id.fab);
+
+        View llBottomSheet = root.findViewById(R.id.bottom_sheet);
+
+        // init the bottom sheet behavior
+        BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(llBottomSheet);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
 
             }
         });
@@ -88,6 +95,6 @@ public class starFragment extends Fragment  implements OnMapReadyCallback, Modal
 
     @Override
     public void onModalOptionSelected(@Nullable String s, @NotNull Option option) {
-        
+
     }
 }
