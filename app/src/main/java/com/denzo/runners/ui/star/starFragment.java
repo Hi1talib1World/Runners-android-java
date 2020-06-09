@@ -12,6 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.commit451.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment;
+import com.commit451.modalbottomsheetdialogfragment.Option;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -30,7 +32,10 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-public class starFragment extends Fragment  implements OnMapReadyCallback {
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+public class starFragment extends Fragment  implements OnMapReadyCallback, ModalBottomSheetDialogFragment.Listener {
     StarViewModel starViewModel;
     static final String TAG = starFragment.class.getSimpleName();
 
@@ -78,5 +83,11 @@ public class starFragment extends Fragment  implements OnMapReadyCallback {
         }
         // Position the map's camera near Sydney, Australia.
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(-34, 151)));
+    }
+
+
+    @Override
+    public void onModalOptionSelected(@Nullable String s, @NotNull Option option) {
+        
     }
 }
