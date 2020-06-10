@@ -1,6 +1,22 @@
 package com.denzo.runners.ui.star.bottomsheet;
 
 
+import android.app.Dialog;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+
+import com.denzo.runners.R;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+
 public class BottomSheet extends BottomSheetDialogFragment {
 
 
