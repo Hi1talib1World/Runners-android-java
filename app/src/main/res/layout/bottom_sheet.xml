@@ -30,7 +30,7 @@
                         android:layout_width="?attr/actionBarSize"
                         android:layout_height="?attr/actionBarSize"
                         android:background="?attr/selectableItemBackgroundBorderless"
-                        android:src="@drawable/ic_cancel"
+                        android:src="@drawable/infoxxl"
                         android:tint="@android:color/white" />
 
                     <TextView
@@ -49,7 +49,7 @@
                         android:layout_width="?attr/actionBarSize"
                         android:layout_height="?attr/actionBarSize"
                         android:background="?attr/selectableItemBackgroundBorderless"
-                        android:src="@drawable/ic_create"
+                        android:src="@drawable/infoxxl"
                         android:tint="@android:color/white" />
 
                     <ImageButton
@@ -57,7 +57,7 @@
                         android:layout_width="?attr/actionBarSize"
                         android:layout_height="?attr/actionBarSize"
                         android:background="?attr/selectableItemBackgroundBorderless"
-                        android:src="@drawable/ic_more_vert"
+                        android:src="@drawable/infoxxl"
                         android:tint="@android:color/white" />
                 </LinearLayout>
 
@@ -89,7 +89,7 @@
                             android:id="@+id/userImage"
                             android:layout_width="?attr/actionBarSize"
                             android:layout_height="?attr/actionBarSize"
-                            android:src="@drawable/f_1" />
+                            android:src="@drawable/infoxxl" />
 
 
                         <TextView
@@ -116,7 +116,7 @@
                             android:layout_width="?attr/actionBarSize"
                             android:layout_height="?attr/actionBarSize"
                             android:background="?attr/selectableItemBackgroundBorderless"
-                            android:src="@drawable/ic_phone" />
+                            android:src="@drawable/infoxxl" />
 
 
                         <LinearLayout
@@ -159,7 +159,7 @@
                                     android:layout_width="?attr/actionBarSize"
                                     android:layout_height="?attr/actionBarSize"
                                     android:background="?attr/selectableItemBackgroundBorderless"
-                                    android:src="@drawable/ic_message_black_24dp"
+                                    android:src="@drawable/infoxxl"
                                     android:tint="@color/colorPrimary" />
 
                             </LinearLayout>
@@ -197,7 +197,7 @@
                                     android:layout_width="?attr/actionBarSize"
                                     android:layout_height="?attr/actionBarSize"
                                     android:background="?attr/selectableItemBackgroundBorderless"
-                                    android:src="@drawable/ic_message_black_24dp"
+                                    android:src="@drawable/infoxxl"
                                     android:tint="@color/colorPrimary" />
 
                             </LinearLayout>
@@ -241,7 +241,7 @@
                             android:layout_width="?attr/actionBarSize"
                             android:layout_height="?attr/actionBarSize"
                             android:background="?attr/selectableItemBackgroundBorderless"
-                            android:src="@drawable/ic_email"
+                            android:src="@drawable/infoxxl"
                             android:tint="@color/colorAccent" />
 
 
