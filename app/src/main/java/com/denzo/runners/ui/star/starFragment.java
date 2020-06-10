@@ -16,6 +16,7 @@ import com.denzo.runners.databinding.ActivityMainBinding;
 
 import com.commit451.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment;
 import com.commit451.modalbottomsheetdialogfragment.Option;
+import com.denzo.runners.ui.star.bottomsheet.BottomSheet;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -71,9 +72,19 @@ public class starFragment extends Fragment  implements OnMapReadyCallback {
                         .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        init();
+
         return root;
     }
-
+    private void init() {
+        bi.openBottomSheet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                BottomSheet bottomSheet = new BottomSheet();
+                bottomSheet.show(getSupportFragmentManager(),bottomSheet.getTag());
+            }
+        });
+    }
     @Override
     public void onMapReady(GoogleMap googleMap) {
         try {
