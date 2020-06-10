@@ -81,7 +81,7 @@ public class starFragment extends Fragment  implements OnMapReadyCallback {
             @Override
             public void onClick(View view) {
                 BottomSheet bottomSheet = new BottomSheet();
-                bottomSheet.show(getSupportFragmentManager(),bottomSheet.getTag());
+                bottomSheet.show(getFragmentManager(),bottomSheet.getTag());
             }
         });
     }
