@@ -39,6 +39,7 @@ import org.jetbrains.annotations.Nullable;
 public class starFragment extends Fragment  implements OnMapReadyCallback, ModalBottomSheetDialogFragment.Listener {
     StarViewModel starViewModel;
     static final String TAG = starFragment.class.getSimpleName();
+    ActivityMainBinding bi;
 
     FloatingActionButton fab;
 
@@ -51,14 +52,11 @@ public class starFragment extends Fragment  implements OnMapReadyCallback, Modal
         View root = inflater.inflate(R.layout.fragment_star, container, false);
         fab = (FloatingActionButton) root.findViewById(R.id.fab);
 
-        View llBottomSheet = root.findViewById(R.id.bottom_sheet);
 
-        // init the bottom sheet behavior
-        BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(llBottomSheet);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                        
+
 
             }
         });
