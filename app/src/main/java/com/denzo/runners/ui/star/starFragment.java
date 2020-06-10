@@ -58,7 +58,7 @@ public class starFragment extends Fragment  implements OnMapReadyCallback, Modal
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                        
 
             }
         });
