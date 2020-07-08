@@ -13,3 +13,4 @@
 .externalNativeBuild
 .cxx
 runner-android/
+*.xml___jb_tmp___
