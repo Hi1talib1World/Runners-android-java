@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.denzo.runners.CardView.CustomAdapter;
 import com.denzo.runners.CardView.DataModel;
 import com.denzo.runners.CardView.MyData;
 import com.denzo.runners.MainActivity;
@@ -43,14 +45,28 @@ public class HomeFragment extends Fragment {
                 ViewModelProviders.of(this).get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
-        myOnClickListener = new HomeFragment.MyOnClickListener(this);
+        myOnClickListener = new HomeFragment.MyOnClickListener(getActivity());
 
         recyclerView = (RecyclerView) root.findViewById(R.id.my_recycler_view);
         recyclerView.setHasFixedSize(true);
 
-        layoutManager = new LinearLayoutManager(this);
+        layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
+        data = new ArrayList<DataModel>();
+        for (int i = 0; i < MyData.nameArray.length; i++) {
+            data.add(new DataModel(
+                    MyData.nameArray[i],
+                    MyData.versionArray[i],
+                    MyData.id_[i],
+                    MyData.drawableArray[i]
+            ));
+        }
+
+        removedItems = new ArrayList<Integer>();
+
+        adapter = new CustomAdapter(data);
+        recyclerView.setAdapter(adapter);
 
 
         return root;
@@ -90,10 +106,10 @@ public class HomeFragment extends Fragment {
 
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public void onCreateOptionsMenu(Menu menu , MenuInflater inflater) {
         super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+        inflater.inflate(R.menu.menu_main, menu);
+        
     }
 
     @Override
@@ -104,7 +120,7 @@ public class HomeFragment extends Fragment {
             if (removedItems.size() != 0) {
                 addRemovedItemToList();
             } else {
-                Toast.makeText(this, "Nothing to add", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Nothing to add", Toast.LENGTH_SHORT).show();
             }
         }
         return true;
