@@ -21,7 +21,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
-            android:background="@drawable/ic_assignment_pink_24"
+            android:background="@drawable/ic_audiotrack_dark"
             tools:ignore="ContentDescription" />
 
         <EditText
@@ -48,7 +48,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
-            android:background="@drawable/ic_outline_event_available_pink_24"
+            android:background="@drawable/ic_audiotrack_dark"
             tools:ignore="ContentDescription" />
 
         <TextView
@@ -74,7 +74,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
-            android:background="@drawable/ic_baseline_timer_pink_24"
+            android:background="@drawable/ic_audiotrack_dark"
             tools:ignore="ContentDescription" />
 
         <TextView
