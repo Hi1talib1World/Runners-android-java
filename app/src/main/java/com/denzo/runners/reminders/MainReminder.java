@@ -130,7 +130,7 @@ public class MainReminder extends AppCompatActivity {
         builder.setContentText(content);
         builder.setContentIntent(pendingIntent);
         builder.setAutoCancel(true);
-        builder.setSmallIcon(R.drawable.ic_stat_name);
+        builder.setSmallIcon(R.drawable.ic_audiotrack_dark);
         builder.setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_SOUND);
         builder.setChannelId(NOTIFICATION_CHANNEL_ID);
         builder.setPriority(NotificationCompat.PRIORITY_HIGH);
