@@ -53,7 +53,7 @@ dependencies {
     implementation 'com.jakewharton:butterknife:10.2.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.1'
 
-    implementation "com.airbnb.android:lottie:4.0.0"
+    implementation "com.airbnb.android:lottie:2.8.0"
 
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
