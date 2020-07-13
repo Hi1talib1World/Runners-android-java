@@ -13,4 +13,16 @@
     <string name="date_dd_mm_yyyy">date dd/mm/yyyy</string>
     <string name="start_my_day">Start My Day</string>
     <string name="first_fragment">First Fragment</string>
+    <string name="listEmptyText">
+<![CDATA[
+<p><b>What do you want to do today?</b><br> You can create new ToDo <br>using  + button</p>
+]]>
+</string>
+    <string name="actionBarTitle">ToDo</string>
+    <string name="editTaskHint">My Task</string>
+    <string name="dialogDate">Date</string>
+    <string name="dialogTime">Time</string>
+    <string name="cardTitle">Title</string>
+    <string name="cardDate">sub title</string>
+    <string name="cardTime">sub title</string>
 </resources>
