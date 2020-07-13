@@ -14,15 +14,19 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AbsListView;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.annotation.RequiresApi;
@@ -33,6 +37,7 @@ import com.denzo.runners.CardView.DataModel;
 import com.denzo.runners.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -134,7 +139,7 @@ public class MainReminder extends AppCompatActivity {
 
     //on theme change refresh activity
     private void restartApp() {
-        Intent i = new Intent(getApplicationContext(), MainActivity.class);
+        Intent i = new Intent(getApplicationContext(), MainReminder.class);
         startActivity(i);
         finish();
         Log.d(TAG, "restartApp: Changed theme successfully");
