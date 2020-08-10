@@ -33,4 +33,5 @@
     <string name="display_country">display country</string>
     <string name="profile_country">profile country</string>
     <string name="display_slack_username">display_slack_username</string>
+    <string name="display_email">display_email</string>
 </resources>
