@@ -25,4 +25,12 @@
     <string name="cardTitle">Title</string>
     <string name="cardDate">sub title</string>
     <string name="cardTime">sub title</string>
+    <string name="profile_name">profile name</string>
+    <string name="profile_track">profile track</string>
+    <string name="display_number">display number</string>
+    <string name="profile_email">profile email</string>
+    <string name="profile_number">profile number</string>
+    <string name="display_country">display country</string>
+    <string name="profile_country">profile country</string>
+    <string name="display_slack_username">display_slack_username</string>
 </resources>
