@@ -56,6 +56,7 @@ dependencies {
     implementation "com.airbnb.android:lottie:2.8.0"
     //this is added when we integrated firebase
     implementation 'com.google.firebase:firebase-auth:11.6.0'
+    implementation 'com.github.gavinliu:ShapedImageView:0.8.9'
 
 
     androidTestImplementation 'androidx.test:runner:1.2.0'
