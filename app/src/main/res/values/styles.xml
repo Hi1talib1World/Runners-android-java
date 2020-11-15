@@ -16,7 +16,7 @@
         <item name="dialogDateColor">@color/dialogDateColor</item>
         <item name="listEmptyTextColor">@color/darkListEmptyTextColor</item>
         <item name="alertDialogTheme">@style/DarkDateAlertDialog</item>
-        <item name="android:datePickerDialogTheme">@style/DarkDateAlertDialog</item>
+
         <item name="android:windowAnimationStyle">@style/WindowAnimationTransition</item>
     </style>
 
