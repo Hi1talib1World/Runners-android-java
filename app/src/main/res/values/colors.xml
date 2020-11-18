@@ -11,7 +11,7 @@
     <color name="darkCardTitle">#ffffff</color>
     <color name="darkDialogTitle">#ffffff</color>
     <color name="darkListEmptyTextColor">#ffffff</color>
-    <color name="secondaryTextColor">#9e9e9e</>
+    <color name="secondaryTextColor">#9e9e9e</color>
     <color name="lightColorPrimary">#ff1744</color>
     <color name="lightColorPrimaryDark">#c4001d</color>
     <color name="lightCardBackground">#ff1744</color>
