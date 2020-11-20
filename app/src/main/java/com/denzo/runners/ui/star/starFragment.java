@@ -112,15 +112,4 @@ public class starFragment extends Fragment  implements OnMapReadyCallback {
     public void onModalOptionSelected(@Nullable String s, @NotNull Option option) {
 
     }
-    private void init() {
-
-        bi.openBottomSheet.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                BottomSheet bottomSheet = new BottomSheet();
-                bottomSheet.show(getSupportFragmentManager(),bottomSheet.getTag());
-            }
-        });
-    }
 }
