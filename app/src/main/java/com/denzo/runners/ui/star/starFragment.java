@@ -41,6 +41,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class starFragment extends Fragment  implements OnMapReadyCallback {
+    ActivityMainBinding bi;
+
     StarViewModel starViewModel;
     static final String TAG = starFragment.class.getSimpleName();
 
@@ -108,5 +110,16 @@ public class starFragment extends Fragment  implements OnMapReadyCallback {
     @Override
     public void onModalOptionSelected(@Nullable String s, @NotNull Option option) {
 
+    }
+    private void init() {
+
+        bi.openBottomSheet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                BottomSheet bottomSheet = new BottomSheet();
+                bottomSheet.show(getSupportFragmentManager(),bottomSheet.getTag());
+            }
+        });
     }
 }
