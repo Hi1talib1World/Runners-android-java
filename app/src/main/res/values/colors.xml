@@ -14,6 +14,7 @@
     <color name="primaryTextColor">#9e559e</color>
     <color name="secondaryTextColor">#9e9e9e</color>
     <color name="lightColorPrimary">#ff1744</color>
+    <color name="color_white">#FFF</color>
     <color name="lightColorPrimaryDark">#c4001d</color>
     <color name="lightCardBackground">#ff1744</color>
     <color name="lightListBackground">#ffffff</color>
