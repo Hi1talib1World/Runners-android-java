@@ -80,7 +80,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:fontFamily="@font/roboto_bold"
+                    android:fontFamily="@font/robotobold"
                     android:text="@string/profile_name"
                     android:textColor="@color/secondaryTextColor"
                     android:textSize="34sp" />
@@ -90,7 +90,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:fontFamily="@font/roboto_medium"
+                    android:fontFamily="@font/robotomedium"
                     android:text="@string/profile_track"
                     android:textAllCaps="false"
                     android:textColor="@android:color/darker_gray"
@@ -130,7 +130,7 @@
                             android:layout_marginStart="16dp"
                             android:layout_marginLeft="16dp"
                             android:layout_weight="1"
-                            android:fontFamily="@font/roboto_medium"
+                            android:fontFamily="@font/robotomedium"
                             android:text="@string/profile_country"
                             android:textColor="@color/secondaryTextColor"
                             android:textSize="18sp" />
@@ -162,7 +162,7 @@
                             android:layout_gravity="start"
                             android:layout_marginStart="16dp"
                             android:layout_marginLeft="16dp"
-                            android:fontFamily="@font/roboto_medium"
+                            android:fontFamily="@font/robotomedium"
                             android:text="@string/profile_slack_username"
                             android:textColor="@color/secondaryTextColor"
                             android:textSize="18sp" />
@@ -191,7 +191,7 @@
                     android:layout_gravity="start"
                     android:layout_marginStart="16dp"
                     android:layout_marginLeft="16dp"
-                    android:fontFamily="@font/roboto_medium"
+                    android:fontFamily="@font/robotomedium"
                     android:text="@string/profile_email"
                     android:textColor="@color/secondaryTextColor"
                     android:textSize="18sp" />
@@ -215,7 +215,7 @@
                     android:layout_gravity="start"
                     android:layout_marginStart="16dp"
                     android:layout_marginLeft="16dp"
-                    android:fontFamily="@font/roboto_medium"
+                    android:fontFamily="@font/robotomedium"
                     android:text="@string/profile_number"
                     android:textColor="@color/secondaryTextColor"
                     android:textSize="18sp" />
