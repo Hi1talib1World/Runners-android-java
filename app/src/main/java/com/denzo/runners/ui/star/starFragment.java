@@ -12,7 +12,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
-import com.denzo.runners.databinding.ActivityMainBinding;
+
 
 import com.commit451.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment;
 import com.commit451.modalbottomsheetdialogfragment.Option;
