@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.commit451.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment;
 import com.commit451.modalbottomsheetdialogfragment.Option;
+import com.denzo.runners.databinding.ActivityMainBinding;
 import com.denzo.runners.ui.star.bottomsheet.BottomSheet;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
