@@ -105,13 +105,7 @@ public class HomeFragment extends Fragment {
     }
 
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu , MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu);
-        inflater.inflate(R.menu.menu_main, menu);
-        return true;
 
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
