@@ -69,7 +69,7 @@ public class MainReminder extends AppCompatActivity {
         setContentView(R.layout.activity_main_rem);
 
         //set custom action bar
-        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        //getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.actionbar);
 
         //toggle to change theme and save uer preference
@@ -284,7 +284,7 @@ public class MainReminder extends AppCompatActivity {
                                 cal.set(Calendar.SECOND, 0);
                                 Log.d(TAG, "onTimeSet: Time has been set successfully");
                             }
-                        }, cal.get(Calendar.HOUR), cal.get(MINUTE), false);
+                        }, cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), false);
                 timePickerDialog.show();
             }
         });
