@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 31
+    compileSdk 34
     buildToolsVersion "30.0.3"
     defaultConfig {
         applicationId "com.denzo.runners"
@@ -51,35 +51,34 @@ android {
 dependencies {
 
 
-    implementation 'com.google.android.material:material:1.4.0'
-    implementation 'com.google.android.gms:play-services-auth:19.2.0'
-    implementation 'com.github.bumptech.glide:glide:4.10.0'
+    implementation 'com.google.android.material:material:1.11.0'
+    implementation 'com.google.android.gms:play-services-auth:21.0.0'
+    implementation 'com.github.bumptech.glide:glide:4.12.0'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation "androidx.recyclerview:recyclerview-selection:1.1.0"
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.3.1'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.github.hadiidbouk:ChartProgressBar-Android:2.0.6'
     implementation 'com.carto:carto-mobile-sdk:4.2.2@aar'
     implementation 'com.google.android.gms:play-services:12.0.1'
-    implementation 'com.github.Commit451:ModalBottomSheetDialogFragment:1.0.2'
-    implementation 'de.hdodenhof:circleimageview:3.0.1'
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
     implementation 'com.github.PhilJay:MPAndroidChart:v2.2.4'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
-    implementation 'com.google.android.material:material:1.4.0'
-    implementation 'androidx.navigation:navigation-fragment:2.3.5'
-    implementation 'androidx.navigation:navigation-ui:2.3.5'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.navigation:navigation-fragment:2.7.7'
+    implementation 'androidx.navigation:navigation-ui:2.7.7'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    testImplementation 'junit:junit:4.13'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-    implementation 'com.jakewharton:butterknife:10.2.1'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    implementation 'com.jakewharton:butterknife:10.2.3'
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.1'
-    annotationProcessor 'androidx.databinding:databinding-compiler:7.0.0'
-    implementation "com.airbnb.android:lottie:2.8.0"
+    annotationProcessor 'androidx.databinding:databinding-compiler:8.3.0'
+    implementation "com.airbnb.android:lottie:3.4.0"
+    implementation 'com.google.android.material:material:1.11.0'
+
     //this is added when we integrated firebase
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.github.gavinliu:ShapedImageView:0.8.9'
-    implementation 'com.google.android.material:material:1.5.0-alpha02'
-    androidTestImplementation 'androidx.test:runner:1.4.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    androidTestImplementation 'androidx.test:runner:1.5.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
