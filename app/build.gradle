@@ -6,7 +6,7 @@ android {
     defaultConfig {
         applicationId "com.denzo.runners"
         minSdkVersion 22
-        targetSdkVersion 31
+        targetSdkVersion 34
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -46,13 +46,13 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    namespace 'com.denzo.runners'
 }
 
 dependencies {
 
 
-    implementation 'com.google.android.material:material:1.11.0'
-    implementation 'com.google.android.gms:play-services-auth:21.0.0'
+    implementation 'com.google.android.gms:play-services-auth:21.1.1'
     implementation 'com.github.bumptech.glide:glide:4.12.0'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation "androidx.recyclerview:recyclerview-selection:1.1.0"
@@ -71,10 +71,10 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     implementation 'com.jakewharton:butterknife:10.2.3'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.1'
-    annotationProcessor 'androidx.databinding:databinding-compiler:8.3.0'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.3'
+    annotationProcessor 'androidx.databinding:databinding-compiler:8.4.0'
     implementation "com.airbnb.android:lottie:3.4.0"
-    implementation 'com.google.android.material:material:1.11.0'
+    implementation 'com.google.android.material:material:1.12.0'
 
     //this is added when we integrated firebase
     implementation 'com.google.firebase:firebase-auth'
