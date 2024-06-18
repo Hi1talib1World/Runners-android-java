@@ -10,16 +10,15 @@ buildscript {
         classpath 'com.android.tools.build:gradle:8.4.2'
 
     }
+
 }
 
 allprojects {
     repositories {
         google()
         mavenCentral()
-        // Add Google Maven repository
-        maven {
-            url "https://maven.google.com"
-        }
+        maven { url 'https://jitpack.io' }
+
 
     }
 }
