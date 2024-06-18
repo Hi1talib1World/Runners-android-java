@@ -3,6 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdk 34
     buildToolsVersion "30.0.3"
+
     defaultConfig {
         applicationId "com.denzo.runners"
         minSdkVersion 22
@@ -10,10 +11,11 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
 
     packagingOptions {
-        pickFirst '**/META-INFMANIFEST.MF'
+        pickFirst '**/META-INF/MANIFEST.MF'
         exclude 'META-INF/DEPENDENCIES'
         exclude 'META-INF/LICENSE'
         exclude 'project.properties'
@@ -25,7 +27,7 @@ android {
         exclude 'META-INF/notice.txt'
         exclude 'META-INF/LICENSE.md'
         exclude 'META-INF/ASL2.0'
-        exclude  'build-data.properties'
+        exclude 'build-data.properties'
         exclude("META-INF/*.kotlin_module")
     }
 
@@ -35,13 +37,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    /*buildFeatures{
-        dataBinding = true
-        viewBinding = true
-    }*/
-    defaultConfig {
-        multiDexEnabled true
-    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -50,16 +46,13 @@ android {
 }
 
 dependencies {
-
-
     implementation 'com.google.android.gms:play-services-auth:21.1.1'
     implementation 'com.github.bumptech.glide:glide:4.12.0'
     implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'com.github.hadiidbouk:ChartProgressBar-Android:2.0.6'
     implementation "androidx.recyclerview:recyclerview-selection:1.1.0"
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.github.hadiidbouk:ChartProgressBar-Android:2.0.6'
-    implementation 'com.carto:carto-mobile-sdk:4.2.2@aar'
     implementation 'com.google.android.gms:play-services:12.0.1'
     implementation 'de.hdodenhof:circleimageview:3.1.0'
     implementation 'com.github.PhilJay:MPAndroidChart:v2.2.4'
@@ -75,8 +68,6 @@ dependencies {
     annotationProcessor 'androidx.databinding:databinding-compiler:8.4.0'
     implementation "com.airbnb.android:lottie:3.4.0"
     implementation 'com.google.android.material:material:1.12.0'
-
-    //this is added when we integrated firebase
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.github.gavinliu:ShapedImageView:0.8.9'
     androidTestImplementation 'androidx.test:runner:1.5.2'
