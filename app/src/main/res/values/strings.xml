@@ -35,4 +35,5 @@
     <string name="display_slack_username">display_slack_username</string>
     <string name="display_email">display_email</string>
     <string name="profile_slack_username">username</string>
+    <string name="google_maps_key">maps</string>
 </resources>
