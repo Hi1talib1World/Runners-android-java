@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdk 34
@@ -6,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId "com.denzo.runners"
-        minSdkVersion 22
+        minSdkVersion 21
         targetSdkVersion 34
         versionCode 1
         versionName "1.0"
@@ -14,21 +16,13 @@ android {
         multiDexEnabled true
     }
 
-    packagingOptions {
-        pickFirst '**/META-INF/MANIFEST.MF'
-        exclude 'META-INF/DEPENDENCIES'
-        exclude 'META-INF/LICENSE'
-        exclude 'project.properties'
-        exclude 'META-INF/INDEX.LIST'
-        exclude 'META-INF/LICENSE.txt'
-        exclude 'META-INF/license.txt'
-        exclude 'META-INF/NOTICE'
-        exclude 'META-INF/NOTICE.txt'
-        exclude 'META-INF/notice.txt'
-        exclude 'META-INF/LICENSE.md'
-        exclude 'META-INF/ASL2.0'
-        exclude 'build-data.properties'
-        exclude("META-INF/*.kotlin_module")
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
     }
 
     buildTypes {
@@ -38,38 +32,61 @@ android {
         }
     }
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
     namespace 'com.denzo.runners'
 }
 
 dependencies {
-    implementation 'com.google.android.gms:play-services-auth:21.1.1'
+    // Room Database
+    implementation 'androidx.room:room-runtime:2.6.1'
+    kapt 'androidx.room:room-compiler:2.6.1'
+
+    // Google Play Services
+    implementation 'com.google.android.gms:play-services-auth:21.2.0'
+    implementation 'com.google.android.gms:play-services-base:18.5.0'
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
+    implementation 'com.google.android.gms:play-services-maps:19.0.0'
+
+    // Firebase
+    implementation 'com.google.firebase:firebase-auth:21.0.1'
+
+    // Image Loading
     implementation 'com.github.bumptech.glide:glide:4.12.0'
-    implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'com.github.hadiidbouk:ChartProgressBar-Android:2.0.6'
-    implementation "androidx.recyclerview:recyclerview-selection:1.1.0"
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.gms:play-services:12.0.1'
     implementation 'de.hdodenhof:circleimageview:3.1.0'
+    implementation 'com.github.gavinliu:ShapedImageView:0.8.9'
+
+    // Chart Library
     implementation 'com.github.PhilJay:MPAndroidChart:v2.2.4'
+    implementation 'com.github.hadiidbouk:ChartProgressBar-Android:2.0.6'
+
+    // RecyclerView & UI Components
+    implementation "androidx.recyclerview:recyclerview-selection:1.1.0"
+    implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.navigation:navigation-fragment:2.7.7'
     implementation 'androidx.navigation:navigation-ui:2.7.7'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    implementation 'androidx.activity:activity:1.9.1'
+    implementation 'com.google.android.material:material:1.12.0'
+
+    // Animation Library
+    implementation "com.airbnb.android:lottie:3.4.0"
+
+    // Butterknife
+    implementation 'com.jakewharton:butterknife:10.2.3'
+    kapt 'com.jakewharton:butterknife-compiler:10.2.3'
+
+    // Data Binding
+    kapt 'androidx.databinding:databinding-compiler:8.4.0'
+
+    // Testing
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-    implementation 'com.jakewharton:butterknife:10.2.3'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.3'
-    annotationProcessor 'androidx.databinding:databinding-compiler:8.4.0'
-    implementation "com.airbnb.android:lottie:3.4.0"
-    implementation 'com.google.android.material:material:1.12.0'
-    implementation 'com.google.firebase:firebase-auth'
-    implementation 'com.github.gavinliu:ShapedImageView:0.8.9'
     androidTestImplementation 'androidx.test:runner:1.5.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.fragment:fragment:1.6.1'
+    implementation 'com.google.android.gms:play-services-maps:19.0.0'
+
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
+
 }
