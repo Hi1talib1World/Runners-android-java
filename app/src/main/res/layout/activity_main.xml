@@ -4,6 +4,17 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <!-- Toolbar -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/colorPrimary"
+        android:title="Runners App"
+        android:titleTextColor="@android:color/white"
+        android:elevation="4dp" />
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -13,11 +24,6 @@
             android:id="@+id/switch1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
             android:text="THEME " />
 
         <ImageButton
@@ -30,8 +36,6 @@
             android:src="@drawable/history_icon32"
             android:background="@android:color/transparent"/>
     </LinearLayout>
-
-
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -160,7 +164,6 @@
             android:id="@+id/button_left"
             android:layout_width="10dp"
             android:layout_height="wrap_content"
-            android:layout_below="@id/text_calories"
             android:layout_margin="15dp"
             android:layout_weight="1"
             android:background="@color/colorPrimary"
@@ -181,7 +184,6 @@
             android:id="@+id/button_right"
             android:layout_width="10dp"
             android:layout_height="wrap_content"
-            android:layout_below="@id/text_calories"
             android:layout_margin="15dp"
             android:layout_weight="1"
             android:background="@color/colorPrimary"
@@ -190,6 +192,5 @@
             android:textSize="20dp"
             android:textStyle="bold" />
     </LinearLayout>
-
 
 </LinearLayout>
