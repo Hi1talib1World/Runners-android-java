@@ -1,196 +1,305 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:background="@color/background">
 
-    <!-- Toolbar -->
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?android:attr/colorPrimary"
-        android:title="Runners App"
-        android:titleTextColor="@android:color/white"
-        android:elevation="4dp" />
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <Switch
-            android:id="@+id/switch1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="THEME " />
-
-        <ImageButton
-            android:id="@+id/history_open"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="230dp"
-            android:layout_weight="1"
-            android:onClick="onClickStartNewActivity"
-            android:src="@drawable/history_icon32"
-            android:background="@android:color/transparent"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="400"
-        android:orientation="vertical">
-
-        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:tools="http://schemas.android.com/tools"
-            android:id="@+id/map"
-            android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_height="wrap_content">
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:context=".MapsActivity" />
-    </LinearLayout>
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:title="Runners Social"
+            app:titleTextColor="?attr/colorOnPrimary">
 
-    <LinearLayout
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingEnd="16dp">
+
+                <ImageButton
+                    android:id="@+id/button_share"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Share"
+                    android:src="@android:drawable/ic_menu_share"
+                    app:tint="?attr/colorOnPrimary" />
+
+                <ImageButton
+                    android:id="@+id/button_social"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Social"
+                    android:src="@android:drawable/ic_menu_myplaces"
+                    app:tint="?attr/colorOnPrimary" />
+
+                <ImageButton
+                    android:id="@+id/history_open"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="History"
+                    android:onClick="onClickStartNewActivity"
+                    android:src="@drawable/history_icon32"
+                    app:tint="?attr/colorOnPrimary" />
+            </LinearLayout>
+        </com.google.android.material.appbar.MaterialToolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/main_scroll_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="3"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <TextView
-            android:id="@+id/data_length"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
+            android:orientation="vertical"
+            android:paddingBottom="100dp">
+
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/map"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                tools:context=".MapsActivity" />
+
+            <!-- Social Leaderboard Preview -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="12dp"
+                app:cardCornerRadius="20dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="?attr/colorSecondary">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="COMMUNITY LEADERBOARD"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="?attr/colorSecondary"
+                        android:layout_marginBottom="12dp"/>
+
+                    <LinearLayout
+                        android:id="@+id/leaderboard_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <!-- Dynamic items will be added here -->
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="1. You - 12.5 km"
+                            android:paddingVertical="4dp" />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="2. Alex - 10.2 km"
+                            android:paddingVertical="4dp" />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="3. Sarah - 8.1 km"
+                            android:paddingVertical="4dp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Goals & Challenges Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="12dp"
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="20dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="?attr/colorPrimary">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="GOALS &amp; CHALLENGES"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="?attr/colorPrimary"
+                        android:layout_marginBottom="12dp"/>
+
+                    <TextView
+                        android:id="@+id/text_step_goal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Weekly Steps: 0 / 50,000"
+                        android:textSize="14sp" />
+                    <com.google.android.material.progressindicator.LinearProgressIndicator
+                        android:id="@+id/progress_step_goal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="8dp"
+                        app:trackThickness="8dp"
+                        app:trackCornerRadius="4dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="8dp">
+                        <TextView
+                            android:id="@+id/text_streak"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:text="Streak: 0 days 🔥"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:id="@+id/text_live_friends"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0 Friends Running 🏃"
+                            android:textColor="?attr/colorSecondary"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Main Stats Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/stats_card_main"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="12dp"
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="20dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:id="@+id/data_length"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="0.00"
+                        android:textColor="?attr/colorPrimary"
+                        android:textSize="48sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="KILOMETERS"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textSize="10sp"
+                        android:letterSpacing="0.1" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="?attr/colorSurfaceVariant"
+                        android:layout_marginVertical="12dp" />
+
+                    <GridLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:columnCount="4">
+
+                        <LinearLayout style="@style/MetricLayout">
+                            <TextView android:id="@+id/data_time" style="@style/MetricValue" android:text="00:00:00" />
+                            <TextView style="@style/MetricLabel" android:text="Time" />
+                        </LinearLayout>
+
+                        <LinearLayout style="@style/MetricLayout">
+                            <TextView android:id="@+id/data_pace" style="@style/MetricValue" android:text="00'00''" />
+                            <TextView style="@style/MetricLabel" android:text="Pace" />
+                        </LinearLayout>
+
+                        <LinearLayout style="@style/MetricLayout">
+                            <TextView android:id="@+id/data_steps" style="@style/MetricValue" android:text="0" />
+                            <TextView style="@style/MetricLabel" android:text="Steps" />
+                        </LinearLayout>
+
+                        <LinearLayout style="@style/MetricLayout">
+                            <TextView android:id="@+id/data_calories" style="@style/MetricValue" android:text="0" />
+                            <TextView style="@style/MetricLabel" android:text="Cal" />
+                        </LinearLayout>
+                    </GridLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Bottom Controls -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        app:cardElevation="8dp"
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.MediumComponent">
+
+        <LinearLayout
+            android:id="@+id/controls_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="0.00"
-            android:textColor="@color/data"
-            android:textSize="50dp" />
+            android:orientation="horizontal"
+            android:padding="16dp">
 
-        <TextView
-            android:id="@+id/text_length"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center_horizontal"
-            android:text="KM"
-            android:textColor="@color/text"
-            android:textSize="30dp" />
-    </LinearLayout>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_left"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:text="START"
+                app:cornerRadius="28dp" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="2"
-        android:orientation="horizontal">
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_lap"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="56dp"
+                android:layout_marginHorizontal="12dp"
+                android:text="LAP"
+                app:cornerRadius="28dp" />
 
-        <TextView
-            android:id="@+id/data_pace"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="00'00''"
-            android:textColor="@color/data"
-            android:textSize="30dp" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_right"
+                style="@style/Widget.Material3.Button"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:text="STOP"
+                app:cornerRadius="28dp" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
-        <TextView
-            android:id="@+id/data_time"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="00:00:00"
-            android:textColor="@color/data"
-            android:textSize="30dp" />
-
-        <TextView
-            android:id="@+id/data_calories"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="0"
-            android:textColor="@color/data"
-            android:textSize="30dp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="2"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/text_pace"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center_horizontal"
-            android:text="Pace"
-            android:textColor="@color/text"
-            android:textSize="20dp" />
-
-        <TextView
-            android:id="@+id/text_time"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center_horizontal"
-            android:text="Time"
-            android:textColor="@color/text"
-            android:textSize="20dp" />
-
-        <TextView
-            android:id="@+id/text_calories"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center_horizontal"
-            android:text="Calories"
-            android:textColor="@color/text"
-            android:textSize="20dp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/button_left"
-            android:layout_width="10dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:layout_weight="1"
-            android:background="@color/colorPrimary"
-            android:text="START"
-            android:textColor="@color/button_text"
-            android:textSize="20dp"
-            android:textStyle="bold" />
-
-        <Button
-            android:id="@+id/button_middle"
-            android:layout_width="0dp"
-            android:layout_height="90dp"
-            android:layout_margin="15dp"
-            android:layout_weight="1"
-            android:background="@drawable/logo_round" />
-
-        <Button
-            android:id="@+id/button_right"
-            android:layout_width="10dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:layout_weight="1"
-            android:background="@color/colorPrimary"
-            android:text="STOP"
-            android:textColor="@color/button_text"
-            android:textSize="20dp"
-            android:textStyle="bold" />
-    </LinearLayout>
-
-</LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
