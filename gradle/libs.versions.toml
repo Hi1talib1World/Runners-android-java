@@ -16,6 +16,9 @@ firebaseDatabase = "21.0.0"
 firebaseFirestore = "25.1.1"
 glide = "4.16.0"
 lottie = "6.6.0"
+shapedImageView = "0.8.7"
+mpAndroidChart = "v3.1.0"
+osmdroid = "6.1.20"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -39,6 +42,9 @@ firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-fires
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
 glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }
 lottie = { group = "com.airbnb.android", name = "lottie", version.ref = "lottie" }
+shaped-imageview = { group = "cn.gavinliu", name = "ShapedImageView", version.ref = "shapedImageView" }
+mp-android-chart = { group = "com.github.PhilJay", name = "MPAndroidChart", version.ref = "mpAndroidChart" }
+osmdroid = { group = "org.osmdroid", name = "osmdroid-android", version.ref = "osmdroid" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
