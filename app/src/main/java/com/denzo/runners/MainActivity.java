@@ -23,6 +23,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -36,13 +37,6 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -51,14 +45,23 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.osmdroid.config.Configuration;
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.Marker;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, SensorEventListener {
-    private GoogleMap mMap;
+public class MainActivity extends AppCompatActivity implements SensorEventListener {
+    public static final String PREFS_NAME = "RunnersPrefs";
+    public static final String PREF_DARK_THEME = "dark_theme";
+
+    private MapView map;
     private FusedLocationProviderClient mFusedLocationClient;
     private LocationCallback mLocationCallback;
     private Button btleft, btright;
@@ -78,6 +81,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Load osmdroid configuration for offline caching
+        Context ctx = getApplicationContext();
+        Configuration.getInstance().setUserAgentValue(getPackageName());
+        Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -103,11 +111,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         setupSocialFeatures();
         setupLocationTracking();
         
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        if (mapFragment != null) mapFragment.getMapAsync(this);
+        map = findViewById(R.id.map);
+        map.setTileSource(TileSourceFactory.MAPNIK);
+        map.setMultiTouchControls(true);
+        map.getController().setZoom(17.0);
 
-        btleft.setOnClickListener(v -> startRunning());
-        btright.setOnClickListener(v -> stopRunning());
+        btleft.setOnClickListener(v -> {
+            if (!isRunning) {
+                startRunning();
+            } else {
+                stopRunning();
+            }
+        });
+        btright.setVisibility(View.GONE);
         btnShare.setOnClickListener(v -> shareCurrentRun());
     }
 
@@ -142,9 +158,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     Double lng = ds.child("lng").getValue(Double.class);
                     String name = ds.child("name").getValue(String.class);
                     
-                    if (lat != null && lng != null && mMap != null) {
+                    if (lat != null && lng != null && map != null) {
                         count++;
-                        updateFriendMarker(ds.getKey(), name, new LatLng(lat, lng));
+                        updateFriendMarker(ds.getKey(), name, new GeoPoint(lat, lng));
                     }
                 }
                 textLiveFriends.setText(count + " Friends Running 🏃");
@@ -153,23 +169,30 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
-    private void updateFriendMarker(String id, String name, LatLng pos) {
+    private void updateFriendMarker(String id, String name, GeoPoint pos) {
         if (friendMarkers.containsKey(id)) {
             friendMarkers.get(id).setPosition(pos);
         } else {
-            Marker m = mMap.addMarker(new MarkerOptions().position(pos).title(name));
+            Marker m = new Marker(map);
+            m.setPosition(pos);
+            m.setTitle(name);
+            m.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+            map.getOverlays().add(m);
             friendMarkers.put(id, m);
         }
+        map.invalidate();
     }
 
     private void startRunning() {
         isRunning = true;
+        btleft.setText("STOP");
         Toast.makeText(this, "Live Sync Enabled", Toast.LENGTH_SHORT).show();
         // Location updates started via requestLocationUpdates()
     }
 
     private void stopRunning() {
         isRunning = false;
+        btleft.setText("START");
         if (currentUser != null) {
             mDatabase.child("live_runs").child(currentUser.getUid()).removeValue();
             // Update personal record on leaderboard
@@ -207,21 +230,35 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void setupLocationTracking() {
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        
+        LocationRequest locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 5000)
+                .setMinUpdateIntervalMillis(2000)
+                .build();
+
         mLocationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
-                if (!isRunning || currentUser == null) return;
                 Location loc = locationResult.getLastLocation();
-                if (loc != null) {
-                    // Sync live location to Firebase
-                    Map<String, Object> liveData = new HashMap<>();
-                    liveData.put("lat", loc.getLatitude());
-                    liveData.put("lng", loc.getLongitude());
-                    liveData.put("name", currentUser.getDisplayName() != null ? currentUser.getDisplayName() : "Friend");
-                    mDatabase.child("live_runs").child(currentUser.getUid()).setValue(liveData);
-                }
+                if (loc == null) return;
+
+                GeoPoint currentPos = new GeoPoint(loc.getLatitude(), loc.getLongitude());
+                map.getController().animateTo(currentPos);
+
+                if (!isRunning || currentUser == null) return;
+                
+                // Sync live location to Firebase
+                Map<String, Object> liveData = new HashMap<>();
+                liveData.put("lat", loc.getLatitude());
+                liveData.put("lng", loc.getLongitude());
+                liveData.put("name", currentUser.getDisplayName() != null ? currentUser.getDisplayName() : "Friend");
+                mDatabase.child("live_runs").child(currentUser.getUid()).setValue(liveData);
             }
         };
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mFusedLocationClient.requestLocationUpdates(locationRequest, mLocationCallback, Looper.getMainLooper());
+        }
     }
 
     private void addLeaderboardItem(int rank, String name, double dist) {
@@ -231,7 +268,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         leaderboardContainer.addView(tv);
     }
 
-    @Override public void onMapReady(@NonNull GoogleMap googleMap) { mMap = googleMap; }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (map != null) map.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (map != null) map.onPause();
+    }
+
     @Override public void onSensorChanged(SensorEvent event) {}
     @Override public void onAccuracyChanged(Sensor sensor, int accuracy) {}
 }
