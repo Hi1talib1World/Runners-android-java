@@ -79,6 +79,9 @@ dependencies {
 
     // Animation
     implementation(libs.lottie)
+    implementation(libs.shaped.imageview)
+    implementation(libs.mp.android.chart)
+    implementation(libs.osmdroid)
 
     // Testing
     testImplementation 'junit:junit:4.13.2'
