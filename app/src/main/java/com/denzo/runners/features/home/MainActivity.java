@@ -1,4 +1,4 @@
-package com.denzo.runners;
+package com.denzo.runners.features.home;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,6 +30,12 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.denzo.runners.R;
+import com.denzo.runners.features.activities.HistoryActivity;
+import com.denzo.runners.core.database.AppDatabase;
+import com.denzo.runners.data.local.dao.RunningDAO;
+import com.denzo.runners.data.local.entities.Runningdata;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -125,6 +131,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         });
         btright.setVisibility(View.GONE);
         btnShare.setOnClickListener(v -> shareCurrentRun());
+        
+        // Handle history button from XML onClick
+        findViewById(R.id.history_open).setOnClickListener(v -> onClickStartNewActivity(v));
+    }
+
+    public void onClickStartNewActivity(View v) {
+        Intent intent = new Intent(this, HistoryActivity.class);
+        startActivity(intent);
     }
 
     private void setupSocialFeatures() {

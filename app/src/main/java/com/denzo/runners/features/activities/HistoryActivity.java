@@ -1,17 +1,13 @@
-package com.denzo.runners;
-
+package com.denzo.runners.features.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -19,13 +15,18 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
 
+import com.denzo.runners.MainActivity;
+import com.denzo.runners.R;
+import com.denzo.runners.core.database.AppDatabase;
+import com.denzo.runners.data.local.dao.RunningDAO;
+import com.denzo.runners.data.local.entities.Runningdata;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
-
 
 public class HistoryActivity extends AppCompatActivity {
 
@@ -43,7 +44,6 @@ public class HistoryActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
-
 
         data_layout = findViewById(R.id.data_layout);
 
@@ -82,8 +82,6 @@ public class HistoryActivity extends AppCompatActivity {
             View ViewToAdd = LayoutInflater.from(this)
                     .inflate(R.layout.item_data, null);
 
-            //Button data_deleteItem = (Button) ViewToAdd.findViewById(R.id.button_deleteItem);
-
             TextView data_id = ViewToAdd.findViewById(R.id.data_id);
             TextView data_distance = ViewToAdd.findViewById(R.id.data_distance);
             TextView data_starttime = ViewToAdd.findViewById(R.id.data_starttime);
@@ -95,9 +93,7 @@ public class HistoryActivity extends AppCompatActivity {
             data_starttime.setText(oldStarttime);
 
             data_layout.addView(ViewToAdd);
-
         }
-
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -120,23 +116,13 @@ public class HistoryActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    // detele item by click
     public void onClickDeleteItem(View view){
-
-        // get the LinearLayout of this item
         LinearLayout r = (LinearLayout) ((ViewGroup) view.getParent());
         TextView deleteView = (TextView) r.getChildAt(1);
-        //int deleteId = Integer.parseInt(deleteView.getText().toString());
         Double deleteId = Double.parseDouble(deleteView.getText().toString());
         Integer deleteIntId = deleteId.intValue();
         System.out.println("The delete id is : "+deleteIntId);
-        // delete data from database by ID
         runningdao.deleteById(deleteIntId);
-        //remove this linearlayout row
         ((ViewGroup) r.getParent()).removeView(r);
-
-
     }
-
-
 }

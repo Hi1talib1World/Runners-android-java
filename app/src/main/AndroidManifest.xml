@@ -10,6 +10,7 @@
     <uses-feature android:name="android.hardware.sensor.stepdetector" android:required="false" />
 
     <application
+        android:name=".MainApplication"
         android:allowBackup="true"
         android:icon="@drawable/run"
         android:label="@string/app_name"
@@ -17,7 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Runners">
 
-        <!-- SplashActivity: Entry point of the app -->
+        <!-- SplashActivity -->
         <activity
             android:name=".SplashActivity"
             android:exported="true">
@@ -27,23 +28,27 @@
             </intent-filter>
         </activity>
 
-        <!-- Login and Sign Up Activities -->
-        <activity android:name=".LoginActivity" android:exported="false" />
-        <activity android:name=".SingUpActivity" android:exported="false" />
+        <!-- Features Auth -->
+        <activity android:name=".features.auth.LoginActivity" android:exported="false" />
+        <activity android:name=".features.auth.SingUpActivity" android:exported="false" />
 
-        <!-- SearchActivity: The search functionality -->
+        <!-- Features Search -->
         <activity
-            android:name=".SearchActivity"
+            android:name=".features.search.SearchActivity"
             android:exported="true"
             android:theme="@style/Theme.Runners" />
 
-        <!-- MainActivity: The main screen of the app -->
+        <!-- Features Home -->
         <activity
-            android:name=".MainActivity"
+            android:name=".features.home.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.Runners" />
 
-        <!-- Optional: Include the legacy HTTP library if needed -->
+        <!-- Features Activities -->
+        <activity
+            android:name=".features.activities.HistoryActivity"
+            android:exported="false" />
+
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />
