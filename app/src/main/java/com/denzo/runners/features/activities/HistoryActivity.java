@@ -15,7 +15,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
 
-import com.denzo.runners.MainActivity;
+import com.denzo.runners.features.home.MainActivity;
 import com.denzo.runners.R;
 import com.denzo.runners.core.database.AppDatabase;
 import com.denzo.runners.data.local.dao.RunningDAO;
