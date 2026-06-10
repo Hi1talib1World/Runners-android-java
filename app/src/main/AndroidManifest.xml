@@ -49,6 +49,12 @@
             android:name=".features.activities.HistoryActivity"
             android:exported="false" />
 
+        <service
+            android:name=".services.LocationService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="location" />
+
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />
