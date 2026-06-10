@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'com.google.gms.google-services'
     id 'kotlin-kapt'
+    id 'com.google.dagger.hilt.android'
 }
 
 android {
@@ -82,6 +83,22 @@ dependencies {
     implementation(libs.shaped.imageview)
     implementation(libs.mp.android.chart)
     implementation(libs.osmdroid)
+
+    // Hilt
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+
+    // Network
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.gson)
+    implementation(libs.okhttp.logging)
+
+    // Paging
+    implementation(libs.paging.runtime)
+    implementation(libs.paging.common)
+
+    // Billing
+    implementation(libs.billing.ktx)
 
     // Testing
     testImplementation 'junit:junit:4.13.2'
