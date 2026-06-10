@@ -11,7 +11,7 @@ class RunningRemoteMediator(
     private val database: AppDatabase
 ) : RemoteMediator<Int, Runningdata>() {
 
-    override fun load(
+    override suspend fun load(
         loadType: LoadType,
         state: PagingState<Int, Runningdata>
     ): MediatorResult {
