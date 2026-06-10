@@ -3,22 +3,22 @@
 
     <item
         android:id="@+id/navigation_home"
-        android:icon="@drawable/ic_home_black_24dp"
-        android:title="@string/home" />
+        android:icon="@android:drawable/ic_menu_compass"
+        android:title="Activity" />
 
     <item
         android:id="@+id/my_journey"
-        android:icon="@drawable/ic_dashboard_black_24dp"
-        android:title="@string/my_journey" />
+        android:icon="@android:drawable/ic_menu_mapmode"
+        android:title="Map" />
 
     <item
         android:id="@+id/nav_star"
-        android:icon="@drawable/ic_dashboard_black_24dp"
-        android:title="@string/star" />
+        android:icon="@android:drawable/btn_star_big_on"
+        android:title="Ranks" />
 
     <item
         android:id="@+id/navigation_notifications"
-        android:icon="@drawable/gear"
-        android:title="@string/settings" />
+        android:icon="@android:drawable/ic_menu_myplaces"
+        android:title="Profile" />
 
 </menu>
