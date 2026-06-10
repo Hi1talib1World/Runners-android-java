@@ -36,6 +36,8 @@ import com.denzo.runners.features.activities.HistoryActivity;
 import com.denzo.runners.core.database.AppDatabase;
 import com.denzo.runners.data.local.dao.RunningDAO;
 import com.denzo.runners.data.local.entities.Runningdata;
+import com.denzo.runners.features.subscription.BillingManager;
+import com.denzo.runners.services.LocationService;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -63,7 +65,14 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.inject.Inject;
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
+    @Inject
+    BillingManager billingManager;
+
     public static final String PREFS_NAME = "RunnersPrefs";
     public static final String PREF_DARK_THEME = "dark_theme";
 
@@ -116,6 +125,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         setupSocialFeatures();
         setupLocationTracking();
+        billingManager.startConnection();
         
         map = findViewById(R.id.map);
         map.setTileSource(TileSourceFactory.MAPNIK);
@@ -200,13 +210,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private void startRunning() {
         isRunning = true;
         btleft.setText("STOP");
-        Toast.makeText(this, "Live Sync Enabled", Toast.LENGTH_SHORT).show();
-        // Location updates started via requestLocationUpdates()
+        
+        Intent serviceIntent = new Intent(this, LocationService.class);
+        ContextCompat.startForegroundService(this, serviceIntent);
+        
+        Toast.makeText(this, "High-Frequency Telemetry Active", Toast.LENGTH_SHORT).show();
     }
 
     private void stopRunning() {
         isRunning = false;
         btleft.setText("START");
+        
+        Intent serviceIntent = new Intent(this, LocationService.class);
+        stopService(serviceIntent);
+
         if (currentUser != null) {
             mDatabase.child("live_runs").child(currentUser.getUid()).removeValue();
             // Update personal record on leaderboard
