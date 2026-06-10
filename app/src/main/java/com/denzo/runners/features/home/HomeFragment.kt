@@ -68,6 +68,12 @@ class HomeFragment : Fragment() {
         binding.buttonLeft.setOnClickListener {
             checkPermissionsAndToggle()
         }
+        
+        // Mock "Join Session" handler
+        binding.activityStatusBar.setOnClickListener {
+            viewModel.joinSession()
+            Toast.makeText(requireContext(), "Searching for live sessions...", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun checkPermissionsAndToggle() {
