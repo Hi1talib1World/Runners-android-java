@@ -25,6 +25,7 @@
                 android:background="@color/runners_volt"
                 app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.SmallComponent" />
             <TextView
+                android:id="@+id/pro_badge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|center_horizontal"
@@ -39,6 +40,7 @@
         </FrameLayout>
 
         <TextView
+            android:id="@+id/athlete_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
@@ -48,6 +50,7 @@
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/member_since"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Member since Jan 2023 • Pro Member"
@@ -55,6 +58,7 @@
             android:textSize="12sp" />
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/edit_profile_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -63,7 +67,7 @@
             android:textColor="@color/onPrimary"
             app:cornerRadius="8dp" />
 
-        <!-- Records Grid -->
+        <!-- Records Grid (Static for now, dynamic in list) -->
         <GridLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -127,6 +131,7 @@
 
         <!-- Gear Tracker -->
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/gear_tracker_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -145,13 +150,15 @@
                     android:textSize="12sp"
                     android:textStyle="bold" />
                 <TextView
+                    android:id="@+id/gear_model_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:text="NIKE ALPHAFY 3"
+                    android:text="NIKE ALPHAFLY 3"
                     android:textColor="@color/runners_text_primary"
                     android:textStyle="bold" />
                 <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:id="@+id/gear_progress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -159,6 +166,7 @@
                     app:indicatorColor="@color/runners_volt"
                     app:trackColor="#333333" />
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/retire_gear_button"
                     style="@style/Widget.Material3.Button.OutlinedButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
