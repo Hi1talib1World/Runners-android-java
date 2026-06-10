@@ -37,6 +37,14 @@ class HomeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState = _uiState.asStateFlow()
 
+    fun joinSession() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            delay(1200) // Mock API latency
+            _uiState.update { it.copy(isLoading = false) }
+        }
+    }
+
     fun toggleTracking() {
         if (_uiState.value.isTracking) {
             stopTracking()
