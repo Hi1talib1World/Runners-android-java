@@ -1,5 +1,6 @@
 package com.denzo.runners.core.di
 
+import com.denzo.runners.data.remote.api.RunnersApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -40,5 +41,11 @@ object NetworkModule {
             .addConverterFactory(GsonConverterFactory.create())
             .client(okHttpClient)
             .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideRunnersApiService(retrofit: Retrofit): RunnersApiService {
+        return retrofit.create(RunnersApiService::class.java)
     }
 }
