@@ -47,6 +47,12 @@
             android:exported="true"
             android:theme="@style/Theme.Runners" />
 
+        <!-- Features Onboarding -->
+        <activity
+            android:name=".features.onboarding.OnboardingActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Runners" />
+
         <!-- Features Activities -->
         <activity
             android:name=".features.activities.HistoryActivity"
