@@ -73,9 +73,9 @@ class OnboardingFragment : Fragment() {
         val step = state.currentStep ?: return
 
         // Hydrate content
-        binding.tv_onboarding_title.text = step.title
-        binding.tv_onboarding_desc.text = step.description
-        binding.iv_onboarding_illustration.setImageResource(step.imageResId)
+        binding.tvOnboardingTitle.text = step.title
+        binding.tvOnboardingDesc.text = step.description
+        binding.ivOnboardingIllustration.setImageResource(step.imageResId)
 
         // Pillar 2: Button Morphing Contracts
         binding.btnNext.text = if (state.isLastStep) "Get Started" else "Next"
@@ -93,12 +93,12 @@ class OnboardingFragment : Fragment() {
         
         // Background transition feedback
         step.backgroundColor?.let { colorRes ->
-            binding.onboarding_root.setBackgroundColor(ContextCompat.getColor(requireContext(), colorRes))
+            binding.onboardingRoot.setBackgroundColor(ContextCompat.getColor(requireContext(), colorRes))
         }
     }
 
     private fun updateIndicators(currentIndex: Int, count: Int) {
-        binding.indicator_layout.removeAllViews()
+        binding.indicatorLayout.removeAllViews()
         for (i in 0 until count) {
             val dot = ImageView(requireContext())
             val size = resources.getDimensionPixelSize(R.dimen.dot_size)
@@ -109,7 +109,7 @@ class OnboardingFragment : Fragment() {
             val color = if (i == currentIndex) R.color.runners_volt else R.color.runners_text_secondary
             dot.setImageResource(R.drawable.ic_dot)
             dot.setColorFilter(ContextCompat.getColor(requireContext(), color))
-            binding.indicator_layout.addView(dot)
+            binding.indicatorLayout.addView(dot)
         }
     }
 
