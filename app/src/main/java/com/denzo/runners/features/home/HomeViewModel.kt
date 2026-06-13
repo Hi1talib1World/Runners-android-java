@@ -2,20 +2,24 @@ package com.denzo.runners.features.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.denzo.runners.data.local.entities.Runningdata
-import com.denzo.runners.data.remote.repository.ActivityRepository
+import com.denzo.runners.data.local.entities.RunEntity
+import com.denzo.runners.data.repository.RunRepository
+import com.denzo.runners.features.subscription.BillingManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
+import org.osmdroid.util.GeoPoint
 import javax.inject.Inject
 
 data class HomeUiState(
     val isTracking: Boolean = false,
-    val isPaused: Boolean = false,
     val isLoading: Boolean = false,
+    val isProUser: Boolean = false,
+    val distanceMeters: Double = 0.0,
+    val durationSeconds: Long = 0,
+    val currentPace: Double = 0.0,
+    val calories: Double = 0.0,
+    val pathPoints: List<GeoPoint> = emptyList(),
     val error: String? = null,
     val currentActivity: ActivityMetrics = ActivityMetrics()
 )
@@ -29,13 +33,36 @@ data class ActivityMetrics(
     val cadence: String = "--"
 )
 
+sealed class UiEvent {
+    object RunSaved : UiEvent()
+    data class ShowError(val message: String) : UiEvent()
+}
+
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val repository: ActivityRepository
+    private val repository: RunRepository,
+    private val billingManager: BillingManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
-    val uiState = _uiState.asStateFlow()
+    val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
+
+    private val _uiEvent = MutableSharedFlow<UiEvent>()
+    val uiEvent: SharedFlow<UiEvent> = _uiEvent.asSharedFlow()
+
+    private var trackingJob: Job? = null
+
+    init {
+        observeProStatus()
+    }
+
+    private fun observeProStatus() {
+        viewModelScope.launch {
+            billingManager.isProUser.collect { isPro ->
+                _uiState.update { it.copy(isProUser = isPro) }
+            }
+        }
+    }
 
     fun joinSession() {
         viewModelScope.launch {
@@ -46,60 +73,74 @@ class HomeViewModel @Inject constructor(
     }
 
     fun toggleTracking() {
-        if (_uiState.value.isTracking) {
-            stopTracking()
-        } else {
-            startTracking()
-        }
+        if (_uiState.value.isTracking) stopAndSaveRun() else startTracking()
     }
 
     private fun startTracking() {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            delay(1000) // Mock API latency for starting a session
-            _uiState.update { it.copy(isTracking = true, isLoading = false, isPaused = false) }
-            
-            // Mock high-frequency data stream
-            simulateMetricsStream()
-        }
-    }
-
-    private fun stopTracking() {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            delay(800) // Mock API latency for final sync
-            
-            // Save to repository (Single Source of Truth)
-            val finalData = Runningdata().apply {
-                distance = _uiState.value.currentActivity.distance.toDoubleOrNull() ?: 0.0
-                starttime = System.currentTimeMillis().toString()
-            }
-            repository.saveActivity(finalData)
-            
-            _uiState.update { it.copy(isTracking = false, isLoading = false, currentActivity = ActivityMetrics()) }
-        }
-    }
-
-    private fun simulateMetricsStream() {
-        viewModelScope.launch {
-            var secs = 0
-            var dist = 0.0
-            while (_uiState.value.isTracking) {
+        _uiState.update { it.copy(
+            isTracking = true, 
+            pathPoints = emptyList(), 
+            distanceMeters = 0.0, 
+            durationSeconds = 0,
+            currentActivity = ActivityMetrics()
+        ) }
+        
+        trackingJob = viewModelScope.launch {
+            while (isActive) {
                 delay(1000)
-                secs++
-                dist += 0.002 // simulate movement
-                
-                _uiState.update { state ->
-                    state.copy(
-                        currentActivity = state.currentActivity.copy(
-                            duration = formatTime(secs),
-                            distance = String.format("%.2f", dist),
-                            pace = "4'15''", // would be calculated based on speed
-                            heartRate = (140..170).random().toString(),
-                            cadence = (85..95).random().toString()
-                        )
-                    )
-                }
+                updateMetrics()
+            }
+        }
+    }
+
+    private fun updateMetrics() {
+        _uiState.update { state ->
+            val newDuration = state.durationSeconds + 1
+            // Mocking coordinate movement
+            val lastPoint = state.pathPoints.lastOrNull() ?: GeoPoint(48.8584, 2.2945)
+            val newPoint = GeoPoint(lastPoint.latitude + 0.0001, lastPoint.longitude + 0.0001)
+            
+            val newDistance = state.distanceMeters + 10.5 // Simulated 10.5 meters per second
+            val paceValue = if (newDistance > 0) (newDuration / 60.0) / (newDistance / 1000.0) else 0.0
+
+            state.copy(
+                durationSeconds = newDuration,
+                distanceMeters = newDistance,
+                currentPace = paceValue,
+                calories = newDistance * 0.05,
+                pathPoints = state.pathPoints + newPoint,
+                currentActivity = state.currentActivity.copy(
+                    duration = formatTime(newDuration.toInt()),
+                    distance = String.format("%.2f", newDistance / 1000),
+                    pace = String.format("%.2f", paceValue),
+                    heartRate = (140..170).random().toString(),
+                    cadence = (85..95).random().toString()
+                )
+            )
+        }
+    }
+
+    private fun stopAndSaveRun() {
+        trackingJob?.cancel()
+        _uiState.update { it.copy(isLoading = true, isTracking = false) }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val currentState = _uiState.value
+                val runRecord = RunEntity(
+                    timestamp = System.currentTimeMillis(),
+                    avgPace = currentState.currentPace,
+                    distanceMeters = currentState.distanceMeters,
+                    durationSeconds = currentState.durationSeconds,
+                    caloriesBurned = currentState.calories,
+                    pathPoints = currentState.pathPoints
+                )
+                repository.saveRun(runRecord)
+                _uiEvent.emit(UiEvent.RunSaved)
+            } catch (e: Exception) {
+                _uiEvent.emit(UiEvent.ShowError("Failed to save run: ${e.message}"))
+            } finally {
+                _uiState.update { it.copy(isLoading = false, currentActivity = ActivityMetrics()) }
             }
         }
     }
