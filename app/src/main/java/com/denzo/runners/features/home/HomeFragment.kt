@@ -22,6 +22,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.overlay.Polyline
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -31,11 +32,16 @@ class HomeFragment : Fragment() {
     
     private val viewModel: HomeViewModel by viewModels()
 
+    private val trackPolyline = Polyline().apply {
+        outlinePaint.color = android.graphics.Color.RED
+        outlinePaint.strokeWidth = 10f
+    }
+
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
         if (permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true) {
-            startTrackingService()
+            viewModel.toggleTracking()
         } else {
             Toast.makeText(requireContext(), "Location permission required", Toast.LENGTH_SHORT).show()
         }
@@ -54,14 +60,14 @@ class HomeFragment : Fragment() {
         
         setupMap()
         setupClickListeners()
-        observeUiState()
+        observeState()
     }
 
     private fun setupMap() {
         binding.map.setTileSource(TileSourceFactory.MAPNIK)
         binding.map.setMultiTouchControls(true)
-        binding.map.controller.setZoom(17.5)
-        binding.map.controller.setCenter(GeoPoint(0.0, 0.0)) // Default
+        binding.map.controller.setZoom(18.0)
+        binding.map.overlays.add(trackPolyline)
     }
 
     private fun setupClickListeners() {
@@ -69,7 +75,6 @@ class HomeFragment : Fragment() {
             checkPermissionsAndToggle()
         }
         
-        // Mock "Join Session" handler
         binding.activityStatusBar.setOnClickListener {
             viewModel.joinSession()
             Toast.makeText(requireContext(), "Searching for live sessions...", Toast.LENGTH_SHORT).show()
@@ -93,30 +98,34 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun observeUiState() {
+    private fun observeState() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.uiState.collect { state ->
-                    updateUi(state)
+                launch {
+                    viewModel.uiState.collect { state ->
+                        updateUi(state)
+                    }
+                }
+                launch {
+                    viewModel.uiEvent.collect { event ->
+                        handleEvent(event)
+                    }
                 }
             }
         }
     }
 
     private fun updateUi(state: HomeUiState) {
-        // State Management: Loading & Execution
         binding.loadingIndicator.visibility = if (state.isLoading) View.VISIBLE else View.GONE
         binding.pauseIcon.visibility = if (state.isLoading) View.GONE else View.VISIBLE
         binding.buttonLeft.isEnabled = !state.isLoading
 
-        // Dynamic Data Mapping
         binding.dataTime.text = state.currentActivity.duration
         binding.dataLength.text = state.currentActivity.distance
         binding.dataPace.text = state.currentActivity.pace
         binding.dataBpm.text = "${state.currentActivity.heartRate} BPM"
-        binding.dataCadence.text = "${state.currentActivity.cadence} RPM CADENCE"
+        binding.dataCadence.text = "${state.currentActivity.cadence} RPM"
 
-        // Transitions: Toggle Button State
         if (state.isTracking) {
             binding.buttonLeft.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.runners_accent_red))
             binding.pauseIcon.setImageResource(android.R.drawable.ic_media_pause)
@@ -126,9 +135,22 @@ class HomeFragment : Fragment() {
             binding.pauseIcon.setImageResource(android.R.drawable.ic_media_play)
             stopTrackingService()
         }
+
+        if (state.pathPoints.isNotEmpty()) {
+            trackPolyline.setPoints(state.pathPoints)
+            binding.map.controller.animateTo(state.pathPoints.last())
+            binding.map.invalidate()
+        }
         
         state.error?.let {
             Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun handleEvent(event: UiEvent) {
+        when (event) {
+            is UiEvent.RunSaved -> Toast.makeText(context, "Run Saved Successfully!", Toast.LENGTH_SHORT).show()
+            is UiEvent.ShowError -> Toast.makeText(context, event.message, Toast.LENGTH_LONG).show()
         }
     }
 
