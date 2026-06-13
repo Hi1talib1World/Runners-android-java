@@ -6,6 +6,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
+import androidx.core.content.edit
+
 /**
  * Pillar 1: The First-Run Guard & Session Persistence
  * Persistence Layer for managing onboarding lifecycle.
@@ -23,7 +25,9 @@ class OnboardingRepository @Inject constructor(
     }
 
     fun setFirstRunCompleted() {
-        prefs.edit().putBoolean(KEY_FIRST_RUN_COMPLETED, true).apply()
+        prefs.edit(commit = false) {
+            putBoolean(KEY_FIRST_RUN_COMPLETED, true)
+        }
     }
 
     companion object {
