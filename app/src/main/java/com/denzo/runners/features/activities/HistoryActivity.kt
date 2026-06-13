@@ -40,8 +40,6 @@ class HistoryActivity : AppCompatActivity() {
         binding = ActivityHistoryBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setSupportActionBar(binding.toolbar) // Assuming there is a toolbar in the layout
-
         observeHistory()
     }
 
@@ -88,7 +86,7 @@ class HistoryActivity : AppCompatActivity() {
                 true
             }
             R.id.action_clear -> {
-                // viewModel.clearHistory()
+                viewModel.clearHistory()
                 true
             }
             else -> super.onOptionsItemSelected(item)
