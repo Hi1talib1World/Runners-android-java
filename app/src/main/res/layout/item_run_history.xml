@@ -26,6 +26,19 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="24/10/2023 14:30" />
 
+        <ImageView
+            android:id="@+id/icon_sync_status"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginStart="8dp"
+            android:src="@android:drawable/stat_sys_upload_done"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/text_date"
+            app:layout_constraintStart_toEndOf="@id/text_date"
+            app:layout_constraintTop_toTopOf="@id/text_date"
+            app:tint="@color/runners_volt"
+            tools:visibility="visible" />
+
         <LinearLayout
             android:id="@+id/stats_row"
             android:layout_width="0dp"
