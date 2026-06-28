@@ -35,4 +35,38 @@
         android:label="Settings"
         tools:layout="@layout/fragment_settings" />
 
+    <fragment
+        android:id="@+id/run_summary"
+        android:name="com.denzo.runners.features.activities.RunSummaryFragment"
+        android:label="Run Summary"
+        tools:layout="@layout/fragment_run_summary">
+        <argument
+            android:name="runId"
+            app:argType="integer" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_search"
+        android:name="com.denzo.runners.features.search.SearchFragment"
+        android:label="Search"
+        tools:layout="@layout/fragment_search" />
+
+    <fragment
+        android:id="@+id/navigation_gear"
+        android:name="com.denzo.runners.features.home.GearManagementFragment"
+        android:label="Manage Gear"
+        tools:layout="@layout/fragment_gear_management" />
+
+    <fragment
+        android:id="@+id/navigation_plans"
+        android:name="com.denzo.runners.features.activities.TrainingPlansFragment"
+        android:label="Training Plans"
+        tools:layout="@layout/fragment_training_plans" />
+
+    <fragment
+        android:id="@+id/navigation_workout_builder"
+        android:name="com.denzo.runners.features.activities.WorkoutBuilderFragment"
+        android:label="Workout Builder"
+        tools:layout="@layout/fragment_workout_builder" />
+
 </navigation>
