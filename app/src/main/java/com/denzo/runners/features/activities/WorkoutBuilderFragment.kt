@@ -1,5 +1,6 @@
 package com.denzo.runners.features.activities
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.RadioGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
@@ -80,7 +80,7 @@ class WorkoutBuilderFragment : Fragment() {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle("Add Workout Step")
             .setView(dialogView)
-            .setPositiveButton("ADD") { _, _ ->
+            .setPositiveButton("ADD") { _: DialogInterface, _: Int ->
                 val type = when (rgType.checkedRadioButtonId) {
                     R.id.rb_warmup -> StepType.WARMUP
                     R.id.rb_sprint -> StepType.SPRINT
@@ -112,8 +112,7 @@ class WorkoutBuilderFragment : Fragment() {
                 title = name,
                 steps = steps.toList()
             )
-            // repository.insertWorkouts([workout]) -> need insert method
-            // I'll assume repository handles individual insertion or I'll add it
+            repository.saveWorkout(workout)
             findNavController().popBackStack()
         }
     }
