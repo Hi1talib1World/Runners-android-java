@@ -14,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.denzo.runners.R
 import com.denzo.runners.data.local.entities.TrainingPlanEntity
+import com.denzo.runners.data.local.entities.WorkoutEntity
 import com.denzo.runners.databinding.FragmentTrainingPlansBinding
 import com.denzo.runners.databinding.ItemTrainingPlanBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -43,6 +44,9 @@ class TrainingPlansFragment : Fragment() {
 
     private fun setupInteractions() {
         binding.btnBack.setOnClickListener { findNavController().popBackStack() }
+        binding.btnCreateCustom.setOnClickListener {
+            findNavController().navigate(R.id.navigation_workout_builder)
+        }
     }
 
     private fun observeUiState() {
@@ -58,7 +62,7 @@ class TrainingPlansFragment : Fragment() {
     private fun updateUi(state: TrainingPlansUiState) {
         binding.plansLoading.visibility = if (state.isLoading) View.VISIBLE else View.GONE
         
-        val adapter = PlansAdapter(state.plans, state.activePlan?.id) { planId ->
+        val adapter = PlansAdapter(state.plans, state.customWorkouts, state.activePlan?.id) { planId ->
             viewModel.onEnroll(planId)
         }
         binding.rvPlansList.adapter = adapter
@@ -70,23 +74,32 @@ class TrainingPlansFragment : Fragment() {
     }
 
     inner class PlansAdapter(
-        private val items: List<TrainingPlanEntity>,
+        private val plans: List<TrainingPlanEntity>,
+        private val customWorkouts: List<WorkoutEntity>,
         private val activePlanId: Int?,
         private val onEnrollClick: (Int) -> Unit
-    ) : RecyclerView.Adapter<PlansAdapter.ViewHolder>() {
+    ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        override fun getItemViewType(position: Int): Int {
+            return if (position < plans.size) 0 else 1
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             val itemBinding = ItemTrainingPlanBinding.inflate(layoutInflater, parent, false)
-            return ViewHolder(itemBinding)
+            return PlanViewHolder(itemBinding)
         }
 
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            holder.bind(items[position])
+        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+            if (getItemViewType(position) == 0) {
+                (holder as PlanViewHolder).bind(plans[position])
+            } else {
+                (holder as PlanViewHolder).bindCustom(customWorkouts[position - plans.size])
+            }
         }
 
-        override fun getItemCount() = items.size
+        override fun getItemCount() = plans.size + customWorkouts.size
 
-        inner class ViewHolder(private val b: ItemTrainingPlanBinding) : RecyclerView.ViewHolder(b.root) {
+        inner class PlanViewHolder(private val b: ItemTrainingPlanBinding) : RecyclerView.ViewHolder(b.root) {
             fun bind(plan: TrainingPlanEntity) {
                 b.tvPlanName.text = plan.name
                 b.tvPlanDesc.text = plan.description
@@ -107,6 +120,14 @@ class TrainingPlansFragment : Fragment() {
                 }
 
                 b.btnEnroll.setOnClickListener { onEnrollClick(plan.id) }
+            }
+
+            fun bindCustom(workout: WorkoutEntity) {
+                b.tvPlanName.text = workout.title
+                b.tvPlanDesc.text = "Custom User Workout"
+                b.tvTotalWeeks.text = "${workout.steps.size} STEPS"
+                b.chipDifficulty.text = "Custom"
+                b.btnEnroll.visibility = View.GONE
             }
         }
     }
