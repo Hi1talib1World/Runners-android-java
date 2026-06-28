@@ -76,6 +76,54 @@
             android:alpha="0.8"
             app:layout_constraintTop_toBottomOf="@id/activity_status_bar" />
 
+        <!-- Environmental Badge -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/weather_badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-30dp"
+            android:layout_marginEnd="16dp"
+            app:cardBackgroundColor="@color/runners_dark_bg"
+            app:cardCornerRadius="20dp"
+            app:strokeColor="@color/runners_volt"
+            app:strokeWidth="1dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/map_summary">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="6dp"
+                android:gravity="center">
+                <ImageView
+                    android:id="@+id/iv_weather_icon"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@android:drawable/ic_menu_compass"
+                    app:tint="@color/runners_volt"
+                    android:contentDescription="Weather" />
+                <TextView
+                    android:id="@+id/tv_weather_temp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="22°C"
+                    android:textColor="@color/runners_text_primary"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/tv_environment_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:text="ROAD"
+                    android:textColor="@color/runners_volt"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
         <!-- Summary Metrics Card -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/metrics_card"
