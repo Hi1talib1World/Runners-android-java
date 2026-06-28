@@ -7,7 +7,7 @@ import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.DistanceRecord
 import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.HeartRateRecord
-import androidx.health.connect.client.units.Distance
+import androidx.health.connect.client.units.Length
 import com.denzo.runners.data.local.entities.RunEntity
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.time.Instant
@@ -55,7 +55,7 @@ class HealthConnectManager @Inject constructor(
             startZoneOffset = ZonedDateTime.now().offset,
             endTime = endTime,
             endZoneOffset = ZonedDateTime.now().offset,
-            distance = Distance.meters(run.distanceMeters)
+            distance = Length.meters(run.distanceMeters)
         )
 
         try {
