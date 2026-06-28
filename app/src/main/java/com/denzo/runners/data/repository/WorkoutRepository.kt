@@ -31,9 +31,23 @@ class WorkoutRepository @Inject constructor(
         workoutDao.updateWorkout(workout.copy(isCompleted = true, completionTimestamp = System.currentTimeMillis()))
     }
 
-    suspend fun seedMockPlans() {
+    suspend fun saveWorkout(workout: WorkoutEntity) {
+        workoutDao.insertWorkouts(listOf(workout))
+    }
+
+    suspend fun seedMockData(challengeDao: com.denzo.runners.data.local.dao.ChallengeDao) {
         val existing = workoutDao.getAllPlans().first()
         if (existing.isNotEmpty()) return
+
+        // Seed Challenges
+        challengeDao.insertChallenge(com.denzo.runners.data.local.entities.ChallengeEntity(
+            name = "October 50K Challenge",
+            description = "Run 50km this month to earn the golden bolt.",
+            targetDistanceMeters = 50000.0,
+            startTimestamp = 1696118400000L, // Oct 1
+            endTimestamp = 1698796800000L, // Oct 31
+            medalIconResId = android.R.drawable.btn_star_big_on
+        ))
 
         val plans = listOf(
             TrainingPlanEntity(name = "Couch to 5K", description = "Perfect for beginners starting their journey.", totalWeeks = 8, difficulty = "Beginner"),
