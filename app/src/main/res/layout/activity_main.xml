@@ -10,14 +10,17 @@
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:elevation="0dp">
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:title="Runners"
-            app:titleTextColor="?attr/colorOnPrimary" />
+            android:background="@color/runners_dark_bg"
+            app:title="RUNNERS"
+            app:titleCentered="true"
+            app:titleTextColor="@color/runners_volt"
+            app:titleTextAppearance="@style/ToolbarTitleAppearance" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.fragment.app.FragmentContainerView
