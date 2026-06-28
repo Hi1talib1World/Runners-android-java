@@ -9,6 +9,7 @@ import com.denzo.runners.data.local.entities.RunEntity
 import com.denzo.runners.data.local.entities.WorkoutEntity
 import com.denzo.runners.data.local.entities.WorkoutStep
 import com.denzo.runners.data.repository.RunRepository
+import com.denzo.runners.data.repository.WorkoutRepository
 import com.denzo.runners.features.settings.SettingsRepository
 import com.denzo.runners.features.subscription.BillingManager
 import com.denzo.runners.services.TrackingManager
