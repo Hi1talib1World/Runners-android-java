@@ -1,72 +1,127 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/variables"
+    android:background="@color/runners_dark_bg">
+
+    <!-- Custom Status Bar -->
+    <LinearLayout
+        android:id="@+id/activity_status_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
+        android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="10dp"
-        android:background="@drawable/underline">
+        android:paddingHorizontal="16dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/button_back"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:contentDescription="Back"
+            android:src="@android:drawable/ic_menu_revert"
+            app:tint="@color/runners_volt" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="14dp"
-            android:textColor="@color/data"
-            android:text="    "
-            android:textAlignment="center" />
+            android:layout_marginStart="16dp"
+            android:text="RUNNERS"
+            android:textColor="@color/runners_volt"
+            android:textStyle="bold|italic" />
+
         <TextView
-            android:id="@+id/text_id"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="14dp"
-            android:textColor="@color/text"
-            android:text="      ID      "
-            android:textAlignment="center"
-            android:background="@drawable/sideline"/>
-        <TextView
-            android:id="@+id/text_distance"
+            android:layout_marginStart="8dp"
+            android:text="/ HISTORY"
+            android:textColor="@color/runners_text_secondary"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_clear_all"
+            style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=" distance "
-            android:textColor="@color/text"
-            android:textSize="14dp"
-            android:textAlignment="center"
-            android:background="@drawable/sideline"/>
-        <TextView
-            android:id="@+id/text_calories"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="14dp"
-            android:textColor="@color/text"
-            android:text=" calories "
-            android:textAlignment="center"
-            android:background="@drawable/sideline"/>
-        <TextView
-            android:id="@+id/text_starttime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="14dp"
-            android:textColor="@color/text"
-            android:text="Start Time"
-            android:textAlignment="center"
-            android:layout_weight="1"/>
+            android:text="CLEAR ALL"
+            android:textColor="@color/runners_accent_red"
+            android:textSize="12sp" />
 
     </LinearLayout>
 
-    <ScrollView
-        android:id="@+id/data_list"
+    <!-- Navigation Tabs -->
+    <LinearLayout
+        android:id="@+id/journey_tabs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_below="@id/variables">
-        <LinearLayout
-            android:id="@+id/data_layout"
-            android:layout_width="match_parent"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/runners_card_bg"
+        android:padding="4dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/activity_status_bar">
+        <TextView
+            android:id="@+id/tab_my_history"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:orientation="vertical" />
-    </ScrollView>
-</LinearLayout>
+            android:layout_weight="1"
+            android:background="@color/runners_volt"
+            android:gravity="center"
+            android:padding="8dp"
+            android:text="MY RUNS"
+            android:textColor="@color/onPrimary"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+        <TextView
+            android:id="@+id/tab_global_feed"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="8dp"
+            android:text="GLOBAL FEED"
+            android:textColor="@color/runners_text_secondary"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_history"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:paddingBottom="16dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/journey_tabs"
+        tools:listitem="@layout/item_run_history" />
+
+    <TextView
+        android:id="@+id/text_empty_history"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No runs found"
+        android:textColor="@color/runners_text_secondary"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/journey_tabs" />
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/loading_indicator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="gone"
+        app:indicatorColor="@color/runners_volt"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
