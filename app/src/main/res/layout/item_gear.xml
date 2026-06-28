@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="8dp"
+    app:cardBackgroundColor="@color/runners_card_bg"
+    app:cardCornerRadius="12dp"
+    app:strokeWidth="0dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/iv_gear_icon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@color/runners_dark_bg"
+            android:padding="8dp"
+            android:src="@android:drawable/ic_menu_gallery"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/runners_volt" />
+
+        <TextView
+            android:id="@+id/tv_gear_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:textColor="@color/runners_text_primary"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@id/chip_status"
+            app:layout_constraintStart_toEndOf="@id/iv_gear_icon"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Nike Alphafly 3" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_status"
+            style="@style/Widget.Material3.Chip.Assist.Elevated"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ACTIVE"
+            android:textColor="@color/onPrimary"
+            android:textSize="8sp"
+            app:chipBackgroundColor="@color/runners_volt"
+            app:chipStrokeWidth="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/gear_mileage_progress"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:max="100"
+            app:indicatorColor="@color/runners_volt"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/tv_gear_name"
+            app:layout_constraintTop_toBottomOf="@id/tv_gear_name"
+            app:trackColor="#33FFFFFF" />
+
+        <TextView
+            android:id="@+id/tv_mileage_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/runners_text_secondary"
+            android:textSize="10sp"
+            app:layout_constraintStart_toStartOf="@id/gear_mileage_progress"
+            app:layout_constraintTop_toBottomOf="@id/gear_mileage_progress"
+            tools:text="342 km / 500 km" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <RadioGroup
+        android:id="@+id/rg_step_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+        <RadioButton
+            android:id="@+id/rb_warmup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Warmup" />
+        <RadioButton
+            android:id="@+id/rb_run"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="Run" />
+        <RadioButton
+            android:id="@+id/rb_sprint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sprint" />
+        <RadioButton
+            android:id="@+id/rb_cooldown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cool" />
+    </RadioGroup>
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:hint="Duration (Seconds)">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_step_duration"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:hint="Instruction (e.g. Go Hard!)">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_step_instruction"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textCapSentences" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+</LinearLayout>
