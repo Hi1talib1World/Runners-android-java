@@ -24,4 +24,24 @@ class SettingsRepository @Inject constructor(
         val current = configDao.getConfig() ?: ConfigEntity()
         configDao.saveConfig(current.copy(isTelemetryEnabled = isEnabled))
     }
+
+    suspend fun updateSyncFrequency(minutes: Int) {
+        val current = configDao.getConfig() ?: ConfigEntity()
+        configDao.saveConfig(current.copy(syncFrequencyMinutes = minutes))
+    }
+
+    suspend fun updateUnitSystem(isMetric: Boolean) {
+        val current = configDao.getConfig() ?: ConfigEntity()
+        configDao.saveConfig(current.copy(isMetric = isMetric))
+    }
+
+    suspend fun updateSocialNotifications(isEnabled: Boolean) {
+        val current = configDao.getConfig() ?: ConfigEntity()
+        configDao.saveConfig(current.copy(isSocialNotificationsEnabled = isEnabled))
+    }
+
+    suspend fun updateMaxHr(maxHr: Int) {
+        val current = configDao.getConfig() ?: ConfigEntity()
+        configDao.saveConfig(current.copy(maxHeartRate = maxHr))
+    }
 }
