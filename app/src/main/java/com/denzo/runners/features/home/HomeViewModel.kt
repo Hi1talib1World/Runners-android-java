@@ -2,13 +2,13 @@ package com.denzo.runners.features.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.denzo.runners.core.health.HealthConnectManager
 import com.denzo.runners.core.utils.UnitConverter
 import com.denzo.runners.data.local.entities.RouteEntity
 import com.denzo.runners.data.local.entities.RunEntity
 import com.denzo.runners.data.local.entities.WorkoutEntity
 import com.denzo.runners.data.local.entities.WorkoutStep
 import com.denzo.runners.data.repository.RunRepository
-import com.denzo.runners.data.repository.WorkoutRepository
 import com.denzo.runners.features.settings.SettingsRepository
 import com.denzo.runners.features.subscription.BillingManager
 import com.denzo.runners.services.TrackingManager
@@ -37,6 +37,7 @@ data class HomeUiState(
     val isLiveGroupJoined: Boolean = false,
     val liveAthletes: List<LiveAthlete> = emptyList(),
     val selectedGoal: RunGoal = RunGoal.FREE,
+    val selectedEnvironment: String = "ROAD",
     val selectedRoute: RouteEntity? = null,
     val availableRoutes: List<RouteEntity> = emptyList(),
     val todayWorkout: WorkoutEntity? = null,
@@ -77,7 +78,8 @@ class HomeViewModel @Inject constructor(
     private val repository: RunRepository,
     private val workoutRepository: WorkoutRepository,
     private val billingManager: BillingManager,
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository,
+    private val healthConnectManager: HealthConnectManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -185,8 +187,6 @@ class HomeViewModel @Inject constructor(
             _uiState.update { it.copy(activeWorkoutStep = nextStep, stepRemainingSeconds = nextStep.durationSeconds) }
             viewModelScope.launch { _uiEvent.emit(UiEvent.NewStep(nextStep.instruction)) }
         } else {
-            // Workout finished, continue as free run or stop?
-            // For now, clear workout state
             _uiState.update { it.copy(activeWorkoutStep = null, selectedGoal = RunGoal.FREE) }
         }
     }
@@ -204,6 +204,12 @@ class HomeViewModel @Inject constructor(
     fun onGoalSelected(goal: RunGoal) {
         if (!_uiState.value.isTracking) {
             _uiState.update { it.copy(selectedGoal = goal, activeWorkoutStep = null) }
+        }
+    }
+
+    fun onEnvironmentSelected(env: String) {
+        if (!_uiState.value.isTracking) {
+            _uiState.update { it.copy(selectedEnvironment = env) }
         }
     }
 
@@ -293,6 +299,10 @@ class HomeViewModel @Inject constructor(
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
+                // Simulation: Fetching weather
+                val temp = (12..28).random().toDouble()
+                val hum = (40..70).random().toDouble()
+
                 val runRecord = RunEntity(
                     timestamp = System.currentTimeMillis(),
                     avgPace = currentState.currentPace,
@@ -301,11 +311,16 @@ class HomeViewModel @Inject constructor(
                     caloriesBurned = currentState.distanceMeters * 0.06,
                     pathPoints = currentState.pathPoints,
                     zoneBreakdown = currentState.zoneBreakdown,
+                    temperature = temp,
+                    humidity = hum,
+                    environment = currentState.selectedEnvironment,
                     isSynced = false
                 )
                 repository.saveRun(runRecord)
                 
-                // If it was a workout, mark as completed
+                // Sync to Health Connect
+                healthConnectManager.writeRunToHealthConnect(runRecord)
+
                 if (currentState.selectedGoal == RunGoal.WORKOUT) {
                     currentState.todayWorkout?.let { workoutRepository.completeWorkout(it) }
                 }
