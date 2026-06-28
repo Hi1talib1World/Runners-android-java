@@ -59,6 +59,7 @@ paging-runtime = { group = "androidx.paging", name = "paging-runtime", version.r
 paging-common = { group = "androidx.paging", name = "paging-common", version.ref = "paging" }
 okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
 billing-ktx = { group = "com.android.billingclient", name = "billing-ktx", version.ref = "billing" }
+androidx-health-connect = { group = "androidx.health.connect", name = "connect-client", version.ref = "healthConnect" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
