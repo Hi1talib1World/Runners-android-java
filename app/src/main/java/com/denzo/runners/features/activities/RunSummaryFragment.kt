@@ -97,6 +97,15 @@ class RunSummaryFragment : Fragment(R.layout.fragment_run_summary) {
         binding.textPaceValue.text = UnitConverter.formatPace(run.avgPace, isMetric).split(" ")[0]
         binding.textCaloriesValue.text = String.format(Locale.getDefault(), "%.0f kcal", run.caloriesBurned)
 
+        // Environmental Context
+        run.temperature?.let { 
+            binding.weatherBadge.visibility = View.VISIBLE
+            binding.tvWeatherTemp.text = String.format(Locale.getDefault(), "%.0f°C", it)
+            binding.tvEnvironmentLabel.text = run.environment ?: "ROAD"
+        } ?: run {
+            binding.weatherBadge.visibility = View.GONE
+        }
+
         if (run.pathPoints.isNotEmpty()) {
             binding.mapSummary.overlays.clear()
             val polyline = Polyline(binding.mapSummary).apply {
