@@ -1,109 +1,285 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
+    android:fillViewport="true"
     android:background="@color/runners_dark_bg">
 
-    <TextView
-        android:id="@+id/settings_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/settings"
-        android:textColor="@color/runners_volt"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/theme_card"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        app:cardBackgroundColor="@color/runners_card_bg"
-        app:cardCornerRadius="12dp"
-        app:layout_constraintTop_toBottomOf="@id/settings_title">
+        android:padding="16dp">
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/settings_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/settings"
+            android:textColor="@color/runners_volt"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Theme Toggle -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/theme_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="16dp"
-            android:gravity="center_vertical">
+            android:layout_marginTop="24dp"
+            app:cardBackgroundColor="@color/runners_card_bg"
+            app:cardCornerRadius="12dp"
+            app:layout_constraintTop_toBottomOf="@id/settings_title">
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@android:drawable/ic_menu_compass"
-                android:contentDescription="Dark Mode Icon"
-                app:tint="@color/runners_volt" />
-
-            <TextView
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_weight="1"
-                android:text="Dark Mode"
-                android:textColor="@color/runners_text_primary"
-                android:textSize="16sp" />
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:gravity="center_vertical">
 
-            <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/theme_switch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@android:drawable/ic_menu_compass"
+                    android:contentDescription="Dark Mode Icon"
+                    app:tint="@color/runners_volt" />
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/telemetry_card"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        app:cardBackgroundColor="@color/runners_card_bg"
-        app:cardCornerRadius="12dp"
-        app:layout_constraintTop_toBottomOf="@id/theme_card">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_weight="1"
+                    android:text="@string/dark_mode"
+                    android:textColor="@color/runners_text_primary"
+                    android:textSize="16sp" />
 
-        <LinearLayout
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/theme_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Telemetry Toggle -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/telemetry_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="16dp"
-            android:gravity="center_vertical">
+            android:layout_marginTop="12dp"
+            app:cardBackgroundColor="@color/runners_card_bg"
+            app:cardCornerRadius="12dp"
+            app:layout_constraintTop_toBottomOf="@id/theme_card">
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@android:drawable/ic_menu_mylocation"
-                android:contentDescription="Telemetry Icon"
-                app:tint="@color/runners_accent_blue" />
-
-            <TextView
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_weight="1"
-                android:text="High-Frequency Telemetry"
-                android:textColor="@color/runners_text_primary"
-                android:textSize="16sp" />
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:gravity="center_vertical">
 
-            <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/telemetry_switch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@android:drawable/ic_menu_mylocation"
+                    android:contentDescription="Telemetry Icon"
+                    app:tint="@color/runners_accent_blue" />
 
-    <com.google.android.material.progressindicator.LinearProgressIndicator
-        android:id="@+id/sync_progress"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:indeterminate="true"
-        android:visibility="invisible"
-        app:indicatorColor="@color/runners_volt"
-        app:layout_constraintTop_toBottomOf="@id/telemetry_card" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_weight="1"
+                    android:text="@string/telemetry_title"
+                    android:textColor="@color/runners_text_primary"
+                    android:textSize="16sp" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/telemetry_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Social Notifications Toggle -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/social_notifications_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            app:cardBackgroundColor="@color/runners_card_bg"
+            app:cardCornerRadius="12dp"
+            app:layout_constraintTop_toBottomOf="@id/telemetry_card">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@android:drawable/btn_star_big_on"
+                    android:contentDescription="Social Alerts Icon"
+                    app:tint="@color/runners_volt" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_weight="1"
+                    android:text="Social Kudos Alerts"
+                    android:textColor="@color/runners_text_primary"
+                    android:textSize="16sp" />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/social_notifications_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Unit System Toggle -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/unit_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            app:cardBackgroundColor="@color/runners_card_bg"
+            app:cardCornerRadius="12dp"
+            app:layout_constraintTop_toBottomOf="@id/social_notifications_card">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@android:drawable/ic_menu_directions"
+                    android:contentDescription="Unit System Icon"
+                    app:tint="@color/runners_volt" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_weight="1"
+                    android:text="@string/unit_system_title"
+                    android:textColor="@color/runners_text_primary"
+                    android:textSize="16sp" />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/unit_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Sync Frequency Slider -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/frequency_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            app:cardBackgroundColor="@color/runners_card_bg"
+            app:cardCornerRadius="12dp"
+            app:layout_constraintTop_toBottomOf="@id/unit_card">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:id="@+id/frequency_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sync_frequency"
+                    android:textColor="@color/runners_text_primary"
+                    android:textSize="16sp" />
+
+                <com.google.android.material.slider.Slider
+                    android:id="@+id/frequency_slider"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:valueFrom="5.0"
+                    android:valueTo="60.0"
+                    android:stepSize="5.0"
+                    app:thumbColor="@color/runners_volt"
+                    app:trackColorActive="@color/runners_volt" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Username Input -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/username_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:hint="@string/username_label"
+            app:boxBackgroundColor="@color/runners_card_bg"
+            app:boxStrokeColor="@color/runners_volt"
+            app:hintTextColor="@color/runners_volt"
+            app:layout_constraintTop_toBottomOf="@id/frequency_card">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/username_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/runners_text_primary" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Max HR Input -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/max_hr_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:hint="Maximum Heart Rate (BPM)"
+            app:boxBackgroundColor="@color/runners_card_bg"
+            app:boxStrokeColor="@color/runners_volt"
+            app:hintTextColor="@color/runners_volt"
+            app:layout_constraintTop_toBottomOf="@id/username_layout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/max_hr_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:textColor="@color/runners_text_primary" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Logout Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/logout_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/logout_button"
+            android:textColor="@color/button_text"
+            app:backgroundTint="@color/runners_accent_red"
+            app:cornerRadius="8dp"
+            app:layout_constraintTop_toBottomOf="@id/max_hr_layout" />
+
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/sync_progress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:indeterminate="true"
+            android:visibility="invisible"
+            app:indicatorColor="@color/runners_volt"
+            app:layout_constraintTop_toBottomOf="@id/logout_button" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>
