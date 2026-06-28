@@ -241,6 +241,53 @@
         </com.google.android.material.chip.ChipGroup>
     </LinearLayout>
 
+    <!-- Environment Selector -->
+    <LinearLayout
+        android:id="@+id/environment_selector"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:paddingBottom="8dp"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/goal_selector">
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chip_group_environment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:singleSelection="true"
+            app:selectionRequired="true">
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_road"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ROAD"
+                android:checked="true"
+                app:chipBackgroundColor="@color/runners_card_bg"
+                app:chipStrokeWidth="0dp"
+                android:textSize="8sp" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_trail"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TRAIL"
+                app:chipBackgroundColor="@color/runners_card_bg"
+                app:chipStrokeWidth="0dp"
+                android:textSize="8sp" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_indoor"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="INDOOR"
+                app:chipBackgroundColor="@color/runners_card_bg"
+                app:chipStrokeWidth="0dp"
+                android:textSize="8sp" />
+        </com.google.android.material.chip.ChipGroup>
+    </LinearLayout>
+
     <!-- Virtual Pacer Delta -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/card_pacer_delta"
@@ -254,7 +301,7 @@
         app:strokeWidth="1dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/goal_selector"
+        app:layout_constraintTop_toBottomOf="@id/environment_selector"
         tools:visibility="visible">
         <TextView
             android:id="@+id/text_pacer_delta"
