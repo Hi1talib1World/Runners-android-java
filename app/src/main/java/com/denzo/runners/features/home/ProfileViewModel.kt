@@ -2,59 +2,214 @@ package com.denzo.runners.features.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.denzo.runners.core.analytics.Achievement
+import com.denzo.runners.core.analytics.AchievementManager
+import com.denzo.runners.core.utils.UnitConverter
+import com.denzo.runners.data.local.entities.GearEntity
+import com.denzo.runners.data.repository.RunRepository
+import com.denzo.runners.features.settings.SettingsRepository
+import com.denzo.runners.features.subscription.BillingManager
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.userProfileChangeRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import java.util.Locale
 import javax.inject.Inject
+import kotlin.math.pow
 
+data class RacePrediction(val distance: String, val time: String)
+
+/**
+ * Pillar 1: Single Source of Truth for Profile
+ */
 data class ProfileUiState(
     val isLoading: Boolean = false,
-    val name: String = "Elite Runner",
-    val memberSince: String = "Jan 2023",
-    val isPro: Boolean = true,
+    val name: String = "Runner",
+    val email: String = "--",
+    val memberSince: String = "--",
+    val isPro: Boolean = false,
+    val isMetric: Boolean = true,
     val records: List<RunRecord> = emptyList(),
-    val gear: GearInfo? = null
+    val gear: GearEntity? = null,
+    val errorEvent: String? = null,
+    val successMessage: String? = null,
+    val lifetimeDistanceKm: String = "0.00",
+    val totalRuns: Int = 0,
+    val achievements: List<Achievement> = emptyList(),
+    val predictions: List<RacePrediction> = emptyList(),
+    val trainingLoad: Int = 0 // Monthly effort score
 )
 
 data class RunRecord(val label: String, val value: String)
-data class GearInfo(val model: String, val currentKm: Int, val limitKm: Int)
 
 @HiltViewModel
-class ProfileViewModel @Inject constructor() : ViewModel() {
+class ProfileViewModel @Inject constructor(
+    private val repository: RunRepository,
+    private val achievementManager: AchievementManager,
+    private val auth: FirebaseAuth,
+    private val settingsRepository: SettingsRepository,
+    private val billingManager: BillingManager
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileUiState())
     val uiState = _uiState.asStateFlow()
 
     init {
         loadProfile()
+        observeProStatus()
+    }
+
+    private fun observeProStatus() {
+        viewModelScope.launch {
+            billingManager.isProUser.collect { isPro ->
+                _uiState.update { it.copy(isPro = isPro) }
+            }
+        }
     }
 
     private fun loadProfile() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            delay(1000)
-            
-            _uiState.update { it.copy(
-                isLoading = false,
-                records = listOf(
-                    RunRecord("5K RECORD", "18:42"),
-                    RunRecord("10K RECORD", "39:15"),
-                    RunRecord("HALF MARATHON", "1:24:55"),
-                    RunRecord("FULL MARATHON", "2:58:12")
-                ),
-                gear = GearInfo("NIKE ALPHAFLY 3", 412, 650)
-            ) }
+            combine(
+                repository.getAllRuns(),
+                repository.getAllGear(),
+                settingsRepository.settingsFlow
+            ) { runs, gearList, settings ->
+                val user = auth.currentUser
+                val totalDistance = runs.sumOf { it.distanceMeters }
+                val runCount = runs.size
+                
+                val achievements = achievementManager.calculateAchievements(runs)
+                val activeGear = gearList.find { it.isActive }
+                
+                val records = mutableListOf<RunRecord>()
+                runs.maxByOrNull { it.distanceMeters }?.let {
+                    records.add(RunRecord("LONGEST RUN", UnitConverter.formatDistance(it.distanceMeters, settings.isMetric)))
+                }
+                runs.minByOrNull { it.avgPace }?.let {
+                    if (it.avgPace > 0) {
+                        records.add(RunRecord("BEST PACE", UnitConverter.formatPace(it.avgPace, settings.isMetric)))
+                    }
+                }
+
+                val predictions = calculatePredictions(runs)
+                val trainingLoad = calculateTrainingLoad(runs)
+
+                _uiState.update { it.copy(
+                    name = user?.displayName ?: "Runner",
+                    email = user?.email ?: "--",
+                    isMetric = settings.isMetric,
+                    records = records,
+                    gear = activeGear,
+                    lifetimeDistanceKm = UnitConverter.formatDistance(totalDistance, settings.isMetric).split(" ")[0],
+                    totalRuns = runCount,
+                    achievements = achievements,
+                    predictions = predictions,
+                    trainingLoad = trainingLoad
+                ) }
+            }.collect()
         }
     }
 
-    fun retireGear() {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            delay(800)
-            _uiState.update { it.copy(isLoading = false, gear = null) }
+    private fun calculatePredictions(runs: List<com.denzo.runners.data.local.entities.RunEntity>): List<RacePrediction> {
+        // Find best run (distance >= 1km) to base predictions on
+        val bestRun = runs.filter { it.distanceMeters >= 1000 }.minByOrNull { it.avgPace } ?: return emptyList()
+        
+        val t1 = bestRun.durationSeconds.toDouble()
+        val d1 = bestRun.distanceMeters
+        
+        fun predict(d2: Double): String {
+            val t2 = t1 * (d2 / d1).pow(1.06)
+            return formatDuration(t2.toLong())
         }
+
+        return listOf(
+            RacePrediction("5K", predict(5000.0)),
+            RacePrediction("10K", predict(10000.0)),
+            RacePrediction("HALF", predict(21097.5))
+        )
+    }
+
+    private fun calculateTrainingLoad(runs: List<com.denzo.runners.data.local.entities.RunEntity>): Int {
+        // Calculate TRIMP-like score for last 30 days
+        val thirtyDaysAgo = System.currentTimeMillis() - (30L * 24 * 60 * 60 * 1000)
+        val recentRuns = runs.filter { it.timestamp > thirtyDaysAgo }
+        
+        var totalLoad = 0.0
+        recentRuns.forEach { run ->
+            if (run.zoneBreakdown.isNotEmpty()) {
+                run.zoneBreakdown.forEachIndexed { index, seconds ->
+                    totalLoad += (seconds / 60.0) * (index + 1)
+                }
+            } else {
+                // Fallback to duration if no zones
+                totalLoad += (run.durationSeconds / 60.0) * 2.0 // Assume moderate Z2
+            }
+        }
+        return totalLoad.toInt()
+    }
+
+    private fun formatDuration(seconds: Long): String {
+        val h = seconds / 3600
+        val m = (seconds % 3600) / 60
+        val s = seconds % 60
+        return if (h > 0) String.format("%d:%02d:%02d", h, m, s) else String.format("%d:%02d", m, s)
+    }
+
+    /**
+     * Pillar 2: Atomic State Mutations
+     */
+    fun retireGear() {
+        val currentGear = _uiState.value.gear ?: return
+        executeAtomicAction(successMsg = "Gear retired successfully") {
+            repository.updateGear(currentGear.copy(isActive = false, isRetired = true))
+        }
+    }
+
+    fun updateProfileName(newName: String) {
+        if (newName.isBlank()) return
+        executeAtomicAction(successMsg = "Profile updated") {
+            val profileUpdates = userProfileChangeRequest {
+                displayName = newName
+            }
+            auth.currentUser?.updateProfile(profileUpdates)?.await()
+            _uiState.update { it.copy(name = newUsernameFormat(newName)) }
+        }
+    }
+
+    fun goPro(activity: android.app.Activity) {
+        billingManager.purchasePro(activity)
+    }
+
+    private fun newUsernameFormat(name: String): String = name.uppercase().trim()
+
+    /**
+     * Pillar 3 & 4: Micro-Feedback & Safeguards
+     */
+    private fun executeAtomicAction(
+        successMsg: String? = null,
+        action: suspend () -> Unit
+    ) {
+        viewModelScope.launch {
+            try {
+                _uiState.update { it.copy(isLoading = true, errorEvent = null, successMessage = null) }
+                action()
+                _uiState.update { it.copy(successMessage = successMsg) }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(errorEvent = "Operation failed: ${e.message}") }
+            } finally {
+                _uiState.update { it.copy(isLoading = false) }
+            }
+        }
+    }
+
+    fun clearError() {
+        _uiState.update { it.copy(errorEvent = null) }
+    }
+
+    fun clearSuccess() {
+        _uiState.update { it.copy(successMessage = null) }
     }
 }
