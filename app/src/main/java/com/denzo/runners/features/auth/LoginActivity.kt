@@ -3,16 +3,18 @@ package com.denzo.runners.features.auth
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import com.denzo.runners.R
 import com.denzo.runners.databinding.ActivityLoginBinding
 import com.denzo.runners.features.home.MainActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import dagger.hilt.android.AndroidEntryPoint
@@ -44,18 +46,50 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(com.denzo.runners.R.string.default_web_client_id))
+            .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
 
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
-        binding.signInButton.setOnClickListener {
-            signIn()
+        setupClickListeners()
+    }
+
+    private fun setupClickListeners() {
+        binding.loginButton.setOnClickListener {
+            loginWithEmail()
+        }
+
+        binding.googleButton.setOnClickListener {
+            signInWithGoogle()
+        }
+
+        binding.signupLink.setOnClickListener {
+            startActivity(Intent(this, SignUpActivity::class.java))
         }
     }
 
-    private fun signIn() {
+    private fun loginWithEmail() {
+        val email = binding.emailEditText.text.toString()
+        val password = binding.passwordEditText.text.toString()
+
+        if (email.isEmpty() || password.isEmpty()) {
+            showSnackbar("Please fill all fields", isError = true)
+            return
+        }
+
+        updateUi(isLoading = true)
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    navigateToMain()
+                } else {
+                    updateUi(isLoading = false, error = task.exception?.message ?: "Login Failed")
+                }
+            }
+    }
+
+    private fun signInWithGoogle() {
         updateUi(isLoading = true)
         val signInIntent = googleSignInClient.signInIntent
         signInLauncher.launch(signInIntent)
@@ -66,24 +100,37 @@ class LoginActivity : AppCompatActivity() {
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    lifecycleScope.launch {
-                        delay(500) // Transition delay
-                        startActivity(Intent(this@LoginActivity, MainActivity::class.java))
-                        finish()
-                    }
+                    navigateToMain()
                 } else {
                     updateUi(isLoading = false, error = "Authentication Failed")
                 }
             }
     }
 
+    private fun navigateToMain() {
+        lifecycleScope.launch {
+            delay(500)
+            startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+            finish()
+        }
+    }
+
     private fun updateUi(isLoading: Boolean, error: String? = null) {
-        // State Management: Loading indicator
-        binding.signInButton.isEnabled = !isLoading
-        binding.signInButton.alpha = if (isLoading) 0.5f else 1.0f
+        binding.loginButton.isEnabled = !isLoading
+        binding.googleButton.isEnabled = !isLoading
+        binding.loadingIndicator.visibility = if (isLoading) View.VISIBLE else View.GONE
         
         error?.let {
-            Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+            showSnackbar(it, isError = true)
         }
+    }
+
+    private fun showSnackbar(message: String, isError: Boolean) {
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).apply {
+            if (isError) {
+                setBackgroundTint(ContextCompat.getColor(this@LoginActivity, R.color.runners_accent_red))
+                setTextColor(ContextCompat.getColor(this@LoginActivity, android.R.color.white))
+            }
+        }.show()
     }
 }
