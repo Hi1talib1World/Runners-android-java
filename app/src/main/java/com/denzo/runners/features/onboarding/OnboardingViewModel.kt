@@ -2,6 +2,7 @@ package com.denzo.runners.features.onboarding
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.denzo.runners.BuildConfig
 import com.denzo.runners.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -36,31 +37,26 @@ class OnboardingViewModel @Inject constructor(
     }
 
     private fun loadSteps() {
-        // Pillar 4: Structural Data Strategy
         val steps = listOf(
             OnboardingStep(
-                "Track Your Pace",
-                "Real-time GPS tracking for your runs with precision accuracy.",
+                R.string.onboarding_title_1,
+                R.string.onboarding_desc_1,
                 android.R.drawable.ic_menu_mylocation
             ),
             OnboardingStep(
-                "Analyze Performance",
-                "Deep dive into your stats with comprehensive charts and metrics.",
+                R.string.onboarding_title_2,
+                R.string.onboarding_desc_2,
                 android.R.drawable.ic_menu_compass
             ),
             OnboardingStep(
-                "Stay Motivated",
-                "Join challenges and reach your fitness goals with the community.",
+                R.string.onboarding_title_3,
+                R.string.onboarding_desc_3,
                 android.R.drawable.ic_menu_gallery
             )
         )
         _uiState.update { it.copy(steps = steps) }
     }
 
-    /**
-     * Pillar 2: Managed State primitives & Navigation logic
-     * Pillar 3: Active Navigation Guards
-     */
     fun onNextClicked() {
         if (_uiState.value.isTransitioning) return
 
@@ -94,16 +90,23 @@ class OnboardingViewModel @Inject constructor(
 
     private suspend fun performTransition(action: () -> Unit) {
         _uiState.update { it.copy(isTransitioning = true) }
-        delay(400) // Pillar 3: Simulated 400ms transition channel
+        if (BuildConfig.DEBUG) {
+            delay(100)
+        } else {
+            delay(400)
+        }
         action()
         _uiState.update { it.copy(isTransitioning = false) }
     }
 
     private suspend fun completeOnboarding() {
         _uiState.update { it.copy(isTransitioning = true) }
-        // Pillar 1: Permanent Dismissal
         repository.setFirstRunCompleted()
-        delay(300)
+        if (BuildConfig.DEBUG) {
+            delay(50)
+        } else {
+            delay(300)
+        }
         _uiState.update { it.copy(isCompleted = true, isTransitioning = false) }
     }
 }
