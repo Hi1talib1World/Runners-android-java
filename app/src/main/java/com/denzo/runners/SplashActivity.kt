@@ -5,9 +5,11 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
+import com.denzo.runners.features.auth.LoginActivity
 import com.denzo.runners.features.home.MainActivity
 import com.denzo.runners.features.onboarding.OnboardingActivity
 import com.denzo.runners.features.onboarding.OnboardingRepository
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -26,11 +28,12 @@ class SplashActivity : AppCompatActivity() {
         setContentView(R.layout.splash)
 
         Handler(Looper.getMainLooper()).postDelayed({
-            // Pillar 1: Initialization logic that reads the flag on boot
-            val destination = if (onboardingRepository.isFirstRunCompleted()) {
-                MainActivity::class.java
-            } else {
-                OnboardingActivity::class.java
+            val currentUser = FirebaseAuth.getInstance().currentUser
+            
+            val destination = when {
+                !onboardingRepository.isFirstRunCompleted() -> OnboardingActivity::class.java
+                currentUser == null -> LoginActivity::class.java
+                else -> MainActivity::class.java
             }
             
             startActivity(Intent(this, destination))
