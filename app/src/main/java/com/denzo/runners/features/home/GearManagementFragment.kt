@@ -1,5 +1,6 @@
 package com.denzo.runners.features.home
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -62,7 +63,7 @@ class GearManagementFragment : Fragment() {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle("Add New Gear")
             .setView(dialogView)
-            .setPositiveButton("ADD") { _, _ ->
+            .setPositiveButton("ADD") { _: DialogInterface, _: Int ->
                 val brand = etBrand.text.toString()
                 val model = etModel.text.toString()
                 val maxKm = etMaxKm.text.toString().toDoubleOrNull() ?: 500.0
@@ -88,7 +89,7 @@ class GearManagementFragment : Fragment() {
         val adapter = GearAdapter(state.gearList, state.isMetric) { gear ->
             showGearActions(gear)
         }
-        binding.rvGear_list.adapter = adapter
+        binding.rvGearList.adapter = adapter
     }
 
     private fun showGearActions(gear: GearEntity) {
