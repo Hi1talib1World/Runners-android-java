@@ -52,6 +52,12 @@ class BillingManager @Inject constructor(
         }
     }
 
+    fun purchasePro(activity: Activity) {
+        // Production: Trigger real Play Store flow
+        // Simulation for testing:
+        _isProUser.value = true
+    }
+
     override fun onPurchasesUpdated(billingResult: BillingResult, purchases: List<Purchase>?) {
         if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
             queryPurchases()
