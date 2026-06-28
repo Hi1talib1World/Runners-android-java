@@ -21,6 +21,6 @@
     </style>
 
 
-    <style name="AppThemeDarkDialog" parent="Theme.AppCompat" >
+    <style name="AppThemeDarkDialog" parent="Theme.AppCompat.NoActionBar" >
     </style>
 </resources>
