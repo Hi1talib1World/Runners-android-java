@@ -1,5 +1,6 @@
 package com.denzo.runners.core.health
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.permission.HealthPermission
@@ -7,7 +8,6 @@ import androidx.health.connect.client.records.DistanceRecord
 import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.HeartRateRecord
 import androidx.health.connect.client.units.Distance
-import androidx.health.connect.client.units.Energy
 import com.denzo.runners.data.local.entities.RunEntity
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.time.Instant
@@ -27,9 +27,14 @@ class HealthConnectManager @Inject constructor(
             HealthPermission.getWritePermission(DistanceRecord::class),
             HealthPermission.getWritePermission(HeartRateRecord::class)
         )
-        return healthConnectClient.permissionController.getGrantedPermissions().containsAll(permissions)
+        return try {
+            healthConnectClient.permissionController.getGrantedPermissions().containsAll(permissions)
+        } catch (e: Exception) {
+            false
+        }
     }
 
+    @SuppressLint("RestrictedApi")
     suspend fun writeRunToHealthConnect(run: RunEntity) {
         if (!hasAllPermissions()) return
 
