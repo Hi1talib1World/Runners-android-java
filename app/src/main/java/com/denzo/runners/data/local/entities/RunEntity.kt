@@ -19,8 +19,15 @@ data class RunEntity(
     val heartRatePoints: List<Int> = emptyList(),
     val cadence: Int = 0,
     val cadencePoints: List<Int> = emptyList(),
-    val zoneBreakdown: List<Long> = emptyList(), // Seconds in Zone 1-5
-    val isSynced: Boolean = false
+    val zoneBreakdown: List<Long> = emptyList(),
+    val isSynced: Boolean = false,
+    
+    // Environmental Context
+    val temperature: Double? = null,
+    val humidity: Double? = null,
+    val windSpeed: Double? = null,
+    val weatherCondition: String? = null,
+    val environment: String? = "ROAD" // ROAD, TRAIL, TREADMILL
 )
 
 class RunTypeConverters {
