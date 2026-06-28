@@ -124,6 +124,15 @@ class HomeFragment : Fragment() {
             viewModel.onGoalSelected(goal)
         }
 
+        binding.chipGroupEnvironment.setOnCheckedStateChangeListener { _, checkedIds ->
+            val env = when (checkedIds.firstOrNull()) {
+                R.id.chip_trail -> "TRAIL"
+                R.id.chip_indoor -> "TREADMILL"
+                else -> "ROAD"
+            }
+            viewModel.onEnvironmentSelected(env)
+        }
+
         setupHoldToFinish()
     }
 
