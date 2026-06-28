@@ -4,32 +4,87 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.denzo.runners.data.local.entities.RunEntity
 import com.denzo.runners.data.repository.RunRepository
+import com.denzo.runners.features.settings.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * Pillar 1: Single Source of Truth for History
+ */
+data class HistoryUiState(
+    val isLoading: Boolean = false,
+    val runs: List<RunEntity> = emptyList(),
+    val isMetric: Boolean = true,
+    val errorEvent: String? = null,
+    val successMessage: String? = null
+)
+
 @HiltViewModel
 class HistoryViewModel @Inject constructor(
-    private val repository: RunRepository
+    private val repository: RunRepository,
+    private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
-    val historyState: StateFlow<List<RunEntity>> = repository.getAllRuns()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
+    private val _transientState = MutableStateFlow(HistoryUiState())
 
+    val historyState: StateFlow<HistoryUiState> = combine(
+        repository.getAllRuns(),
+        settingsRepository.settingsFlow,
+        _transientState
+    ) { runs, settings, transient ->
+        transient.copy(
+            runs = runs,
+            isMetric = settings.isMetric
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = HistoryUiState()
+    )
+
+    /**
+     * Pillar 2: Atomic State Mutations
+     */
     fun deleteRun(run: RunEntity) {
-        // Implementation for deleting a specific run
+        executeAtomicAction(successMsg = "Run deleted") {
+            repository.deleteRun(run)
+        }
     }
 
     fun clearHistory() {
-        viewModelScope.launch {
+        if (historyState.value.runs.isEmpty()) return
+        executeAtomicAction(successMsg = "History cleared") {
             repository.clearAllHistory()
         }
+    }
+
+    /**
+     * Pillar 3 & 4: Micro-Feedback & Failure Safeguards
+     */
+    private fun executeAtomicAction(
+        successMsg: String? = null,
+        action: suspend () -> Unit
+    ) {
+        viewModelScope.launch {
+            try {
+                _transientState.update { it.copy(isLoading = true, errorEvent = null, successMessage = null) }
+                action()
+                _transientState.update { it.copy(successMessage = successMsg) }
+            } catch (e: Exception) {
+                _transientState.update { it.copy(errorEvent = "Failed: ${e.message}") }
+            } finally {
+                _transientState.update { it.copy(isLoading = false) }
+            }
+        }
+    }
+
+    fun clearError() {
+        _transientState.update { it.copy(errorEvent = null) }
+    }
+
+    fun clearSuccess() {
+        _transientState.update { it.copy(successMessage = null) }
     }
 }
