@@ -2,7 +2,6 @@ package com.denzo.runners.features.activities
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.denzo.runners.data.local.entities.RunEntity
 import com.denzo.runners.data.repository.RunRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -22,7 +21,8 @@ data class FeedActivity(
     val duration: String,
     val kudosCount: Int,
     val commentCount: Int,
-    val isKudoed: Boolean = false
+    val isKudoed: Boolean = false,
+    val isLive: Boolean = false
 )
 
 data class FeedUiState(
@@ -48,7 +48,7 @@ class FeedViewModel @Inject constructor(
             delay(800) // Simulation
             
             val mockFeed = listOf(
-                FeedActivity("1", "Marcus Thorne", "2h ago", "Morning Tempo Run", "12.4 km", "4'12'' /km", "52:10", 24, 3),
+                FeedActivity("1", "Marcus Thorne", "LIVE", "Morning Tempo Run", "12.4 km", "4'12'' /km", "52:10", 24, 3, isLive = true),
                 FeedActivity("2", "Sarah Miller", "4h ago", "Trail Exploration", "8.2 km", "5'45'' /km", "45:30", 15, 1),
                 FeedActivity("3", "David K.", "6h ago", "Easy Recovery", "5.0 km", "6'02'' /km", "30:10", 8, 0)
             )
