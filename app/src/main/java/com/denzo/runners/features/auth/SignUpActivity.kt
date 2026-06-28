@@ -2,18 +2,15 @@ package com.denzo.runners.features.auth
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
-import com.denzo.runners.databinding.ActivitySingUpBinding
+import com.denzo.runners.R
+import com.denzo.runners.databinding.ActivitySignupBinding
 import com.denzo.runners.features.home.MainActivity
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.ApiException
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthProvider
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -21,67 +18,81 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class SignUpActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivitySingUpBinding
-    private lateinit var googleSignInClient: GoogleSignInClient
+    private lateinit var binding: ActivitySignupBinding
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
-
-    private val signUpLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-        try {
-            val account = task.getResult(ApiException::class.java)
-            firebaseAuthWithGoogle(account.idToken!!)
-        } catch (e: ApiException) {
-            updateUi(isLoading = false, error = "Google sign up failed")
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivitySingUpBinding.inflate(layoutInflater)
+        binding = ActivitySignupBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(com.denzo.runners.R.string.default_web_client_id))
-            .requestEmail()
-            .build()
+        setupClickListeners()
+    }
 
-        googleSignInClient = GoogleSignIn.getClient(this, gso)
+    private fun setupClickListeners() {
+        binding.signupButton.setOnClickListener {
+            createAccount()
+        }
 
-        binding.signInButton.setOnClickListener {
-            signUp()
+        binding.loginLink.setOnClickListener {
+            finish()
         }
     }
 
-    private fun signUp() {
-        updateUi(isLoading = true)
-        val signUpIntent = googleSignInClient.signInIntent
-        signUpLauncher.launch(signUpIntent)
-    }
+    private fun createAccount() {
+        val email = binding.emailEditText.text.toString()
+        val password = binding.passwordEditText.text.toString()
+        val confirmPassword = binding.confirmPasswordEditText.text.toString()
 
-    private fun firebaseAuthWithGoogle(idToken: String) {
-        val credential = GoogleAuthProvider.getCredential(idToken, null)
-        auth.signInWithCredential(credential)
+        if (email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+            showSnackbar("Please fill all fields", isError = true)
+            return
+        }
+
+        if (password != confirmPassword) {
+            showSnackbar("Passwords do not match", isError = true)
+            return
+        }
+
+        if (password.length < 6) {
+            showSnackbar("Password should be at least 6 characters", isError = true)
+            return
+        }
+
+        updateUi(isLoading = true)
+        auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    lifecycleScope.launch {
-                        delay(500)
-                        startActivity(Intent(this@SignUpActivity, MainActivity::class.java))
-                        finish()
-                    }
+                    navigateToMain()
                 } else {
-                    updateUi(isLoading = false, error = "Account Creation Failed")
+                    updateUi(isLoading = false, error = task.exception?.message ?: "Account Creation Failed")
                 }
             }
     }
 
+    private fun navigateToMain() {
+        lifecycleScope.launch {
+            delay(500)
+            startActivity(Intent(this@SignUpActivity, MainActivity::class.java))
+            finishAffinity() // Clear activity stack
+        }
+    }
+
     private fun updateUi(isLoading: Boolean, error: String? = null) {
-        binding.signInButton.isEnabled = !isLoading
-        binding.signInButton.alpha = if (isLoading) 0.5f else 1.0f
+        binding.signupButton.isEnabled = !isLoading
+        binding.loadingIndicator.visibility = if (isLoading) View.VISIBLE else View.GONE
         
         error?.let {
-            Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+            showSnackbar(it, isError = true)
         }
+    }
+
+    private fun showSnackbar(message: String, isError: Boolean) {
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).apply {
+            if (isError) {
+                setBackgroundTint(ContextCompat.getColor(this@SignUpActivity, R.color.runners_accent_red))
+                setTextColor(ContextCompat.getColor(this@SignUpActivity, android.R.color.white))
+            }
+        }.show()
     }
 }
