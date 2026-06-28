@@ -11,8 +11,13 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
 import com.denzo.runners.R
+import com.denzo.runners.core.utils.UnitConverter
+import com.denzo.runners.data.local.entities.ChallengeEntity
 import com.denzo.runners.databinding.FragmentRanksBinding
+import com.denzo.runners.databinding.ItemChallengeBinding
 import com.denzo.runners.databinding.ItemRankingBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -35,22 +40,18 @@ class RanksFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupTabs()
+        setupClickListeners()
         observeUiState()
     }
 
-    private fun setupTabs() {
-        val tabs = listOf(binding.tabGlobal, binding.tabClubs, binding.tabFriends)
-        tabs.forEach { tab ->
-            tab.setOnClickListener {
-                tabs.forEach { t ->
-                    t.setBackgroundColor(0)
-                    t.setTextColor(ContextCompat.getColor(requireContext(), R.color.runners_text_secondary))
-                }
-                tab.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.runners_volt))
-                tab.setTextColor(ContextCompat.getColor(requireContext(), R.color.onPrimary))
-                // API call would go here to reload rankings
-            }
+    private fun setupClickListeners() {
+        binding.tabGlobal.setOnClickListener { viewModel.onTabSelected(RanksTab.GLOBAL) }
+        binding.tabClubs.setOnClickListener { viewModel.onTabSelected(RanksTab.CLUBS) }
+        binding.tabFriends.setOnClickListener { viewModel.onTabSelected(RanksTab.FRIENDS) }
+        binding.tabChallenges.setOnClickListener { viewModel.onTabSelected(RanksTab.CHALLENGES) }
+
+        binding.btnSearch.setOnClickListener {
+            findNavController().navigate(R.id.navigation_search)
         }
     }
 
@@ -68,37 +69,92 @@ class RanksFragment : Fragment() {
         binding.loadingIndicator.visibility = if (state.isLoading) View.VISIBLE else View.GONE
         binding.ranksContent.visibility = if (state.isLoading) View.GONE else View.VISIBLE
 
-        if (!state.isLoading) {
-            // Dynamic Data: Podium
-            state.podium.forEachIndexed { index, athlete ->
-                when (athlete.rank) {
-                    "01" -> binding.name1.text = athlete.name
-                    "02" -> binding.name2.text = athlete.name
-                    "03" -> binding.name3.text = athlete.name
-                }
-            }
+        updateTabs(state.selectedTab)
 
-            // Dynamic Data: Ranking List
-            binding.rankingsList.removeAllViews()
-            state.rankings.forEach { athlete ->
-                val itemBinding = ItemRankingBinding.inflate(layoutInflater, binding.rankingsList, false)
-                itemBinding.textRank.text = athlete.rank
-                itemBinding.textName.text = athlete.name
-                itemBinding.textTeam.text = athlete.team
-                itemBinding.textDistance.text = athlete.distance
-                
-                // State Management: Highlight "Me"
-                if (athlete.isMe) {
-                    itemBinding.rankingCard.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.runners_volt))
-                    itemBinding.textRank.setTextColor(ContextCompat.getColor(requireContext(), R.color.onPrimary))
-                    itemBinding.textName.setTextColor(ContextCompat.getColor(requireContext(), R.color.onPrimary))
-                    itemBinding.textTeam.setTextColor(ContextCompat.getColor(requireContext(), R.color.onPrimary))
-                    itemBinding.textDistance.setTextColor(ContextCompat.getColor(requireContext(), R.color.onPrimary))
-                }
-                
-                binding.rankingsList.addView(itemBinding.root)
+        if (!state.isLoading) {
+            if (state.selectedTab == RanksTab.CHALLENGES) {
+                renderChallenges(state.challenges)
+            } else {
+                renderRankings(state.podium, state.rankings)
             }
         }
+    }
+
+    private fun renderRankings(podium: List<AthleteRank>, rankings: List<AthleteRank>) {
+        binding.podiumContainer.visibility = View.VISIBLE
+        
+        podium.forEachIndexed { _, athlete ->
+            when (athlete.rank) {
+                "01" -> binding.name1.text = athlete.name
+                "02" -> binding.name2.text = athlete.name
+                "03" -> binding.name3.text = athlete.name
+            }
+        }
+
+        binding.rankingsList.removeAllViews()
+        rankings.forEach { athlete ->
+            val itemBinding = ItemRankingBinding.inflate(layoutInflater, binding.rankingsList, false)
+            itemBinding.textRank.text = athlete.rank
+            itemBinding.textName.text = athlete.name
+            itemBinding.textTeam.text = athlete.team
+            itemBinding.textDistance.text = athlete.distance
+            
+            if (athlete.isMe) {
+                itemBinding.rankingCard.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.runners_volt))
+                itemBinding.textRank.setTextColor(ContextCompat.getColor(requireContext(), R.color.onPrimary))
+                itemBinding.textName.setTextColor(ContextCompat.getColor(requireContext(), R.color.onPrimary))
+                itemBinding.textTeam.setTextColor(ContextCompat.getColor(requireContext(), R.color.onPrimary))
+                itemBinding.textDistance.setTextColor(ContextCompat.getColor(requireContext(), R.color.onPrimary))
+            }
+            binding.rankingsList.addView(itemBinding.root)
+        }
+    }
+
+    private fun renderChallenges(challenges: List<ChallengeEntity>) {
+        binding.podiumContainer.visibility = View.GONE
+        binding.rankingsList.removeAllViews()
+        
+        challenges.forEach { challenge ->
+            val itemBinding = ItemChallengeBinding.inflate(layoutInflater, binding.rankingsList, false)
+            itemBinding.tvChallengeName.text = challenge.name
+            itemBinding.tvChallengeDesc.text = challenge.description
+            itemBinding.ivChallengeMedal.setImageResource(challenge.medalIconResId)
+            
+            if (challenge.isJoined) {
+                itemBinding.btnJoinChallenge.text = "JOINED"
+                itemBinding.btnJoinChallenge.isEnabled = false
+                itemBinding.btnJoinChallenge.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.runners_card_bg))
+                itemBinding.btnJoinChallenge.setTextColor(ContextCompat.getColor(requireContext(), R.color.runners_text_secondary))
+                
+                itemBinding.challengeProgress.visibility = View.VISIBLE
+                itemBinding.tvChallengeStatus.visibility = View.VISIBLE
+            } else {
+                itemBinding.btnJoinChallenge.text = "JOIN"
+                itemBinding.btnJoinChallenge.isEnabled = true
+                itemBinding.btnJoinChallenge.setOnClickListener { viewModel.onJoinChallenge(challenge.id) }
+                
+                itemBinding.challengeProgress.visibility = View.GONE
+                itemBinding.tvChallengeStatus.visibility = View.GONE
+            }
+            
+            binding.rankingsList.addView(itemBinding.root)
+        }
+    }
+
+    private fun updateTabs(selected: RanksTab) {
+        val tabs = listOf(binding.tabGlobal, binding.tabClubs, binding.tabFriends, binding.tabChallenges)
+        tabs.forEach { it.setBackgroundColor(0) }
+        tabs.forEach { it.setTextColor(ContextCompat.getColor(requireContext(), R.color.runners_text_secondary)) }
+
+        val activeTab = when (selected) {
+            RanksTab.GLOBAL -> binding.tabGlobal
+            RanksTab.CLUBS -> binding.tabClubs
+            RanksTab.FRIENDS -> binding.tabFriends
+            RanksTab.CHALLENGES -> binding.tabChallenges
+        }
+
+        activeTab.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.runners_volt))
+        activeTab.setTextColor(ContextCompat.getColor(requireContext(), R.color.onPrimary))
     }
 
     override fun onDestroyView() {
