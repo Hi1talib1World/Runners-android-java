@@ -19,10 +19,6 @@ import com.denzo.runners.features.home.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
-/**
- * Pillar 2: UI Passive Observables
- * Pillar 3: Micro-Feedback & Step Locks
- */
 @AndroidEntryPoint
 class OnboardingFragment : Fragment() {
 
@@ -65,33 +61,28 @@ class OnboardingFragment : Fragment() {
         }
     }
 
-    /**
-     * Pillar 4: Zero Hardcoding Rules
-     * The view controller binds layout variables reactively to payload models.
-     */
     private fun updateUi(state: OnboardingUiState) {
         val step = state.currentStep ?: return
 
         // Hydrate content
-        binding.tvOnboardingTitle.text = step.title
-        binding.tvOnboardingDesc.text = step.description
+        binding.tvOnboardingTitle.setText(step.titleResId)
+        binding.tvOnboardingDesc.setText(step.descResId)
         binding.ivOnboardingIllustration.setImageResource(step.imageResId)
 
-        // Pillar 2: Button Morphing Contracts
-        binding.btnNext.text = if (state.isLastStep) "Get Started" else "Next"
+        binding.btnNext.setText(if (state.isLastStep) R.string.onboarding_start else R.string.onboarding_next)
+        binding.btnBack.setText(R.string.onboarding_back)
+        binding.btnSkip.setText(R.string.onboarding_skip)
+        
         binding.btnBack.visibility = if (state.currentStepIndex == 0) View.GONE else View.VISIBLE
         binding.btnSkip.visibility = if (state.isLastStep) View.GONE else View.VISIBLE
 
-        // Pillar 3: Active Navigation Guards
         val navigationEnabled = !state.isTransitioning
         binding.btnNext.isEnabled = navigationEnabled
         binding.btnBack.isEnabled = navigationEnabled
         binding.btnSkip.isEnabled = navigationEnabled
 
-        // Pillar 3: Visual Feedback (Dot Indicators)
         updateIndicators(state.currentStepIndex, state.totalSteps)
         
-        // Background transition feedback
         step.backgroundColor?.let { colorRes ->
             binding.onboardingRoot.setBackgroundColor(ContextCompat.getColor(requireContext(), colorRes))
         }
