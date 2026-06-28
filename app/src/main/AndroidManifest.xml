@@ -1,16 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Permissions -->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!-- Standard Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- Location Permissions (Critical for a Runner App) -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+
+    <!-- Activity Recognition (Steps/Cadence) -->
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+
+    <!-- Android 13+ Notification Permission -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Android 14+ Foreground Service Compliance -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-feature android:name="android.hardware.sensor.stepcounter" android:required="false" />
-    <uses-feature android:name="android.hardware.sensor.stepdetector" android:required="false" />
 
     <application
         android:name=".MainApplication"
@@ -19,54 +28,53 @@
         android:label="@string/app_name"
         android:roundIcon="@drawable/run"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Runners">
+        android:theme="@style/Theme.Runners"
+        android:enableOnBackInvokedCallback="true"
+        tools:targetApi="35">
 
-        <!-- SplashActivity -->
+        <!-- SplashActivity: Launcher component MUST be exported -->
         <activity
             android:name=".SplashActivity"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/NoTitleFullscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <!-- Features Auth -->
-        <activity android:name=".features.auth.LoginActivity" android:exported="false" />
-        <activity android:name=".features.auth.SingUpActivity" android:exported="false" />
-
-        <!-- Features Search -->
+        <!-- Auth Features: Explicitly NOT exported for security -->
         <activity
-            android:name=".features.search.SearchActivity"
-            android:exported="true"
-            android:theme="@style/Theme.Runners" />
+            android:name=".features.auth.LoginActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
 
-        <!-- Features Home -->
+        <activity
+            android:name=".features.auth.SignUpActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- Main Tracking Hub -->
         <activity
             android:name=".features.home.MainActivity"
-            android:exported="true"
+            android:exported="false"
             android:theme="@style/Theme.Runners" />
 
-        <!-- Features Onboarding -->
+        <!-- Onboarding Experience -->
         <activity
             android:name=".features.onboarding.OnboardingActivity"
             android:exported="false"
             android:theme="@style/Theme.Runners" />
 
-        <!-- Features Activities -->
-        <activity
-            android:name=".features.activities.HistoryActivity"
-            android:exported="false" />
-
+        <!--
+           Location Service: Mandatory foregroundServiceType for Android 14.
+           Set to 'location' to match the actual behavior (GPS tracking).
+        -->
         <service
             android:name=".services.LocationService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="location" />
-
-        <uses-library
-            android:name="org.apache.http.legacy"
-            android:required="false" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
