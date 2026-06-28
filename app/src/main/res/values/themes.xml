@@ -13,16 +13,31 @@
         <item name="colorSecondaryContainer">@color/secondaryContainer</item>
         <item name="colorOnSecondaryContainer">@color/onSecondaryContainer</item>
 
+        <!-- Accent/Tertiary colors to avoid default purple -->
+        <item name="colorTertiary">@color/runners_accent_blue</item>
+        <item name="colorOnTertiary">@color/onPrimary</item>
+        <item name="colorTertiaryContainer">@color/runners_accent_blue</item>
+        <item name="colorOnTertiaryContainer">@color/onPrimary</item>
+
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="android:statusBarColor">@color/runners_dark_bg</item>
+        <item name="android:windowLightStatusBar">false</item>
 
         <!-- Material 3 Surface and Background -->
         <item name="android:windowBackground">@color/background</item>
         <item name="colorSurface">@color/surface</item>
         <item name="colorOnSurface">@color/onSurface</item>
+        <item name="colorSurfaceVariant">@color/surfaceVariant</item>
+        <item name="colorOnSurfaceVariant">@color/onSurfaceVariant</item>
+        <item name="colorOutline">@color/runners_volt</item>
     </style>
 
     <style name="Theme.Runners" parent="Base.Theme.Runners" />
+
+    <style name="ToolbarTitleAppearance" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textStyle">bold|italic</item>
+        <item name="android:textSize">20sp</item>
+    </style>
 
     <!-- Metric Styles -->
     <style name="MetricLayout">
