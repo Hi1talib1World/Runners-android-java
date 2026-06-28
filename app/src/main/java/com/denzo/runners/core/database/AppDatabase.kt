@@ -19,7 +19,7 @@ import com.denzo.runners.data.local.entities.TrainingPlanEntity
 import com.denzo.runners.data.local.entities.WorkoutEntity
 import com.denzo.runners.data.local.entities.WorkoutTypeConverters
 
-@Database(entities = [RunEntity::class, ConfigEntity::class, RouteEntity::class, GearEntity::class, TrainingPlanEntity::class, WorkoutEntity::class, ChallengeEntity::class], version = 9, exportSchema = false)
+@Database(entities = [RunEntity::class, ConfigEntity::class, RouteEntity::class, GearEntity::class, TrainingPlanEntity::class, WorkoutEntity::class, ChallengeEntity::class], version = 10, exportSchema = false)
 @TypeConverters(RunTypeConverters::class, WorkoutTypeConverters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun getRunDao(): RunDao
