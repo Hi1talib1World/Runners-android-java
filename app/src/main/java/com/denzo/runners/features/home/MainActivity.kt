@@ -1,8 +1,11 @@
 package com.denzo.runners.features.home
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.lifecycleScope
@@ -12,6 +15,8 @@ import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.denzo.runners.R
 import com.denzo.runners.databinding.ActivityMainBinding
+import com.denzo.runners.features.auth.LoginActivity
+import com.denzo.runners.features.auth.SignUpActivity
 import com.denzo.runners.features.settings.SettingsRepository
 import com.denzo.runners.features.subscription.BillingManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -37,6 +42,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        
         // Pillar 1: Hydrate the initial state directly from persistent cache
         // to eliminate visual flickering.
         lifecycleScope.launch {
@@ -53,7 +60,6 @@ class MainActivity : AppCompatActivity() {
         val ctx = applicationContext
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx))
 
-        super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -98,5 +104,24 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         return navHostFragment.navController.navigateUp() || super.onSupportNavigateUp()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_login -> {
+                startActivity(Intent(this, LoginActivity::class.java))
+                true
+            }
+            R.id.action_register -> {
+                startActivity(Intent(this, SignUpActivity::class.java))
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 }
