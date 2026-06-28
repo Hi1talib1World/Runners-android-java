@@ -15,6 +15,7 @@ data class TrainingPlansUiState(
     val plans: List<TrainingPlanEntity> = emptyList(),
     val activePlan: TrainingPlanEntity? = null,
     val workouts: List<WorkoutEntity> = emptyList(),
+    val customWorkouts: List<WorkoutEntity> = emptyList(),
     val error: String? = null
 )
 
@@ -29,6 +30,7 @@ class TrainingPlansViewModel @Inject constructor(
     init {
         observePlans()
         observeActivePlan()
+        observeCustomWorkouts()
     }
 
     private fun observePlans() {
@@ -47,6 +49,14 @@ class TrainingPlansViewModel @Inject constructor(
                 if (plan != null) {
                     loadWorkouts(plan.id)
                 }
+            }
+        }
+    }
+
+    private fun observeCustomWorkouts() {
+        viewModelScope.launch {
+            repository.getWorkoutsForPlan(-1).collect { list ->
+                _uiState.update { it.copy(customWorkouts = list) }
             }
         }
     }
