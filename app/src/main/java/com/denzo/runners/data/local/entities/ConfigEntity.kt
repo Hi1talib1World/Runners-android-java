@@ -9,5 +9,8 @@ data class ConfigEntity(
     val isDarkMode: Boolean = true,
     val syncFrequencyMinutes: Int = 15,
     val lastSyncTimestamp: Long = 0L,
-    val isTelemetryEnabled: Boolean = true
+    val isTelemetryEnabled: Boolean = true,
+    val isMetric: Boolean = true,
+    val isSocialNotificationsEnabled: Boolean = true,
+    val maxHeartRate: Int = 190
 )
