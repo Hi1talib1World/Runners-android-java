@@ -1,5 +1,6 @@
 package com.denzo.runners.features.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -50,20 +51,36 @@ class ProfileFragment : Fragment() {
         }
         
         binding.editProfileButton.setOnClickListener {
-            // Demonstrate atomic mutation
             viewModel.updateProfileName("Elite Pro Runner")
         }
 
         binding.goProButton.setOnClickListener {
-            // This is a direct call to BillingManager for simulation
-            // In a real app, the ViewModel would trigger this via a side effect or event.
             viewModel.goPro(requireActivity())
+        }
+
+        binding.shareStatsButton.setOnClickListener {
+            shareStats()
         }
     }
 
-    /**
-     * Pillar 3: Reactive UI & Interaction Interlocking
-     */
+    private fun shareStats() {
+        val state = viewModel.uiState.value
+        val shareMessage = """
+            🏃 My Runners Progress Update!
+            📊 Lifetime Distance: ${state.lifetimeDistanceKm} km
+            🏆 Total Runs: ${state.totalRuns}
+            🏅 Latest Achievement: ${state.achievements.lastOrNull { it.isUnlocked }?.title ?: "Just Started!"}
+            
+            Join me on Runners! #RunnersApp #FitnessMotivation
+        """.trimIndent()
+
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, shareMessage)
+        }
+        startActivity(Intent.createChooser(intent, "Share your progress"))
+    }
+
     private fun observeUiState() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -75,15 +92,12 @@ class ProfileFragment : Fragment() {
     }
 
     private fun updateUi(state: ProfileUiState) {
-        // Micro-Feedback: Global Loading State
         binding.globalLoading.visibility = if (state.isLoading) View.VISIBLE else View.GONE
         
-        // Interaction Interlocking
         val isInteracting = !state.isLoading
         binding.retireGearButton.isEnabled = isInteracting
         binding.editProfileButton.isEnabled = isInteracting
 
-        // Dynamic Data: Identity
         binding.athleteName.text = state.name
         binding.athleteEmail.text = state.email
         
@@ -145,7 +159,6 @@ class ProfileFragment : Fragment() {
             binding.recordsGrid.addView(itemView)
         }
         
-        // State Management: Gear visibility
         if (state.gear != null) {
             binding.gearTrackerCard.visibility = View.VISIBLE
             binding.gearEmptyState.visibility = View.GONE
@@ -157,7 +170,6 @@ class ProfileFragment : Fragment() {
             binding.gearEmptyState.setText(R.string.gear_empty_state)
         }
 
-        // Pillar 4: Feedback (Error/Success)
         state.errorEvent?.let { error ->
             showSnackbar(error)
             viewModel.clearError()
