@@ -1,42 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Runners Neon Theme -->
-    <color name="runners_volt">#C6FF00</color>
+    <!-- New Runners Design System (Image Compliant) -->
+    <color name="runners_volt">#CCFF00</color>
+    <color name="runners_blue">#007AFF</color>
+    <color name="runners_red">#FF3B30</color>
     <color name="runners_dark_bg">#0D0D0D</color>
+    <color name="runners_surface">#121212</color>
     <color name="runners_card_bg">#1A1A1A</color>
+
     <color name="runners_text_primary">#FFFFFF</color>
-    <color name="runners_text_secondary">#888888</color>
-    <color name="runners_accent_blue">#2196F3</color>
-    <color name="runners_accent_red">#F44336</color>
+    <color name="runners_text_secondary">#BCBCBC</color>
+    <color name="runners_text_muted">#888888</color>
 
     <!-- Material 3 Mappings -->
-    <color name="primary">#C6FF00</color>
+    <color name="primary">#CCFF00</color>
     <color name="onPrimary">#000000</color>
-    <color name="primaryContainer">#C6FF00</color>
+    <color name="primaryContainer">#CCFF00</color>
     <color name="onPrimaryContainer">#000000</color>
 
-    <color name="secondary">#888888</color>
+    <color name="secondary">#007AFF</color>
     <color name="onSecondary">#FFFFFF</color>
-    <color name="secondaryContainer">#262626</color>
+    <color name="secondaryContainer">#1A1A1A</color>
     <color name="onSecondaryContainer">#FFFFFF</color>
+
+    <color name="tertiary">#FF3B30</color>
+    <color name="onTertiary">#FFFFFF</color>
 
     <color name="background">#0D0D0D</color>
     <color name="onBackground">#FFFFFF</color>
-    <color name="surface">#1A1A1A</color>
+    <color name="surface">#121212</color>
     <color name="onSurface">#FFFFFF</color>
-    <color name="surfaceVariant">#262626</color>
-    <color name="onSurfaceVariant">#888888</color>
+    <color name="surfaceVariant">#1A1A1A</color>
+    <color name="onSurfaceVariant">#BCBCBC</color>
+    <color name="outline">#333333</color>
 
     <!-- Legacy / Compat -->
-    <color name="colorPrimary">#C6FF00</color>
+    <color name="colorPrimary">#CCFF00</color>
     <color name="colorPrimaryDark">#000000</color>
-    <color name="colorAccent">#C6FF00</color>
+    <color name="colorAccent">#CCFF00</color>
     <color name="white">#FFFFFF</color>
     <color name="color_white">#FFFFFF</color>
     <color name="data">#FFFFFF</color>
-    <color name="text">#888888</color>
+    <color name="text">#BCBCBC</color>
     <color name="button_text">#000000</color>
     <color name="primaryTextColor">#FFFFFF</color>
-    <color name="secondaryTextColor">#888888</color>
-    <color name="darkColorDate">#888888</color>
+    <color name="secondaryTextColor">#BCBCBC</color>
+    <color name="runners_accent_red">#FF3B30</color>
+    <color name="runners_accent_blue">#007AFF</color>
 </resources>
