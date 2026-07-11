@@ -3,6 +3,7 @@ package com.denzo.runners.features.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.denzo.runners.core.health.HealthConnectManager
+import com.denzo.runners.core.utils.DateTimeUtils
 import com.denzo.runners.core.utils.UnitConverter
 import com.denzo.runners.data.local.entities.RouteEntity
 import com.denzo.runners.data.local.entities.RunEntity
@@ -83,6 +84,16 @@ class HomeViewModel @Inject constructor(
     private val healthConnectManager: HealthConnectManager
 ) : ViewModel() {
 
+    companion object {
+        private const val MOCK_JOIN_DELAY = 1500L
+        private const val ATHLETE_UPDATE_DELAY = 3000L
+        private const val CALORIE_FACTOR = 0.06
+        private const val DISTANCE_5K_METERS = 5000.0
+        private const val DISTANCE_10K_METERS = 10000.0
+        private const val TIME_30M_SECONDS = 1800L
+        private const val TIME_60M_SECONDS = 3600L
+    }
+
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
@@ -158,9 +169,9 @@ class HomeViewModel @Inject constructor(
                         ghostPosition = liveState.ghostPosition,
                         goalProgress = progress,
                         currentActivity = state.currentActivity.copy(
-                            duration = formatTime(liveState.durationSeconds.toInt()),
-                            distance = UnitConverter.formatDistance(liveState.distanceMeters, state.isMetric),
-                            pace = UnitConverter.formatPace(liveState.currentPace, state.isMetric)
+                            duration = DateTimeUtils.formatDuration(liveState.durationSeconds),
+                            distance = UnitConverter.formatDistance(liveState.distanceMeters, state.isMetric).split(" ")[0],
+                            pace = UnitConverter.formatPace(liveState.currentPace, state.isMetric).split(" ")[0]
                         )
                     )
                 }
@@ -195,10 +206,10 @@ class HomeViewModel @Inject constructor(
     private fun calculateGoalProgress(liveState: com.denzo.runners.services.LiveRunState, goal: RunGoal): Int {
         return when (goal) {
             RunGoal.FREE, RunGoal.ROUTE, RunGoal.WORKOUT -> 0
-            RunGoal.DISTANCE_5K -> ((liveState.distanceMeters / 5000.0) * 100).toInt().coerceIn(0, 100)
-            RunGoal.DISTANCE_10K -> ((liveState.distanceMeters / 10000.0) * 100).toInt().coerceIn(0, 100)
-            RunGoal.TIME_30M -> ((liveState.durationSeconds / 1800.0) * 100).toInt().coerceIn(0, 100)
-            RunGoal.TIME_60M -> ((liveState.durationSeconds / 3600.0) * 100).toInt().coerceIn(0, 100)
+            RunGoal.DISTANCE_5K -> ((liveState.distanceMeters / DISTANCE_5K_METERS) * 100).toInt().coerceIn(0, 100)
+            RunGoal.DISTANCE_10K -> ((liveState.distanceMeters / DISTANCE_10K_METERS) * 100).toInt().coerceIn(0, 100)
+            RunGoal.TIME_30M -> ((liveState.durationSeconds / TIME_30M_SECONDS.toDouble()) * 100).toInt().coerceIn(0, 100)
+            RunGoal.TIME_60M -> ((liveState.durationSeconds / TIME_60M_SECONDS.toDouble()) * 100).toInt().coerceIn(0, 100)
         }
     }
 
@@ -247,7 +258,7 @@ class HomeViewModel @Inject constructor(
         
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            delay(1500)
+            delay(MOCK_JOIN_DELAY)
             
             _uiState.update { it.copy(
                 isLoading = false, 
@@ -270,7 +281,7 @@ class HomeViewModel @Inject constructor(
                     LiveAthlete("a3", "David K.", GeoPoint(currentPos.latitude + 0.001, currentPos.longitude - 0.0002), "4'55''")
                 )
                 _uiState.update { it.copy(liveAthletes = mockAthletes) }
-                delay(3000)
+                delay(ATHLETE_UPDATE_DELAY)
             }
         }
     }
@@ -293,6 +304,12 @@ class HomeViewModel @Inject constructor(
         // Handled by Fragment
     }
 
+    fun discardRun() {
+        _uiState.update { it.copy(isTracking = false, isLiveGroupJoined = false, activeWorkoutStep = null) }
+        liveAthleteJob?.cancel()
+        TrackingManager.stopRun()
+    }
+
     fun stopAndSaveRun() {
         val currentState = _uiState.value
         _uiState.update { it.copy(isLoading = true, isTracking = false, isLiveGroupJoined = false, activeWorkoutStep = null) }
@@ -309,7 +326,7 @@ class HomeViewModel @Inject constructor(
                     avgPace = currentState.currentPace,
                     distanceMeters = currentState.distanceMeters,
                     durationSeconds = currentState.durationSeconds,
-                    caloriesBurned = currentState.distanceMeters * 0.06,
+                    caloriesBurned = currentState.distanceMeters * CALORIE_FACTOR,
                     pathPoints = currentState.pathPoints,
                     zoneBreakdown = currentState.zoneBreakdown,
                     temperature = temp,
@@ -319,13 +336,12 @@ class HomeViewModel @Inject constructor(
                 )
                 repository.saveRun(runRecord)
                 
-                // Sync to Health Connect
                 healthConnectManager.writeRunToHealthConnect(runRecord)
 
                 if (currentState.selectedGoal == RunGoal.WORKOUT) {
                     currentState.todayWorkout?.let { workoutRepository.completeWorkout(it) }
                 }
-
+                
                 _uiEvent.emit(UiEvent.RunSaved)
             } catch (e: Exception) {
                 _uiEvent.emit(UiEvent.ShowError("Failed to save run: ${e.message}"))
@@ -333,12 +349,6 @@ class HomeViewModel @Inject constructor(
                 _uiState.update { it.copy(isLoading = false, currentActivity = ActivityMetrics()) }
             }
         }
-    }
-
-    private fun formatTime(seconds: Int): String {
-        val mins = seconds / 60
-        val remainingSecs = seconds % 60
-        return String.format(Locale.getDefault(), "%02d:%02d", mins, remainingSecs)
     }
 
     override fun onCleared() {
