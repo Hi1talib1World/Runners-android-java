@@ -7,19 +7,22 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.denzo.runners.R
+import com.denzo.runners.data.repository.AuthRepository
 import com.denzo.runners.databinding.ActivitySignupBinding
 import com.denzo.runners.features.home.MainActivity
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class SignUpActivity : AppCompatActivity() {
 
+    @Inject
+    lateinit var authRepository: AuthRepository
+
     private lateinit var binding: ActivitySignupBinding
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,14 +63,14 @@ class SignUpActivity : AppCompatActivity() {
         }
 
         updateUi(isLoading = true)
-        auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener(this) { task ->
-                if (task.isSuccessful) {
-                    navigateToMain()
-                } else {
-                    updateUi(isLoading = false, error = task.exception?.message ?: "Account Creation Failed")
-                }
+        lifecycleScope.launch {
+            val result = authRepository.signup(email, password)
+            if (result.isSuccess) {
+                navigateToMain()
+            } else {
+                updateUi(isLoading = false, error = result.exceptionOrNull()?.message ?: "Account Creation Failed")
             }
+        }
     }
 
     private fun navigateToMain() {
