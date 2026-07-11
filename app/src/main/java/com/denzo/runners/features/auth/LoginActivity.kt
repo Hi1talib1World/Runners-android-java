@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.denzo.runners.R
+import com.denzo.runners.data.repository.AuthRepository
 import com.denzo.runners.databinding.ActivityLoginBinding
 import com.denzo.runners.features.home.MainActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -15,18 +16,19 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthProvider
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
 
+    @Inject
+    lateinit var authRepository: AuthRepository
+
     private lateinit var binding: ActivityLoginBinding
     private lateinit var googleSignInClient: GoogleSignInClient
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
     private val signInLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -34,7 +36,7 @@ class LoginActivity : AppCompatActivity() {
         val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
         try {
             val account = task.getResult(ApiException::class.java)
-            firebaseAuthWithGoogle(account.idToken!!)
+            loginWithGoogle(account.idToken!!)
         } catch (e: ApiException) {
             updateUi(isLoading = false, error = "Google sign in failed")
         }
@@ -79,14 +81,14 @@ class LoginActivity : AppCompatActivity() {
         }
 
         updateUi(isLoading = true)
-        auth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener(this) { task ->
-                if (task.isSuccessful) {
-                    navigateToMain()
-                } else {
-                    updateUi(isLoading = false, error = task.exception?.message ?: "Login Failed")
-                }
+        lifecycleScope.launch {
+            val result = authRepository.login(email, password)
+            if (result.isSuccess) {
+                navigateToMain()
+            } else {
+                updateUi(isLoading = false, error = result.exceptionOrNull()?.message ?: "Login Failed")
             }
+        }
     }
 
     private fun signInWithGoogle() {
@@ -95,16 +97,15 @@ class LoginActivity : AppCompatActivity() {
         signInLauncher.launch(signInIntent)
     }
 
-    private fun firebaseAuthWithGoogle(idToken: String) {
-        val credential = GoogleAuthProvider.getCredential(idToken, null)
-        auth.signInWithCredential(credential)
-            .addOnCompleteListener(this) { task ->
-                if (task.isSuccessful) {
-                    navigateToMain()
-                } else {
-                    updateUi(isLoading = false, error = "Authentication Failed")
-                }
+    private fun loginWithGoogle(idToken: String) {
+        lifecycleScope.launch {
+            val result = authRepository.signInWithGoogle(idToken)
+            if (result.isSuccess) {
+                navigateToMain()
+            } else {
+                updateUi(isLoading = false, error = "Authentication Failed")
             }
+        }
     }
 
     private fun navigateToMain() {
