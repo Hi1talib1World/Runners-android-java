@@ -3,7 +3,8 @@ package com.denzo.runners.features.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.denzo.runners.BuildConfig
-import com.google.firebase.auth.FirebaseAuth
+import com.denzo.runners.data.repository.AuthRepository
+import com.denzo.runners.data.repository.RunRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -30,16 +31,18 @@ data class SettingsUiState(
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val repository: SettingsRepository,
-    private val auth: FirebaseAuth
+    private val runRepository: RunRepository,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _transientState = MutableStateFlow(SettingsUiState())
     
-    // Combine persistent repository state with transient UI state
+    // Combine persistent repository state with transient UI state and Auth name
     val uiState: StateFlow<SettingsUiState> = combine(
         repository.settingsFlow,
-        _transientState
-    ) { persisted, transient ->
+        _transientState,
+        authRepository.displayName
+    ) { persisted, transient, name ->
         transient.copy(
             isDarkMode = persisted.isDarkMode,
             isMetric = persisted.isMetric,
@@ -47,7 +50,7 @@ class SettingsViewModel @Inject constructor(
             isSocialNotificationsEnabled = persisted.isSocialNotificationsEnabled,
             maxHeartRate = persisted.maxHeartRate,
             syncFrequencyMinutes = persisted.syncFrequencyMinutes,
-            username = auth.currentUser?.displayName ?: "Runner"
+            username = name ?: "Runner"
         )
     }.stateIn(
         scope = viewModelScope,
@@ -96,7 +99,7 @@ class SettingsViewModel @Inject constructor(
     fun updateUsername(newUsername: String) {
         if (newUsername.isBlank()) return
         executeAtomicAction("Updating Profile...") {
-            _transientState.update { it.copy(username = newUsername) }
+            authRepository.updateDisplayName(newUsername).getOrThrow()
             simulateCloudSync()
         }
     }
@@ -109,9 +112,16 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    fun clearLocalData() {
+        executeAtomicAction("Cleaning Local Storage...") {
+            runRepository.clearAllHistory()
+            delay(500)
+        }
+    }
+
     fun logout() {
         executeAtomicAction("Terminating Session...") {
-            auth.signOut()
+            authRepository.logout()
             _transientState.update { it.copy(isLoggedOut = true, successMessage = "Logged out successfully") }
         }
     }
