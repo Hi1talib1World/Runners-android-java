@@ -2,12 +2,11 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/plan_card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="16dp"
+    android:layout_marginHorizontal="20dp"
     android:layout_marginVertical="8dp"
-    app:cardBackgroundColor="@color/runners_card_bg"
+    app:cardBackgroundColor="@color/runners_surface"
     app:cardCornerRadius="16dp"
     app:strokeWidth="0dp">
 
@@ -20,8 +19,9 @@
             android:id="@+id/tv_plan_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-condensed"
             android:textColor="@color/runners_volt"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@id/chip_difficulty"
             app:layout_constraintStart_toStartOf="parent"
@@ -30,53 +30,56 @@
 
         <com.google.android.material.chip.Chip
             android:id="@+id/chip_difficulty"
-            style="@style/Widget.Material3.Chip.Assist"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/runners_text_primary"
+            android:fontFamily="monospace"
+            android:textColor="@color/onPrimary"
             android:textSize="10sp"
-            app:chipBackgroundColor="#33FFFFFF"
+            app:chipBackgroundColor="@color/runners_volt"
+            app:chipMinHeight="24dp"
             app:chipStrokeWidth="0dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="Beginner" />
+            tools:text="BEGINNER" />
 
         <TextView
             android:id="@+id/tv_plan_desc"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="sans-serif"
             android:textColor="@color/runners_text_secondary"
             android:textSize="14sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_plan_name"
-            tools:text="Perfect for beginners starting their journey." />
+            tools:text="Perfect for starting your running journey. Gradually build endurance over 8 weeks." />
 
         <TextView
             android:id="@+id/tv_total_weeks"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:textColor="@color/runners_text_primary"
-            android:textSize="12sp"
-            android:textStyle="bold"
+            android:fontFamily="monospace"
+            android:textColor="@color/runners_text_muted"
+            android:textSize="10sp"
+            app:layout_constraintBottom_toBottomOf="@id/btn_enroll"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_plan_desc"
+            app:layout_constraintTop_toTopOf="@id/btn_enroll"
             tools:text="8 WEEKS" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_enroll"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="monospace"
             android:text="ENROLL"
             android:textColor="@color/onPrimary"
+            android:textSize="12sp"
             android:textStyle="bold"
             app:backgroundTint="@color/runners_volt"
             app:cornerRadius="24dp"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/tv_total_weeks" />
+            app:layout_constraintTop_toBottomOf="@id/tv_plan_desc" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>
