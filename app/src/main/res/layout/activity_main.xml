@@ -4,23 +4,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background">
+    android:background="@color/runners_dark_bg">
 
+    <!-- Global Toolbar (Can be toggled or styled) -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:elevation="0dp">
+        android:background="@color/runners_dark_bg"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent">
+
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/runners_dark_bg"
-            app:title="RUNNERS"
-            app:titleCentered="true"
-            app:titleTextColor="@color/runners_volt"
-            app:titleTextAppearance="@style/ToolbarTitleAppearance" />
+            app:titleTextColor="@color/runners_text_primary" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.fragment.app.FragmentContainerView
@@ -37,13 +36,11 @@
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/runners_dark_bg"
-        app:itemIconSize="24dp"
-        app:itemPaddingTop="12dp"
-        app:itemPaddingBottom="12dp"
+        android:background="@color/runners_surface"
         app:itemIconTint="@color/bottom_nav_selector"
         app:itemTextColor="@color/bottom_nav_selector"
-        app:itemRippleColor="@color/runners_volt"
+        app:itemActiveIndicatorStyle="@style/Widget.Material3.BottomNavigationView.ActiveIndicator"
+        app:itemRippleColor="#33CCFF00"
         app:labelVisibilityMode="labeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:menu="@menu/bottom_nav_menu" />
