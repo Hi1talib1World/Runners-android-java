@@ -14,6 +14,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.denzo.runners.R
+import com.denzo.runners.data.repository.AuthRepository
 import com.denzo.runners.databinding.ActivityMainBinding
 import com.denzo.runners.features.auth.LoginActivity
 import com.denzo.runners.features.auth.SignUpActivity
@@ -38,6 +39,9 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var settingsRepository: SettingsRepository
+
+    @Inject
+    lateinit var authRepository: AuthRepository
 
     private lateinit var binding: ActivityMainBinding
 
@@ -109,6 +113,13 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        val isLoggedIn = authRepository.isUserLoggedIn
+        menu?.findItem(R.id.action_login)?.isVisible = !isLoggedIn
+        menu?.findItem(R.id.action_register)?.isVisible = !isLoggedIn
+        return super.onPrepareOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
