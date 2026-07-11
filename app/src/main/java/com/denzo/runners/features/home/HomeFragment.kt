@@ -19,6 +19,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.denzo.runners.R
+import com.denzo.runners.core.utils.DateTimeUtils
 import com.denzo.runners.databinding.FragmentHomeBinding
 import com.denzo.runners.services.LocationService
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -106,6 +107,10 @@ class HomeFragment : Fragment() {
             findNavController().navigate(R.id.navigation_plans)
         }
 
+        binding.btnHelp.setOnClickListener {
+            showHelpDialog()
+        }
+
         binding.cardTodayWorkout.setOnClickListener {
             viewModel.onTodayWorkoutClicked()
         }
@@ -134,6 +139,20 @@ class HomeFragment : Fragment() {
         }
 
         setupHoldToFinish()
+    }
+
+    private fun showHelpDialog() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Runner Assistant")
+            .setMessage("""
+                - Real-time Tracking: Precision GPS for your activities.
+                - Ghost Mode: Race against your previous best on saved routes.
+                - Live Sessions: Join the community map and send cheers to friends.
+                - Training Plans: Follow guided workouts with audio coaching.
+                - Hold to Finish: Prevent accidental stops by holding the button for 2 seconds.
+            """.trimIndent())
+            .setPositiveButton("GOT IT", null)
+            .show()
     }
 
     private fun showRouteSelector() {
@@ -180,6 +199,20 @@ class HomeFragment : Fragment() {
                 delay(100)
             }
             binding.finishProgress.visibility = View.INVISIBLE
+            handleFinishAction()
+        }
+    }
+
+    private fun handleFinishAction() {
+        val duration = viewModel.uiState.value.durationSeconds
+        if (duration < 30) {
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Discard Run?")
+                .setMessage("This activity is very short. Do you want to save it or discard it?")
+                .setPositiveButton("SAVE") { _, _ -> viewModel.stopAndSaveRun() }
+                .setNegativeButton("DISCARD") { _, _ -> viewModel.discardRun() }
+                .show()
+        } else {
             viewModel.stopAndSaveRun()
         }
     }
@@ -237,85 +270,93 @@ class HomeFragment : Fragment() {
 
     private fun updateUi(state: HomeUiState) {
         _binding?.let { b ->
-            b.loadingIndicator.visibility = if (state.isLoading) View.VISIBLE else View.GONE
-            b.pauseIcon.visibility = if (state.isLoading) View.GONE else View.VISIBLE
-            b.buttonLeft.isEnabled = !state.isLoading
+            updateLoadingAndControls(b, state)
+            updateMetricsDisplay(b, state)
+            updateLiveStatus(b, state)
+            updateTrackingOverlays(b, state)
+        }
+    }
 
-            b.dataTime.text = state.currentActivity.duration
-            b.dataLength.text = state.currentActivity.distance
-            b.dataPace.text = state.currentActivity.pace
-            b.dataBpm.text = "${state.currentActivity.heartRate} BPM"
-            b.dataCadence.text = "${state.currentActivity.cadence} RPM"
+    private fun updateLoadingAndControls(b: FragmentHomeBinding, state: HomeUiState) {
+        b.loadingIndicator.visibility = if (state.isLoading) View.VISIBLE else View.GONE
+        b.pauseIcon.visibility = if (state.isLoading) View.GONE else View.VISIBLE
+        b.buttonLeft.isEnabled = !state.isLoading
+    }
 
-            // Today's Workout Card
-            if (!state.isTracking && state.todayWorkout != null) {
-                b.cardTodayWorkout.visibility = View.VISIBLE
-                b.tvTodayWorkoutTitle.text = "${state.todayWorkout.title} (Week ${state.todayWorkout.weekNumber})"
-                if (state.selectedGoal == RunGoal.WORKOUT) {
-                    b.cardTodayWorkout.setStrokeColor(ContextCompat.getColorStateList(requireContext(), R.color.runners_volt))
-                } else {
-                    b.cardTodayWorkout.setStrokeColor(ContextCompat.getColorStateList(requireContext(), android.R.color.transparent))
-                }
-            } else {
-                b.cardTodayWorkout.visibility = View.GONE
+    private fun updateMetricsDisplay(b: FragmentHomeBinding, state: HomeUiState) {
+        b.dataTime.text = state.currentActivity.duration
+        b.dataLength.text = state.currentActivity.distance
+        b.dataPace.text = state.currentActivity.pace
+        b.dataBpm.text = getString(R.string.hr_display, state.currentActivity.heartRate)
+        b.dataCadence.text = getString(R.string.cadence_display, state.currentActivity.cadence)
+
+        if (state.isTracking && state.currentHr > 0) {
+            b.hrZoneCard.visibility = View.VISIBLE
+            b.textLiveHr.text = getString(R.string.hr_display, state.currentHr.toString())
+            b.textHrZone.text = getString(R.string.hr_zone_display, state.currentHrZone)
+            b.textHrZone.setTextColor(getZoneColor(state.currentHrZone))
+            b.textHrZoneLabel.text = getZoneLabel(state.currentHrZone)
+        } else {
+            b.hrZoneCard.visibility = View.GONE
+        }
+    }
+
+    private fun updateLiveStatus(b: FragmentHomeBinding, state: HomeUiState) {
+        if (state.isLiveGroupJoined) {
+            b.topTimer.text = getString(R.string.live_group_display, state.liveAthletes.size)
+            b.topTimer.setTextColor(ContextCompat.getColor(requireContext(), R.color.runners_volt))
+        } else {
+            b.topTimer.setTextColor(ContextCompat.getColor(requireContext(), R.color.runners_text_primary))
+        }
+    }
+
+    private fun updateTrackingOverlays(b: FragmentHomeBinding, state: HomeUiState) {
+        if (state.isTracking) {
+            b.buttonLeft.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.runners_accent_red))
+            b.pauseIcon.setImageResource(android.R.drawable.ic_media_pause)
+            b.goalSelector.visibility = View.GONE
+            b.environmentSelector.visibility = View.GONE
+            
+            if (state.selectedGoal != RunGoal.FREE && state.selectedGoal != RunGoal.WORKOUT) {
+                b.goalProgressTop.visibility = View.VISIBLE
+                b.goalProgressTop.progress = state.goalProgress
             }
 
-            // Active Workout HUD
-            if (state.isTracking && state.activeWorkoutStep != null) {
+            if (state.selectedGoal == RunGoal.ROUTE && state.ghostPosition != null) {
+                b.cardPacerDelta.visibility = View.VISIBLE
+                b.textPacerDelta.text = getString(R.string.ghost_active) 
+                
+                ghostMarker?.position = state.ghostPosition
+                if (!b.map.overlays.contains(ghostMarker)) {
+                    b.map.overlays.add(ghostMarker)
+                }
+            }
+
+            if (state.activeWorkoutStep != null) {
                 b.cardActiveWorkoutStep.visibility = View.VISIBLE
                 b.tvStepInstruction.text = state.activeWorkoutStep.instruction.uppercase()
-                b.tvStepTimer.text = "${formatTime(state.stepRemainingSeconds.toInt())} REMAINING"
+                b.tvStepTimer.text = getString(R.string.step_remaining, DateTimeUtils.formatDuration(state.stepRemainingSeconds))
             } else {
                 b.cardActiveWorkoutStep.visibility = View.GONE
             }
+            
+            updateLiveAthletes(state.liveAthletes)
+        } else {
+            b.buttonLeft.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.runners_volt))
+            b.pauseIcon.setImageResource(android.R.drawable.ic_media_play)
+            b.goalSelector.visibility = View.VISIBLE
+            b.environmentSelector.visibility = View.VISIBLE
+            b.goalProgressTop.visibility = View.GONE
+            b.cardPacerDelta.visibility = View.GONE
+            b.cardActiveWorkoutStep.visibility = View.GONE
+            b.map.overlays.remove(ghostMarker)
+            clearLiveAthletes()
+        }
 
-            // Live Activity Bar
-            if (state.isLiveGroupJoined) {
-                b.topTimer.text = "RUNNING WITH ${state.liveAthletes.size} OTHERS"
-                b.topTimer.setTextColor(ContextCompat.getColor(requireContext(), R.color.runners_volt))
-            } else {
-                b.topTimer.setTextColor(ContextCompat.getColor(requireContext(), R.color.runners_text_primary))
-            }
-
-            if (state.isTracking) {
-                b.buttonLeft.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.runners_accent_red))
-                b.pauseIcon.setImageResource(android.R.drawable.ic_media_pause)
-                b.goalSelector.visibility = View.GONE
-                
-                if (state.selectedGoal != RunGoal.FREE && state.selectedGoal != RunGoal.WORKOUT) {
-                    b.goalProgressTop.visibility = View.VISIBLE
-                    b.goalProgressTop.progress = state.goalProgress
-                }
-
-                if (state.selectedGoal == RunGoal.ROUTE && state.ghostPosition != null) {
-                    b.cardPacerDelta.visibility = View.VISIBLE
-                    b.textPacerDelta.text = "GHOST ACTIVE" 
-                    
-                    ghostMarker?.position = state.ghostPosition
-                    if (!b.map.overlays.contains(ghostMarker)) {
-                        b.map.overlays.add(ghostMarker)
-                    }
-                }
-                
-                updateLiveAthletes(state.liveAthletes)
-            } else {
-                b.buttonLeft.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.runners_volt))
-                b.pauseIcon.setImageResource(android.R.drawable.ic_media_play)
-                b.goalSelector.visibility = View.VISIBLE
-                b.goalProgressTop.visibility = View.GONE
-                b.cardPacerDelta.visibility = View.GONE
-                b.map.overlays.remove(ghostMarker)
-                clearLiveAthletes()
-                
-                val intent = Intent(requireContext(), LocationService::class.java)
-                requireContext().stopService(intent)
-            }
-
-            if (state.pathPoints.isNotEmpty()) {
-                trackPolyline?.setPoints(state.pathPoints)
-                b.map.controller.animateTo(state.pathPoints.last())
-                b.map.invalidate()
-            }
+        if (state.pathPoints.isNotEmpty()) {
+            trackPolyline?.setPoints(state.pathPoints)
+            b.map.controller.animateTo(state.pathPoints.last())
+            b.map.invalidate()
         }
     }
 
@@ -355,6 +396,29 @@ class HomeFragment : Fragment() {
             .show()
     }
 
+    private fun getZoneColor(zone: Int): Int {
+        val colorRes = when (zone) {
+            1 -> android.R.color.darker_gray
+            2 -> android.R.color.holo_blue_light
+            3 -> android.R.color.holo_green_light
+            4 -> android.R.color.holo_orange_light
+            5 -> android.R.color.holo_red_light
+            else -> android.R.color.white
+        }
+        return ContextCompat.getColor(requireContext(), colorRes)
+    }
+
+    private fun getZoneLabel(zone: Int): String {
+        return when (zone) {
+            1 -> "RECOVERY"
+            2 -> "AEROBIC"
+            3 -> "STAMINA"
+            4 -> "THRESHOLD"
+            5 -> "MAXIMUM"
+            else -> "--"
+        }
+    }
+
     private fun handleEvent(event: UiEvent) {
         val view = view ?: return
         when (event) {
@@ -370,16 +434,9 @@ class HomeFragment : Fragment() {
                     .show()
             }
             is UiEvent.NewStep -> {
-                // Fragment can show a brief alert or rely on the HUD/Service audio
                 Snackbar.make(view, "New Step: ${event.instruction}", Snackbar.LENGTH_SHORT).show()
             }
         }
-    }
-
-    private fun formatTime(seconds: Int): String {
-        val mins = seconds / 60
-        val remainingSecs = seconds % 60
-        return String.format(java.util.Locale.getDefault(), "%02d:%02d", mins, remainingSecs)
     }
 
     override fun onResume() {
