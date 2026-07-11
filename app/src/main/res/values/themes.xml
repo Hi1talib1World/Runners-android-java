@@ -1,67 +1,93 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.Runners" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/primary</item>
+        <!-- Primary brand color (Neon Volt) -->
+        <item name="colorPrimary">@color/runners_volt</item>
         <item name="colorOnPrimary">@color/onPrimary</item>
-        <item name="colorPrimaryContainer">@color/primaryContainer</item>
+        <item name="colorPrimaryContainer">@color/runners_volt</item>
         <item name="colorOnPrimaryContainer">@color/onPrimaryContainer</item>
 
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/secondary</item>
+        <!-- Secondary brand color (Blue) -->
+        <item name="colorSecondary">@color/runners_blue</item>
         <item name="colorOnSecondary">@color/onSecondary</item>
-        <item name="colorSecondaryContainer">@color/secondaryContainer</item>
-        <item name="colorOnSecondaryContainer">@color/onSecondaryContainer</item>
+        <item name="colorSecondaryContainer">@color/runners_surface</item>
+        <item name="colorOnSecondaryContainer">@color/onSurface</item>
 
-        <!-- Accent/Tertiary colors to avoid default purple -->
-        <item name="colorTertiary">@color/runners_accent_blue</item>
-        <item name="colorOnTertiary">@color/onPrimary</item>
-        <item name="colorTertiaryContainer">@color/runners_accent_blue</item>
-        <item name="colorOnTertiaryContainer">@color/onPrimary</item>
+        <!-- Tertiary brand color (Red) -->
+        <item name="colorTertiary">@color/runners_red</item>
+        <item name="colorOnTertiary">@color/onTertiary</item>
 
-        <!-- Status bar color. -->
+        <!-- Status bar and Background -->
         <item name="android:statusBarColor">@color/runners_dark_bg</item>
         <item name="android:windowLightStatusBar">false</item>
-
-        <!-- Material 3 Surface and Background -->
         <item name="android:windowBackground">@color/background</item>
-        <item name="colorSurface">@color/surface</item>
+
+        <!-- Material 3 Surface and Outline -->
+        <item name="colorSurface">@color/runners_surface</item>
         <item name="colorOnSurface">@color/onSurface</item>
-        <item name="colorSurfaceVariant">@color/surfaceVariant</item>
-        <item name="colorOnSurfaceVariant">@color/onSurfaceVariant</item>
-        <item name="colorOutline">@color/runners_volt</item>
+        <item name="colorSurfaceVariant">@color/runners_card_bg</item>
+        <item name="colorOnSurfaceVariant">@color/runners_text_secondary</item>
+        <item name="colorOutline">@color/outline</item>
+
+        <!-- Global Shape Appearance -->
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.Runners.Small</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.Runners.Medium</item>
     </style>
 
     <style name="Theme.Runners" parent="Base.Theme.Runners" />
 
-    <style name="ToolbarTitleAppearance" parent="TextAppearance.Material3.TitleLarge">
-        <item name="android:textStyle">bold|italic</item>
-        <item name="android:textSize">20sp</item>
+    <!-- Typography Styles from Design System -->
+    <style name="HeadlineAppearance" parent="TextAppearance.Material3.HeadlineMedium">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/runners_text_primary</item>
+        <item name="android:fontFamily">sans-serif-condensed</item>
     </style>
 
-    <!-- Metric Styles -->
+    <style name="BodyAppearance" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:textColor">@color/runners_text_secondary</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <style name="LabelAppearance" parent="TextAppearance.Material3.LabelLarge">
+        <item name="android:textColor">@color/runners_volt</item>
+        <item name="android:fontFamily">monospace</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <!-- Shape Styles -->
+    <style name="ShapeAppearance.Runners.Small" parent="ShapeAppearance.Material3.SmallComponent">
+        <item name="cornerSize">8dp</item>
+    </style>
+
+    <style name="ShapeAppearance.Runners.Medium" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerSize">12dp</item>
+    </style>
+
+    <!-- Custom Metric Styles -->
     <style name="MetricLayout">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_columnWeight">1</item>
         <item name="android:gravity">center</item>
         <item name="android:orientation">vertical</item>
-        <item name="android:padding">4dp</item>
-        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:layout_marginBottom">12dp</item>
     </style>
 
     <style name="MetricValue">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">?attr/colorOnSurface</item>
-        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/runners_text_primary</item>
+        <item name="android:textSize">20sp</item>
         <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">sans-serif-condensed</item>
     </style>
 
     <style name="MetricLabel">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+        <item name="android:textColor">@color/runners_volt</item>
         <item name="android:textSize">10sp</item>
+        <item name="android:fontFamily">monospace</item>
     </style>
 </resources>
