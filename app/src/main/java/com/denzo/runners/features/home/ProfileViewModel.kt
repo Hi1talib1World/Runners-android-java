@@ -6,17 +6,14 @@ import com.denzo.runners.core.analytics.Achievement
 import com.denzo.runners.core.analytics.AchievementManager
 import com.denzo.runners.core.utils.UnitConverter
 import com.denzo.runners.data.local.entities.GearEntity
+import com.denzo.runners.data.local.entities.RunEntity
+import com.denzo.runners.data.repository.AuthRepository
 import com.denzo.runners.data.repository.RunRepository
 import com.denzo.runners.features.settings.SettingsRepository
 import com.denzo.runners.features.subscription.BillingManager
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.userProfileChangeRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
-import java.util.Locale
 import javax.inject.Inject
 import kotlin.math.pow
 
@@ -49,7 +46,7 @@ data class RunRecord(val label: String, val value: String)
 class ProfileViewModel @Inject constructor(
     private val repository: RunRepository,
     private val achievementManager: AchievementManager,
-    private val auth: FirebaseAuth,
+    private val authRepository: AuthRepository,
     private val settingsRepository: SettingsRepository,
     private val billingManager: BillingManager
 ) : ViewModel() {
@@ -75,9 +72,10 @@ class ProfileViewModel @Inject constructor(
             combine(
                 repository.getAllRuns(),
                 repository.getAllGear(),
-                settingsRepository.settingsFlow
-            ) { runs, gearList, settings ->
-                val user = auth.currentUser
+                settingsRepository.settingsFlow,
+                authRepository.displayName
+            ) { runs, gearList, settings, name ->
+                val email = authRepository.currentUserEmail
                 val totalDistance = runs.sumOf { it.distanceMeters }
                 val runCount = runs.size
                 
@@ -98,8 +96,8 @@ class ProfileViewModel @Inject constructor(
                 val trainingLoad = calculateTrainingLoad(runs)
 
                 _uiState.update { it.copy(
-                    name = user?.displayName ?: "Runner",
-                    email = user?.email ?: "--",
+                    name = name ?: "Runner",
+                    email = email ?: "--",
                     isMetric = settings.isMetric,
                     records = records,
                     gear = activeGear,
@@ -113,7 +111,7 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    private fun calculatePredictions(runs: List<com.denzo.runners.data.local.entities.RunEntity>): List<RacePrediction> {
+    private fun calculatePredictions(runs: List<RunEntity>): List<RacePrediction> {
         // Find best run (distance >= 1km) to base predictions on
         val bestRun = runs.filter { it.distanceMeters >= 1000 }.minByOrNull { it.avgPace } ?: return emptyList()
         
@@ -132,7 +130,7 @@ class ProfileViewModel @Inject constructor(
         )
     }
 
-    private fun calculateTrainingLoad(runs: List<com.denzo.runners.data.local.entities.RunEntity>): Int {
+    private fun calculateTrainingLoad(runs: List<RunEntity>): Int {
         // Calculate TRIMP-like score for last 30 days
         val thirtyDaysAgo = System.currentTimeMillis() - (30L * 24 * 60 * 60 * 1000)
         val recentRuns = runs.filter { it.timestamp > thirtyDaysAgo }
@@ -171,19 +169,13 @@ class ProfileViewModel @Inject constructor(
     fun updateProfileName(newName: String) {
         if (newName.isBlank()) return
         executeAtomicAction(successMsg = "Profile updated") {
-            val profileUpdates = userProfileChangeRequest {
-                displayName = newName
-            }
-            auth.currentUser?.updateProfile(profileUpdates)?.await()
-            _uiState.update { it.copy(name = newUsernameFormat(newName)) }
+            authRepository.updateDisplayName(newName).getOrThrow()
         }
     }
 
     fun goPro(activity: android.app.Activity) {
         billingManager.purchasePro(activity)
     }
-
-    private fun newUsernameFormat(name: String): String = name.uppercase().trim()
 
     /**
      * Pillar 3 & 4: Micro-Feedback & Safeguards
