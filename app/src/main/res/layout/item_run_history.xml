@@ -2,13 +2,13 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/run_card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="16dp"
+    android:layout_marginHorizontal="20dp"
     android:layout_marginVertical="8dp"
-    app:cardBackgroundColor="@color/runners_card_bg"
-    app:cardCornerRadius="12dp">
+    app:cardBackgroundColor="@color/runners_surface"
+    app:cardCornerRadius="16dp"
+    app:strokeWidth="0dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -19,55 +19,59 @@
             android:id="@+id/text_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/runners_text_primary"
-            android:textSize="16sp"
-            android:textStyle="bold"
+            android:fontFamily="monospace"
+            android:textColor="@color/runners_text_secondary"
+            android:textSize="10sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="24/10/2023 14:30" />
+            tools:text="MON, 12 OCT • 08:30" />
 
         <ImageView
-            android:id="@+id/icon_sync_status"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:layout_marginStart="8dp"
-            android:src="@android:drawable/stat_sys_upload_done"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@id/text_date"
-            app:layout_constraintStart_toEndOf="@id/text_date"
-            app:layout_constraintTop_toTopOf="@id/text_date"
-            app:tint="@color/runners_volt"
-            tools:visibility="visible" />
+            android:id="@+id/image_map_preview"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="12dp"
+            android:background="@color/runners_card_bg"
+            android:contentDescription="Map Preview"
+            android:scaleType="centerInside"
+            android:src="@android:drawable/ic_menu_mapmode"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_date"
+            app:tint="@color/runners_text_muted" />
 
         <LinearLayout
-            android:id="@+id/stats_row"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginStart="16dp"
             android:orientation="horizontal"
-            app:layout_constraintEnd_toStartOf="@id/button_delete"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/text_date">
+            app:layout_constraintBottom_toBottomOf="@id/image_map_preview"
+            app:layout_constraintEnd_toStartOf="@id/btn_delete"
+            app:layout_constraintStart_toEndOf="@id/image_map_preview"
+            app:layout_constraintTop_toTopOf="@id/image_map_preview">
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="DISTANCE"
-                    android:textColor="@color/runners_text_secondary"
-                    android:textSize="10sp" />
+
                 <TextView
                     android:id="@+id/text_distance"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/runners_volt"
-                    android:textSize="14sp"
+                    android:fontFamily="sans-serif-condensed"
+                    android:textColor="@color/runners_text_primary"
+                    android:textSize="20sp"
                     android:textStyle="bold"
-                    tools:text="5.42 km" />
+                    tools:text="5.24 km" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="monospace"
+                    android:text="@string/label_distance"
+                    android:textColor="@color/runners_volt"
+                    android:textSize="10sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -75,27 +79,58 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical">
+
                 <TextView
+                    android:id="@+id/text_duration"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="CALORIES"
-                    android:textColor="@color/runners_text_secondary"
-                    android:textSize="10sp" />
-                <TextView
-                    android:id="@+id/text_calories"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-condensed"
                     android:textColor="@color/runners_text_primary"
-                    android:textSize="14sp"
-                    tools:text="320 kcal" />
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    tools:text="45:12" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="monospace"
+                    android:text="@string/label_duration"
+                    android:textColor="@color/runners_volt"
+                    android:textSize="10sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/text_pace"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-condensed"
+                    android:textColor="@color/runners_text_primary"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    tools:text="5:12 /km" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="monospace"
+                    android:text="@string/label_avg_pace"
+                    android:textColor="@color/runners_volt"
+                    android:textSize="10sp" />
             </LinearLayout>
         </LinearLayout>
 
         <ImageButton
-            android:id="@+id/button_delete"
+            android:id="@+id/btn_delete"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Delete"
             android:src="@android:drawable/ic_menu_delete"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
