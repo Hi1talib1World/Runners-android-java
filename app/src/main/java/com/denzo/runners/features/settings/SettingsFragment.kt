@@ -13,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.denzo.runners.databinding.FragmentSettingsBinding
 import com.denzo.runners.features.auth.LoginActivity
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -85,9 +86,24 @@ class SettingsFragment : Fragment() {
             }
         }
 
+        binding.clearDataButton.setOnClickListener {
+            confirmClearData()
+        }
+
         binding.logoutButton.setOnClickListener {
             viewModel.logout()
         }
+    }
+
+    private fun confirmClearData() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Clear All History?")
+            .setMessage("This will permanently delete all your local run data and history. This action cannot be undone.")
+            .setPositiveButton("CLEAR EVERYTHING") { _, _ ->
+                viewModel.clearLocalData()
+            }
+            .setNegativeButton("CANCEL", null)
+            .show()
     }
 
     /**
@@ -149,6 +165,8 @@ class SettingsFragment : Fragment() {
         binding.socialNotificationsSwitch.isEnabled = controlsEnabled
         binding.frequencySlider.isEnabled = controlsEnabled
         binding.usernameInput.isEnabled = controlsEnabled
+        binding.maxHrInput.isEnabled = controlsEnabled
+        binding.clearDataButton.isEnabled = controlsEnabled
         binding.logoutButton.isEnabled = controlsEnabled
         
         binding.syncProgress.visibility = if (state.isProcessing) View.VISIBLE else View.INVISIBLE
