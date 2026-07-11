@@ -6,40 +6,36 @@
     android:layout_height="match_parent"
     android:background="@color/runners_dark_bg">
 
-    <!-- Custom Status Bar -->
+    <!-- Header / Custom Toolbar -->
     <LinearLayout
-        android:id="@+id/activity_status_bar"
+        android:id="@+id/history_status_bar"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="64dp"
+        android:background="@color/runners_surface"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingHorizontal="16dp"
+        android:paddingHorizontal="20dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/button_back"
+            android:id="@+id/btn_back"
             android:layout_width="24dp"
             android:layout_height="24dp"
+            android:clickable="true"
             android:contentDescription="Back"
+            android:focusable="true"
             android:src="@android:drawable/ic_menu_revert"
             app:tint="@color/runners_volt" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:text="RUNNERS"
+            android:layout_marginStart="12dp"
+            android:fontFamily="sans-serif-condensed"
+            android:text="JOURNEY"
             android:textColor="@color/runners_volt"
+            android:textSize="20sp"
             android:textStyle="bold|italic" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="/ HISTORY"
-            android:textColor="@color/runners_text_secondary"
-            android:textSize="12sp"
-            android:textStyle="bold" />
 
         <View
             android:layout_width="0dp"
@@ -47,81 +43,115 @@
             android:layout_weight="1" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/button_clear_all"
+            android:id="@+id/btn_filter"
             style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="CLEAR ALL"
-            android:textColor="@color/runners_accent_red"
-            android:textSize="12sp" />
-
+            android:text="FILTER"
+            android:textColor="@color/runners_volt"
+            android:textStyle="bold" />
     </LinearLayout>
 
-    <!-- Navigation Tabs -->
+    <!-- Stats Summary Header -->
     <LinearLayout
-        android:id="@+id/journey_tabs"
+        android:id="@+id/stats_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="8dp"
-        android:background="@color/runners_card_bg"
-        android:padding="4dp"
+        android:background="@color/runners_surface"
         android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/activity_status_bar">
-        <TextView
-            android:id="@+id/tab_my_history"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@color/runners_volt"
-            android:gravity="center"
-            android:padding="8dp"
-            android:text="MY RUNS"
-            android:textColor="@color/onPrimary"
-            android:textSize="12sp"
-            android:textStyle="bold" />
-        <TextView
-            android:id="@+id/tab_global_feed"
+        android:padding="20dp"
+        app:layout_constraintTop_toBottomOf="@id/history_status_bar">
+
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:padding="8dp"
-            android:text="GLOBAL FEED"
-            android:textColor="@color/runners_text_secondary"
-            android:textSize="12sp" />
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_total_distance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-condensed"
+                android:textColor="@color/runners_text_primary"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                tools:text="452.1" />
+
+            <TextView
+                android:id="@+id/tv_total_distance_unit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:text="@string/label_kilometers"
+                android:textColor="@color/runners_text_secondary"
+                android:textSize="10sp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/runners_text_muted" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_total_runs"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-condensed"
+                android:textColor="@color/runners_text_primary"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                tools:text="32" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:text="@string/label_total_runs"
+                android:textColor="@color/runners_text_secondary"
+                android:textSize="10sp" />
+        </LinearLayout>
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view_history"
+        android:id="@+id/rv_history"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:clipToPadding="false"
-        android:paddingBottom="16dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:paddingBottom="100dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/journey_tabs"
+        app:layout_constraintTop_toBottomOf="@id/stats_header"
         tools:listitem="@layout/item_run_history" />
 
     <TextView
-        android:id="@+id/text_empty_history"
+        android:id="@+id/tv_empty_history"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="No runs found"
-        android:textColor="@color/runners_text_secondary"
+        android:fontFamily="monospace"
+        android:text="NO ACTIVITIES YET"
+        android:textColor="@color/runners_text_muted"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/journey_tabs" />
+        app:layout_constraintTop_toBottomOf="@id/stats_header" />
 
     <com.google.android.material.progressindicator.LinearProgressIndicator
-        android:id="@+id/loading_indicator"
+        android:id="@+id/history_loading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:indeterminate="true"
         android:visibility="gone"
         app:indicatorColor="@color/runners_volt"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/stats_header"
+        app:trackColor="#33FFFFFF" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
