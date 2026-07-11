@@ -52,12 +52,15 @@
     <string name="error_account_creation_failed">Account Creation Failed</string>
     <string name="error_google_signin_failed">Google sign in failed</string>
     <string name="msg_run_saved">Run Saved Successfully!</string>
-    <string name="msg_searching_sessions">Searching for live sessions...</string>
+    <string name="msg_searching_sessions">Searching for live sessions&#8230;</string>
+    <string name="hr_display">%s BPM</string>
+    <string name="cadence_display">%s RPM</string>
+    <string name="hr_zone_display">ZONE %d</string>
+    <string name="live_group_display">RUNNING WITH %d OTHERS</string>
+    <string name="ghost_active">GHOST ACTIVE</string>
+    <string name="step_remaining">%s REMAINING</string>
     <string name="action_login">Login</string>
     <string name="action_register">Register</string>
-    <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
 
@@ -75,17 +78,90 @@
 
     <!-- Settings Strings -->
     <string name="dark_mode">Dark Mode</string>
-    <string name="unit_system_title">Unit System (Metric/Imperial)</string>
     <string name="telemetry_title">High-Frequency Telemetry</string>
     <string name="sync_frequency">Sync Frequency (minutes): %d</string>
     <string name="username_label">Account Username</string>
     <string name="logout_button">Logout Session</string>
     <string name="settings_saved">Settings synchronized successfully</string>
-    <string name="logout_confirmation">Logging out...</string>
+    <string name="logout_confirmation">Logging out&#8230;</string>
     <string name="error_generic">Something went wrong. Please try again.</string>
     <string name="gear_empty_state">No active gear tracked</string>
     <string name="member_since_pro">Member since %s • Pro Member</string>
     <string name="member_since_free">Member since %s • Free Tier</string>
+    <string name="unit_system_title">Unit System (Metric/Imperial)</string>
+
+    <!-- Design System Strings -->
+    <string name="label_runners">RUNNERS</string>
+    <string name="label_live_gps">LIVE GPS</string>
+    <string name="label_current_pace">CURRENT PACE</string>
+    <string name="label_distance">DISTANCE</string>
+    <string name="label_duration">DURATION</string>
+    <string name="label_elevation">ELEVATION</string>
+    <string name="label_meters_gained">METERS GAINED</string>
+    <string name="label_kilometers">KILOMETERS</string>
+    <string name="label_miles">MILES</string>
+    <string name="label_active_time">ACTIVE TIME</string>
+    <string name="label_hold_finish">HOLD FINISH</string>
+    <string name="label_ranks">RANKS</string>
+    <string name="label_telemetry_leaderboard">WEEKLY TELEMETRY LEADERBOARD</string>
+    <string name="label_global">GLOBAL</string>
+    <string name="label_clubs">CLUBS</string>
+    <string name="label_friends">FRIENDS</string>
+    <string name="label_challenges">CHALLENGES</string>
+
+    <string name="label_athlete_profile">ATHLETE PROFILE</string>
+    <string name="label_lifetime_km">LIFETIME KM</string>
+    <string name="label_total_runs">TOTAL RUNS</string>
+    <string name="label_achievements">ACHIEVEMENTS</string>
+    <string name="label_training_intelligence">TRAINING INTELLIGENCE</string>
+    <string name="label_weekly_effort">WEEKLY EFFORT SCORE</string>
+    <string name="label_race_predictions">RACE PREDICTIONS</string>
+    <string name="label_active_gear">ACTIVE GEAR</string>
+    <string name="action_edit_athlete">EDIT ATHLETE DATA</string>
+    <string name="action_broadcast_progress">BROADCAST PROGRESS</string>
+    <string name="action_retire_gear">RETIRE GEAR</string>
+    <string name="action_go_pro">GO PRO</string>
+    <string name="desc_avatar">Athlete Avatar</string>
+
+    <string name="desc_live_icon">Live status icon</string>
+    <string name="desc_search">Search athletes or clubs</string>
+    <string name="desc_plans">Training plans catalog</string>
+    <string name="desc_help">App features guide</string>
+    <string name="desc_pause">Pause or Resume tracking</string>
+    <string name="desc_finish">Hold to finish and save</string>
+    <string name="desc_camera">Take an activity photo</string>
+
+    <string name="label_journey">JOURNEY</string>
+    <string name="label_filter">FILTER</string>
+    <string name="label_no_activities">NO ACTIVITIES YET</string>
+    <string name="desc_map_preview">Map Preview</string>
+    <string name="label_avg_pace">AVG PACE</string>
+    <string name="action_delete">Delete</string>
+    <string name="label_activity">ACTIVITY</string>
+    <string name="label_share">Share</string>
+    <string name="label_weather">Weather</string>
+    <string name="label_calories">CALORIES</string>
+    <string name="label_performance_analysis">PERFORMANCE ANALYSIS</string>
+    <string name="label_pace">PACE</string>
+    <string name="label_hr">HR</string>
+    <string name="label_cadence">CADENCE</string>
+    <string name="label_intensity_distribution">INTENSITY DISTRIBUTION</string>
+    <string name="label_training">TRAINING</string>
+    <string name="label_create">CREATE</string>
+    <string name="label_builder">BUILDER</string>
+    <string name="label_save">SAVE</string>
+    <string name="label_workout_title">Workout Title</string>
+    <string name="label_interval_steps">INTERVAL STEPS</string>
+    <string name="label_add_step">ADD STEP</string>
+    <string name="desc_reorder">Reorder</string>
+    <string name="desc_remove">Remove</string>
+    <string name="label_equipment">EQUIPMENT</string>
+    <string name="desc_add_gear">Add Gear</string>
+    <string name="desc_shoe">Shoe</string>
+    <string name="label_discovery">DISCOVERY</string>
+    <string name="hint_discovery_search">Search athletes or clubs&#8230;</string>
+    <string name="label_no_results">NO RESULTS FOUND</string>
+    <string name="action_follow">FOLLOW</string>
 
     <string name="lorem_ipsum">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris
@@ -123,4 +199,5 @@
         libero vel nunc consequat, quis tincidunt nisl eleifend. Cras bibendum enim a justo luctus
         vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
     </string>
+
 </resources>
