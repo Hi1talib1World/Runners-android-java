@@ -6,10 +6,11 @@ interface AuthRepository {
     val currentUserEmail: String?
     val isUserLoggedIn: Boolean
     val userId: String?
-    val displayName: String?
+    val displayName: Flow<String?>
 
     suspend fun login(email: String, password: String): Result<Unit>
     suspend fun signup(email: String, password: String): Result<Unit>
     fun logout()
     suspend fun updateDisplayName(name: String): Result<Unit>
+    suspend fun signInWithGoogle(idToken: String): Result<Unit>
 }
