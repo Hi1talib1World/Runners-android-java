@@ -17,6 +17,8 @@ data class HistoryUiState(
     val isLoading: Boolean = false,
     val runs: List<RunEntity> = emptyList(),
     val isMetric: Boolean = true,
+    val totalDistance: Double = 0.0,
+    val totalRuns: Int = 0,
     val errorEvent: String? = null,
     val successMessage: String? = null
 )
@@ -29,14 +31,18 @@ class HistoryViewModel @Inject constructor(
 
     private val _transientState = MutableStateFlow(HistoryUiState())
 
-    val historyState: StateFlow<HistoryUiState> = combine(
+    val uiState: StateFlow<HistoryUiState> = combine(
         repository.getAllRuns(),
         settingsRepository.settingsFlow,
         _transientState
     ) { runs, settings, transient ->
+        val totalMeters = runs.sumOf { it.distanceMeters }
+        val totalDistance = if (settings.isMetric) totalMeters / 1000.0 else totalMeters / 1609.34
         transient.copy(
             runs = runs,
-            isMetric = settings.isMetric
+            isMetric = settings.isMetric,
+            totalDistance = totalDistance,
+            totalRuns = runs.size
         )
     }.stateIn(
         scope = viewModelScope,
@@ -54,7 +60,7 @@ class HistoryViewModel @Inject constructor(
     }
 
     fun clearHistory() {
-        if (historyState.value.runs.isEmpty()) return
+        if (uiState.value.runs.isEmpty()) return
         executeAtomicAction(successMsg = "History cleared") {
             repository.clearAllHistory()
         }
