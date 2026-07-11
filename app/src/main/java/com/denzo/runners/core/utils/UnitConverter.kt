@@ -17,12 +17,25 @@ object UnitConverter {
     fun formatPace(paceMinPerKm: Double, isMetric: Boolean): String {
         if (paceMinPerKm <= 0) return "0'00''"
         
+        val actualPace = if (isMetric) paceMinPerKm else paceMinPerKm * (METERS_IN_MILE / 1000.0)
+        val minutes = actualPace.toInt()
+        val seconds = ((actualPace - minutes) * 60).toInt()
+        
         return if (isMetric) {
-            String.format(Locale.getDefault(), "%.2f /km", paceMinPerKm)
+            String.format(Locale.getDefault(), "%d:%02d /km", minutes, seconds)
         } else {
-            // Convert min/km to min/mile
-            val paceMinPerMile = paceMinPerKm * (METERS_IN_MILE / 1000.0)
-            String.format(Locale.getDefault(), "%.2f /mi", paceMinPerMile)
+            String.format(Locale.getDefault(), "%d:%02d /mi", minutes, seconds)
+        }
+    }
+
+    fun formatDuration(seconds: Long): String {
+        val hours = seconds / 3600
+        val minutes = (seconds % 3600) / 60
+        val secs = seconds % 60
+        return if (hours > 0) {
+            String.format(Locale.getDefault(), "%d:%02d:%02d", hours, minutes, secs)
+        } else {
+            String.format(Locale.getDefault(), "%d:%02d", minutes, secs)
         }
     }
 }
