@@ -1,7 +1,6 @@
 package com.denzo.runners.features.activities
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -34,29 +33,22 @@ class HistoryAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val run = getItem(position)
-        holder.bind(run)
+        holder.bind(getItem(position))
     }
 
     inner class ViewHolder(private val binding: ItemRunHistoryBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        private val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+        private val dateFormat = SimpleDateFormat("EEE, dd MMM • HH:mm", Locale.getDefault())
 
         fun bind(run: RunEntity) {
-            binding.root.setOnClickListener {
-                onItemClick(run)
-            }
-
             binding.textDate.text = dateFormat.format(Date(run.timestamp))
             binding.textDistance.text = UnitConverter.formatDistance(run.distanceMeters, isMetric)
-            binding.textCalories.text = String.format(Locale.getDefault(), "%.0f kcal", run.caloriesBurned)
-            
-            binding.iconSyncStatus.visibility = if (run.isSynced) View.VISIBLE else View.GONE
-            
-            binding.buttonDelete.setOnClickListener {
-                onDeleteClick(run)
-            }
+            binding.textDuration.text = UnitConverter.formatDuration(run.durationSeconds)
+            binding.textPace.text = UnitConverter.formatPace(run.avgPace, isMetric)
+
+            binding.root.setOnClickListener { onItemClick(run) }
+            binding.btnDelete.setOnClickListener { onDeleteClick(run) }
         }
     }
 
