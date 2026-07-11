@@ -5,11 +5,11 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
+import com.denzo.runners.data.repository.AuthRepository
 import com.denzo.runners.features.auth.LoginActivity
 import com.denzo.runners.features.home.MainActivity
 import com.denzo.runners.features.onboarding.OnboardingActivity
 import com.denzo.runners.features.onboarding.OnboardingRepository
-import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -23,16 +23,17 @@ class SplashActivity : AppCompatActivity() {
     @Inject
     lateinit var onboardingRepository: OnboardingRepository
 
+    @Inject
+    lateinit var authRepository: AuthRepository
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.splash)
 
         Handler(Looper.getMainLooper()).postDelayed({
-            val currentUser = FirebaseAuth.getInstance().currentUser
-            
             val destination = when {
                 !onboardingRepository.isFirstRunCompleted() -> OnboardingActivity::class.java
-                currentUser == null -> LoginActivity::class.java
+                !authRepository.isUserLoggedIn -> LoginActivity::class.java
                 else -> MainActivity::class.java
             }
             
