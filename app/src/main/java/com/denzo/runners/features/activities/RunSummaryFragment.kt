@@ -1,7 +1,12 @@
 package com.denzo.runners.features.activities
 
+import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -12,65 +17,59 @@ import com.denzo.runners.R
 import com.denzo.runners.core.utils.UnitConverter
 import com.denzo.runners.data.local.entities.RunEntity
 import com.denzo.runners.databinding.FragmentRunSummaryBinding
-import com.google.android.material.snackbar.Snackbar
-import com.github.mikephil.charting.data.BarData
-import com.github.mikephil.charting.data.BarDataSet
-import com.github.mikephil.charting.data.BarEntry
-import com.github.mikephil.charting.data.Entry
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
-import com.github.mikephil.charting.data.LineData
-import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.data.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Polyline
 import java.util.Locale
 
 @AndroidEntryPoint
-class RunSummaryFragment : Fragment(R.layout.fragment_run_summary) {
+class RunSummaryFragment : Fragment() {
 
     private var _binding: FragmentRunSummaryBinding? = null
     private val binding get() = _binding!!
-    
+
     private val viewModel: RunSummaryViewModel by viewModels()
     private var currentRun: RunEntity? = null
     private var isMetricPref: Boolean = true
 
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = FragmentRunSummaryBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        _binding = FragmentRunSummaryBinding.bind(view)
-
-        val runId = arguments?.getInt("runId") ?: -1
-
         setupInteractions()
         setupMap()
         observeUiState()
-        viewModel.loadRun(runId)
     }
 
     private fun setupInteractions() {
-        binding.buttonBack.setOnClickListener { findNavController().popBackStack() }
-        binding.buttonShare.setOnClickListener { shareRun() }
+        binding.btnBack.setOnClickListener { findNavController().popBackStack() }
+        binding.btnShare.setOnClickListener { shareRun() }
         
-        binding.buttonSaveRoute.setOnClickListener {
-            // Branded dialog for route naming would go here
-            viewModel.saveAsRoute("Saved Route ${System.currentTimeMillis()}")
+        binding.btnDelete.setOnClickListener {
+            currentRun?.let { viewModel.deleteRun(it) }
+            findNavController().popBackStack()
         }
 
         binding.chipGroupMetrics.setOnCheckedStateChangeListener { _, checkedIds ->
-            currentRun?.let { run ->
-                when (checkedIds.firstOrNull()) {
-                    R.id.chip_hr -> updateChart(run, "HR")
-                    R.id.chip_cadence -> updateChart(run, "CAD")
-                    else -> updateChart(run, "PACE")
-                }
+            val metric = when (checkedIds.firstOrNull()) {
+                R.id.chip_hr -> "HR"
+                R.id.chip_cadence -> "CADENCE"
+                else -> "PACE"
             }
+            currentRun?.let { updateChart(it, metric) }
         }
     }
 
     private fun setupMap() {
         binding.mapSummary.setTileSource(TileSourceFactory.MAPNIK)
-        binding.mapSummary.setMultiTouchControls(true)
+        binding.mapSummary.setMultiTouchControls(false)
+        binding.mapSummary.controller.setZoom(17.0)
     }
 
     private fun observeUiState() {
@@ -78,11 +77,6 @@ class RunSummaryFragment : Fragment(R.layout.fragment_run_summary) {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
                     state.run?.let { displayRun(it, state.isMetric) }
-                    
-                    state.successMessage?.let { msg ->
-                        Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
-                        viewModel.clearMessage()
-                    }
                 }
             }
         }
@@ -107,16 +101,12 @@ class RunSummaryFragment : Fragment(R.layout.fragment_run_summary) {
         }
 
         if (run.pathPoints.isNotEmpty()) {
-            binding.mapSummary.overlays.clear()
-            val polyline = Polyline(binding.mapSummary).apply {
-                setPoints(run.pathPoints)
-                outlinePaint.color = android.graphics.Color.RED
-                outlinePaint.strokeWidth = 10f
-            }
+            val polyline = Polyline(binding.mapSummary)
+            polyline.outlinePaint.color = Color.RED
+            polyline.outlinePaint.strokeWidth = 10f
+            polyline.setPoints(run.pathPoints)
             binding.mapSummary.overlays.add(polyline)
-            binding.mapSummary.controller.setZoom(17.0)
-            binding.mapSummary.controller.setCenter(run.pathPoints.first())
-            binding.mapSummary.invalidate()
+            binding.mapSummary.controller.setCenter(run.pathPoints.last())
         }
 
         updateChart(run, "PACE")
@@ -124,123 +114,86 @@ class RunSummaryFragment : Fragment(R.layout.fragment_run_summary) {
     }
 
     private fun setupZoneChart(run: RunEntity) {
-        val breakdown = if (run.zoneBreakdown.isNotEmpty()) run.zoneBreakdown else listOf(120L, 450L, 800L, 300L, 50L)
-        val entries = breakdown.mapIndexed { index, seconds ->
-            BarEntry(index.toFloat(), (seconds / 60).toFloat())
-        }
-
-        val dataSet = BarDataSet(entries, "Minutes per Zone").apply {
-            colors = listOf(
-                android.graphics.Color.GRAY,
-                android.graphics.Color.BLUE,
-                android.graphics.Color.GREEN,
-                android.graphics.Color.YELLOW,
-                android.graphics.Color.RED
-            )
-            setDrawValues(true)
-            valueTextColor = android.graphics.Color.WHITE
-            valueTextSize = 10f
-        }
-
-        binding.zoneChart.apply {
-            data = BarData(dataSet)
-            description.isEnabled = false
-            xAxis.apply {
-                valueFormatter = IndexAxisValueFormatter(listOf("Z1", "Z2", "Z3", "Z4", "Z5"))
-                position = com.github.mikephil.charting.components.XAxis.XAxisPosition.BOTTOM
-                textColor = android.graphics.Color.WHITE
-                setDrawGridLines(false)
-            }
-            axisLeft.apply {
-                textColor = android.graphics.Color.WHITE
-                setDrawGridLines(true)
-            }
-            axisRight.isEnabled = false
-            legend.isEnabled = false
-            setFitBars(true)
-            invalidate()
-        }
-    }
-
-    private fun updateChart(run: RunEntity, type: String) {
-        val entries = mutableListOf<Entry>()
-        val label: String
-        val color: Int
+        val entries = mutableListOf<BarEntry>()
+        val labels = listOf("Z1", "Z2", "Z3", "Z4", "Z5")
         
-        when (type) {
-            "HR" -> {
-                label = "Heart Rate (BPM)"
-                color = android.graphics.Color.RED
-                // Use stored points or simulate based on avg
-                val points = if (run.heartRatePoints.isNotEmpty()) run.heartRatePoints else simulatePoints(run.avgHeartRate, 10)
-                points.forEachIndexed { i, p -> entries.add(Entry(i.toFloat(), p.toFloat())) }
+        if (run.zoneBreakdown.isNotEmpty()) {
+            run.zoneBreakdown.forEachIndexed { index, seconds ->
+                entries.add(BarEntry(index.toFloat(), (seconds / 60).toFloat()))
             }
-            "CAD" -> {
-                label = "Cadence (RPM)"
-                color = android.graphics.Color.CYAN
-                val points = if (run.cadencePoints.isNotEmpty()) run.cadencePoints else simulatePoints(run.cadence, 10)
-                points.forEachIndexed { i, p -> entries.add(Entry(i.toFloat(), p.toFloat())) }
-            }
-            else -> {
-                label = if (isMetricPref) "Pace (min/km)" else "Pace (min/mi)"
-                color = android.graphics.Color.parseColor("#C6FF00")
-                val basePace = if (isMetricPref) run.avgPace else run.avgPace * (1609.34 / 1000.0)
-                val points = simulatePoints(basePace.toInt(), 10)
-                points.forEachIndexed { i, p -> entries.add(Entry(i.toFloat(), p.toFloat())) }
-            }
+        } else {
+            // Mock data for visual consistency if zones missing
+            entries.add(BarEntry(0f, 5f))
+            entries.add(BarEntry(1f, 15f))
+            entries.add(BarEntry(2f, 25f))
+            entries.add(BarEntry(3f, 10f))
+            entries.add(BarEntry(4f, 2f))
         }
 
-        val dataSet = LineDataSet(entries, label).apply {
-            this.color = color
-            setCircleColor(color)
-            lineWidth = 2f
-            setDrawValues(false)
-            setDrawFilled(true)
-            fillColor = color
-            fillAlpha = 50
-        }
-
-        binding.paceChart.data = LineData(dataSet)
-        binding.paceChart.description.isEnabled = false
-        binding.paceChart.xAxis.textColor = android.graphics.Color.WHITE
-        binding.paceChart.axisLeft.textColor = android.graphics.Color.WHITE
-        binding.paceChart.axisRight.isEnabled = false
-        binding.paceChart.legend.textColor = android.graphics.Color.WHITE
-        binding.paceChart.invalidate()
+        val dataSet = BarDataSet(entries, "Minutes in Zone")
+        dataSet.colors = listOf(
+            Color.GRAY, Color.BLUE, Color.GREEN, Color.YELLOW, Color.RED
+        )
+        dataSet.valueTextColor = Color.WHITE
+        
+        binding.zoneChart.data = BarData(dataSet)
+        binding.zoneChart.description.isEnabled = false
+        binding.zoneChart.xAxis.textColor = Color.WHITE
+        binding.zoneChart.axisLeft.textColor = Color.WHITE
+        binding.zoneChart.axisRight.isEnabled = false
+        binding.zoneChart.legend.isEnabled = false
+        binding.zoneChart.invalidate()
     }
 
-    private fun simulatePoints(base: Int, count: Int): List<Int> {
-        return (0 until count).map { (base + (Math.random() * 10 - 5)).toInt() }
+    private fun updateChart(run: RunEntity, metric: String) {
+        val entries = mutableListOf<Entry>()
+        val points = when(metric) {
+            "HR" -> if (run.heartRatePoints.isNotEmpty()) run.heartRatePoints else simulatePoints(140, 180)
+            "CADENCE" -> if (run.cadencePoints.isNotEmpty()) run.cadencePoints else simulatePoints(160, 190)
+            else -> simulatePoints(4, 7) // Pace simulation
+        }
+
+        points.forEachIndexed { index, value ->
+            entries.add(Entry(index.toFloat(), value.toFloat()))
+        }
+
+        val dataSet = LineDataSet(entries, metric)
+        dataSet.color = ContextCompat.getColor(requireContext(), R.color.runners_volt)
+        dataSet.setDrawCircles(false)
+        dataSet.setDrawValues(false)
+        dataSet.lineWidth = 2f
+        dataSet.setDrawFilled(true)
+        dataSet.fillDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.fade_volt)
+
+        binding.summaryChart.data = LineData(dataSet)
+        binding.summaryChart.description.isEnabled = false
+        binding.summaryChart.xAxis.textColor = Color.WHITE
+        binding.summaryChart.axisLeft.textColor = Color.WHITE
+        binding.summaryChart.axisRight.isEnabled = false
+        binding.summaryChart.invalidate()
+    }
+
+    private fun simulatePoints(min: Int, max: Int): List<Int> {
+        return (1..50).map { (min..max).random() }
     }
 
     private fun shareRun() {
         val run = currentRun ?: return
-        val shareMessage = """
-            🏃 New Run Logged!
-            📏 Distance: ${UnitConverter.formatDistance(run.distanceMeters, isMetricPref)}
-            ⏱️ Time: ${formatTime(run.durationSeconds.toInt())}
-            ⚡ Pace: ${UnitConverter.formatPace(run.avgPace, isMetricPref)}
-            🔥 Calories: ${String.format(Locale.getDefault(), "%.0f kcal", run.caloriesBurned)}
-            
-            Check it out on Runners! #RunnersApp #Running
-        """.trimIndent()
-
-        val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+        val shareText = "Just finished a ${UnitConverter.formatDistance(run.distanceMeters, isMetricPref)} run at ${UnitConverter.formatPace(run.avgPace, isMetricPref)} pace! #RunnersApp"
+        
+        val intent = Intent(Intent.ACTION_SEND).apply {
             type = "text/plain"
-            putExtra(android.content.Intent.EXTRA_TEXT, shareMessage)
+            putExtra(Intent.EXTRA_TEXT, shareText)
         }
-        startActivity(android.content.Intent.createChooser(intent, "Share your run"))
+        startActivity(Intent.createChooser(intent, "Share your activity"))
     }
 
     private fun formatTime(seconds: Int): String {
-        val hrs = seconds / 3600
-        val mins = (seconds % 3600) / 60
-        val secs = seconds % 60
-        return if (hrs > 0) {
-            String.format(Locale.getDefault(), "%02d:%02d:%02d", hrs, mins, secs)
-        } else {
-            String.format(Locale.getDefault(), "%02d:%02d", mins, secs)
-        }
+        val h = seconds / 3600
+        val m = (seconds % 3600) / 60
+        val s = seconds % 60
+        return if (h > 0) String.format(Locale.getDefault(), "%d:%02d:%02d", h, m, s) 
+               else String.format(Locale.getDefault(), "%02d:%02d", m, s)
     }
 
     override fun onResume() {
