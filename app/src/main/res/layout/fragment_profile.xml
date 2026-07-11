@@ -1,14 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/runners_dark_bg">
 
-    <androidx.core.widget.NestedScrollView
+    <!-- Header -->
+    <LinearLayout
+        android:id="@+id/profile_status_bar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="64dp"
+        android:background="@color/runners_surface"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="20dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:contentDescription="@string/label_athlete_profile"
+            android:src="@android:drawable/ic_menu_myplaces"
+            app:tint="@color/runners_volt" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:fontFamily="monospace"
+            android:text="@string/label_athlete_profile"
+            android:textColor="@color/runners_volt"
+            android:textStyle="bold" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:id="@+id/go_pro_button"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:contentDescription="@string/action_go_pro"
+            android:src="@android:drawable/btn_star_big_on"
+            app:tint="@color/runners_volt" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:paddingBottom="100dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/profile_status_bar">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -17,144 +62,131 @@
             android:orientation="vertical"
             android:padding="24dp">
 
-            <!-- Avatar with Pro badge -->
-            <FrameLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-                <com.google.android.material.imageview.ShapeableImageView
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                app:cardBackgroundColor="@color/runners_card_bg"
+                app:cardCornerRadius="12dp"
+                app:strokeColor="@color/runners_volt"
+                app:strokeWidth="2dp">
+
+                <ImageView
                     android:id="@+id/profile_avatar"
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"
-                    android:padding="4dp"
-                    android:src="@android:drawable/ic_menu_gallery"
-                    android:background="@color/runners_volt"
-                    app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.SmallComponent" />
-                <TextView
-                    android:id="@+id/pro_badge"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|center_horizontal"
-                    android:layout_marginBottom="-10dp"
-                    android:background="@color/runners_volt"
-                    android:paddingHorizontal="8dp"
-                    android:paddingVertical="2dp"
-                    android:text="PRO"
-                    android:textColor="@color/onPrimary"
-                    android:textSize="10sp"
-                    android:textStyle="bold" />
-            </FrameLayout>
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:contentDescription="@string/desc_avatar"
+                    android:scaleType="centerCrop"
+                    android:src="@android:drawable/ic_menu_gallery" />
+            </com.google.android.material.card.MaterialCardView>
 
             <TextView
                 android:id="@+id/athlete_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="Elite Runner"
+                android:layout_marginTop="16dp"
+                android:fontFamily="sans-serif-condensed"
                 android:textColor="@color/runners_text_primary"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textSize="24sp"
+                android:textStyle="bold"
+                tools:text="Marcus Thorne" />
 
             <TextView
                 android:id="@+id/athlete_email"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="monospace"
                 android:textColor="@color/runners_text_secondary"
                 android:textSize="12sp"
-                tools:text="runner@example.com" />
+                tools:text="marcus.t@velocity.run" />
 
             <TextView
                 android:id="@+id/member_since"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Member since Jan 2023 • Pro Member"
-                android:textColor="@color/runners_text_secondary"
-                android:textSize="12sp" />
+                android:layout_marginTop="4dp"
+                android:fontFamily="monospace"
+                android:textColor="@color/runners_volt"
+                android:textSize="10sp"
+                tools:text="ELITE MEMBER SINCE 2023" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/go_pro_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="GO PRO"
-                android:textColor="@color/onPrimary"
-                android:textStyle="bold"
-                android:visibility="gone"
-                app:backgroundTint="@color/runners_volt"
-                app:cornerRadius="8dp"
-                app:icon="@android:drawable/btn_star"
-                app:iconTint="@color/onPrimary" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/edit_profile_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:backgroundTint="@color/runners_volt"
-                android:text="EDIT PROFILE"
-                android:textColor="@color/onPrimary"
-                app:cornerRadius="8dp" />
-
-            <!-- Lifetime Stats -->
+            <!-- Lifetime Metrics -->
             <LinearLayout
-                android:id="@+id/lifetime_stats"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="32dp"
+                android:background="@color/runners_surface"
                 android:orientation="horizontal"
-                android:baselineAligned="false">
+                android:padding="20dp">
+
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
                     android:orientation="vertical">
+
                     <TextView
                         android:id="@+id/text_lifetime_distance"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="0.00"
+                        android:fontFamily="sans-serif-condensed"
                         android:textColor="@color/runners_text_primary"
                         android:textSize="24sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        tools:text="1,245.8" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="TOTAL KM"
+                        android:fontFamily="monospace"
+                        android:text="@string/label_lifetime_km"
                         android:textColor="@color/runners_text_secondary"
                         android:textSize="10sp" />
                 </LinearLayout>
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/runners_text_muted" />
+
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
                     android:orientation="vertical">
+
                     <TextView
                         android:id="@+id/text_total_runs"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="0"
+                        android:fontFamily="sans-serif-condensed"
                         android:textColor="@color/runners_text_primary"
                         android:textSize="24sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        tools:text="152" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="RUNS"
+                        android:fontFamily="monospace"
+                        android:text="@string/label_total_runs"
                         android:textColor="@color/runners_text_secondary"
                         android:textSize="10sp" />
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Achievements Section -->
+            <!-- Achievements (Design System Matrix Look) -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
                 android:layout_marginTop="32dp"
-                android:text="ACHIEVEMENTS"
-                android:textColor="@color/runners_text_secondary"
-                android:textSize="12sp"
+                android:fontFamily="monospace"
+                android:text="@string/label_achievements"
+                android:textColor="@color/runners_volt"
+                android:textSize="10sp"
                 android:textStyle="bold" />
 
             <HorizontalScrollView
@@ -163,6 +195,7 @@
                 android:layout_marginTop="12dp"
                 android:overScrollMode="never"
                 android:scrollbars="none">
+
                 <LinearLayout
                     android:id="@+id/achievements_container"
                     android:layout_width="wrap_content"
@@ -176,9 +209,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:columnCount="2">
-                <!-- Records will be populated or visibility toggled -->
-            </GridLayout>
+                android:columnCount="2" />
 
             <!-- Training Intelligence -->
             <TextView
@@ -186,53 +217,63 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
                 android:layout_marginTop="32dp"
-                android:text="TRAINING INTELLIGENCE"
-                android:textColor="@color/runners_text_secondary"
-                android:textSize="12sp"
+                android:fontFamily="monospace"
+                android:text="@string/label_training_intelligence"
+                android:textColor="@color/runners_volt"
+                android:textSize="10sp"
                 android:textStyle="bold" />
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                app:cardBackgroundColor="@color/runners_card_bg"
+                app:cardBackgroundColor="@color/runners_surface"
                 app:cardCornerRadius="16dp"
                 app:strokeWidth="0dp">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:padding="20dp">
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="WEEKLY EFFORT SCORE"
+                        android:fontFamily="monospace"
+                        android:text="@string/label_weekly_effort"
                         android:textColor="@color/runners_text_secondary"
                         android:textSize="10sp"
                         android:textStyle="bold" />
+
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp">
+
                         <TextView
                             android:id="@+id/tv_training_load"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="450"
+                            android:fontFamily="sans-serif-condensed"
                             android:textColor="@color/runners_volt"
                             android:textSize="24sp"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"
+                            tools:text="450" />
+
                         <TextView
                             android:id="@+id/tv_load_status"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentEnd="true"
                             android:layout_centerVertical="true"
-                            android:text="OPTIMAL"
+                            android:fontFamily="monospace"
                             android:textColor="@color/runners_volt"
                             android:textSize="12sp"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"
+                            tools:text="OPTIMAL" />
                     </RelativeLayout>
+
                     <com.google.android.material.progressindicator.LinearProgressIndicator
                         android:id="@+id/load_progress"
                         android:layout_width="match_parent"
@@ -249,7 +290,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
                 android:layout_marginTop="24dp"
-                android:text="RACE PREDICTIONS"
+                android:fontFamily="monospace"
+                android:text="@string/label_race_predictions"
                 android:textColor="@color/runners_text_secondary"
                 android:textSize="10sp"
                 android:textStyle="bold" />
@@ -260,6 +302,7 @@
                 android:layout_marginTop="12dp"
                 android:overScrollMode="never"
                 android:scrollbars="none">
+
                 <LinearLayout
                     android:id="@+id/predictions_container"
                     android:layout_width="wrap_content"
@@ -267,66 +310,106 @@
                     android:orientation="horizontal" />
             </HorizontalScrollView>
 
-            <!-- Gear Tracker -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/gear_tracker_card"
+            <!-- Actions -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/edit_profile_button"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                app:cardBackgroundColor="@color/runners_card_bg"
-                app:cardCornerRadius="12dp">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="GEAR TRACKER"
-                        android:textColor="@color/runners_text_secondary"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-                    <TextView
-                        android:id="@+id/gear_model_name"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:text="NIKE ALPHAFLY 3"
-                        android:textColor="@color/runners_text_primary"
-                        android:textStyle="bold" />
-                    <com.google.android.material.progressindicator.LinearProgressIndicator
-                        android:id="@+id/gear_progress"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:progress="65"
-                        app:indicatorColor="@color/runners_volt"
-                        app:trackColor="#333333" />
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/retire_gear_button"
-                        style="@style/Widget.Material3.Button.OutlinedButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:text="RETIRE GEAR"
-                        android:textColor="@color/runners_volt"
-                        app:strokeColor="@color/runners_volt" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+                android:layout_height="64dp"
+                android:layout_marginTop="32dp"
+                android:fontFamily="monospace"
+                android:text="@string/action_edit_athlete"
+                android:textColor="@color/onPrimary"
+                android:textStyle="bold"
+                app:backgroundTint="@color/runners_volt"
+                app:cornerRadius="12dp" />
 
-            <!-- Empty State for Gear -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/share_stats_button"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="8dp"
+                android:fontFamily="monospace"
+                android:text="@string/action_broadcast_progress"
+                android:textColor="@color/runners_volt"
+                app:icon="@android:drawable/ic_menu_share"
+                app:iconTint="@color/runners_volt" />
+
+            <!-- Gear Tracker -->
             <TextView
                 android:id="@+id/gear_empty_state"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="No active gear tracked"
-                android:textColor="@color/runners_text_secondary"
+                android:layout_marginTop="32dp"
+                android:fontFamily="monospace"
+                android:text="@string/gear_empty_state"
+                android:textColor="@color/runners_text_muted"
+                android:textSize="12sp"
                 android:visibility="gone" />
 
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/gear_tracker_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:visibility="gone"
+                app:cardBackgroundColor="@color/runners_surface"
+                app:cardCornerRadius="16dp"
+                app:strokeWidth="0dp"
+                tools:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="monospace"
+                        android:text="@string/label_active_gear"
+                        android:textColor="@color/runners_text_secondary"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/gear_model_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="sans-serif-condensed"
+                        android:textColor="@color/runners_text_primary"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        tools:text="Nike Pegasus 40" />
+
+                    <com.google.android.material.progressindicator.LinearProgressIndicator
+                        android:id="@+id/gear_progress"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:progress="45"
+                        app:indicatorColor="@color/runners_volt"
+                        app:trackColor="#33FFFFFF" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/retire_gear_button"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:fontFamily="monospace"
+                        android:text="@string/action_retire_gear"
+                        android:textColor="@color/runners_accent_red"
+                        android:textSize="10sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
         </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
+    </ScrollView>
 
     <com.google.android.material.progressindicator.LinearProgressIndicator
         android:id="@+id/global_loading"
@@ -334,6 +417,8 @@
         android:layout_height="wrap_content"
         android:indeterminate="true"
         android:visibility="gone"
-        app:indicatorColor="@color/runners_volt" />
+        app:indicatorColor="@color/runners_volt"
+        app:layout_constraintTop_toBottomOf="@id/profile_status_bar"
+        app:trackColor="#33FFFFFF" />
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
