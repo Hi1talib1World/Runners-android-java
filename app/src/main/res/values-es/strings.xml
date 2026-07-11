@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Runners</string>
+    <string name="home">Inicio</string>
+    <string name="my_journey">Mi Jornada</string>
+    <string name="settings">Ajustes</string>
+    <string name="start_my_day">Empezar Mi Día</string>
+
+    <!-- Auth Strings -->
+    <string name="title_login">RUNNERS</string>
+    <string name="title_signup">CREAR CUENTA</string>
+    <string name="hint_email">Correo electrónico</string>
+    <string name="hint_password">Contraseña</string>
+    <string name="label_login">INICIAR SESIÓN</string>
+    <string name="label_signup">REGISTRARSE</string>
+    <string name="label_no_account">¿No tienes una cuenta? Regístrate</string>
+    <string name="label_have_account">¿Ya tienes una cuenta? Inicia sesión</string>
+
+    <!-- Settings Strings -->
+    <string name="dark_mode">Modo Oscuro</string>
+    <string name="unit_system_title">Sistema de Unidades (Métrico/Imperial)</string>
+    <string name="logout_button">Cerrar Sesión</string>
+    <string name="settings_saved">Ajustes sincronizados con éxito</string>
+</resources>
