@@ -5,10 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.denzo.runners.data.local.entities.GearEntity
 import com.denzo.runners.data.repository.RunRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -31,23 +28,18 @@ class GearViewModel @Inject constructor(
         loadGear()
     }
 
-    private fun loadGear() {
+    fun loadGear() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             repository.getAllGear().collect { list ->
-                _uiState.update { it.copy(isLoading = false, gearList = list) }
+                _uiState.update { it.copy(gearList = list, isLoading = false) }
             }
         }
     }
 
-    fun onAddGear(brand: String, model: String, maxKm: Double) {
+    fun onAddGear(brand: String, model: String, maxMeters: Double) {
         viewModelScope.launch {
-            val gear = GearEntity(
-                brand = brand,
-                model = model,
-                maxMileageMeters = maxKm * 1000.0,
-                isActive = _uiState.value.gearList.none { it.isActive }
-            )
+            val gear = GearEntity(brand = brand, model = model, maxMileageMeters = maxMeters)
             repository.addGear(gear)
         }
     }
