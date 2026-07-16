@@ -36,7 +36,6 @@ class ProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
         setupClickListeners()
         observeUiState()
     }
@@ -51,7 +50,7 @@ class ProfileFragment : Fragment() {
         }
         
         binding.editProfileButton.setOnClickListener {
-            viewModel.updateProfileName("Elite Pro Runner")
+            findNavController().navigate(R.id.navigation_settings)
         }
 
         binding.goProButton.setOnClickListener {
@@ -107,7 +106,6 @@ class ProfileFragment : Fragment() {
             getString(R.string.member_since_free, state.memberSince)
         }
         binding.memberSince.text = memberText
-        binding.proBadge.visibility = if (state.isPro) View.VISIBLE else View.GONE
         binding.goProButton.visibility = if (state.isPro) View.GONE else View.VISIBLE
         
         binding.textLifetimeDistance.text = state.lifetimeDistanceKm
@@ -115,10 +113,12 @@ class ProfileFragment : Fragment() {
 
         // Training Intelligence
         binding.tvTrainingLoad.text = state.trainingLoad.toString()
-        val loadStatus = when {
-            state.trainingLoad < 200 -> "RECOVERY"
-            state.trainingLoad < 600 -> "OPTIMAL"
-            else -> "OVERREACHING"
+        val loadStatus = if (state.trainingLoad < 200) {
+            "RECOVERY"
+        } else if (state.trainingLoad < 600) {
+            "OPTIMAL"
+        } else {
+            "OVERREACHING"
         }
         binding.tvLoadStatus.text = loadStatus
         binding.loadProgress.progress = (state.trainingLoad / 10).coerceIn(0, 100)
@@ -136,16 +136,17 @@ class ProfileFragment : Fragment() {
         binding.achievementsContainer.removeAllViews()
         state.achievements.forEach { achievement ->
             val badgeView = layoutInflater.inflate(R.layout.item_achievement_badge, binding.achievementsContainer, false)
-            badgeView.findViewById<android.widget.ImageView>(R.id.iv_badge_icon).apply {
-                setImageResource(achievement.iconResId)
-                if (achievement.isUnlocked) {
-                    setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.runners_volt))
-                    setColorFilter(ContextCompat.getColor(requireContext(), R.color.onPrimary))
-                } else {
-                    setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.runners_card_bg))
-                    setColorFilter(ContextCompat.getColor(requireContext(), R.color.runners_text_secondary))
-                }
+            val iconView = badgeView.findViewById<android.widget.ImageView>(R.id.iv_badge_icon)
+            iconView.setImageResource(achievement.iconResId)
+            
+            if (achievement.isUnlocked) {
+                iconView.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.runners_volt))
+                iconView.setColorFilter(ContextCompat.getColor(requireContext(), R.color.onPrimary))
+            } else {
+                iconView.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.runners_card_bg))
+                iconView.setColorFilter(ContextCompat.getColor(requireContext(), R.color.runners_text_secondary))
             }
+            
             badgeView.findViewById<android.widget.TextView>(R.id.tv_badge_title).text = achievement.title
             binding.achievementsContainer.addView(badgeView)
         }
@@ -167,7 +168,6 @@ class ProfileFragment : Fragment() {
         } else {
             binding.gearTrackerCard.visibility = View.GONE
             binding.gearEmptyState.visibility = View.VISIBLE
-            binding.gearEmptyState.setText(R.string.gear_empty_state)
         }
 
         state.errorEvent?.let { error ->
