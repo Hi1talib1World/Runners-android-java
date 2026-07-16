@@ -6,11 +6,15 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.ServiceInfo
 import android.location.Location
+import android.location.LocationManager
+import android.os.BatteryManager
 import android.os.Build
 import android.os.IBinder
 import android.os.Looper
+import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.denzo.runners.R
 import com.denzo.runners.core.utils.AudioCoach
@@ -34,6 +38,7 @@ class LocationService : Service() {
         private const val SYNC_INTERVAL_SECONDS = 15L
         private const val TRACKING_INTERVAL_MS = 1000L
         private const val MIN_TRACKING_INTERVAL_MS = 500L
+        private const val BATTERY_SAVER_THRESHOLD = 15
     }
 
     @Inject
@@ -80,6 +85,13 @@ class LocationService : Service() {
             val route = if (routeId != -1) repository.getRouteById(routeId) else null
             TrackingManager.startRun(route, settings.maxHeartRate)
         }
+        
+        // Critical: Guard for GPS availability
+        if (!isGpsEnabled()) {
+            Toast.makeText(this, "GPS is required for tracking", Toast.LENGTH_LONG).show()
+            stopSelf()
+        }
+        
         return super.onStartCommand(intent, flags, startId)
     }
 
@@ -101,6 +113,18 @@ class LocationService : Service() {
         startDurationTimer()
         startHrSimulation()
         observeCheers()
+    }
+
+    private fun isGpsEnabled(): Boolean {
+        val manager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return manager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+    }
+
+    private fun getBatteryLevel(): Int {
+        val intent = registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+        val level = intent?.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) ?: -1
+        val scale = intent?.getIntExtra(BatteryManager.EXTRA_SCALE, -1) ?: -1
+        return if (level != -1 && scale != -1) (level * 100 / scale.toFloat()).toInt() else -1
     }
 
     private fun startHrSimulation() {
@@ -161,7 +185,16 @@ class LocationService : Service() {
     }
 
     private fun startLocationUpdates() {
-        val request = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, TRACKING_INTERVAL_MS)
+        val battery = getBatteryLevel()
+        
+        // If-Else Robustness: Adjust tracking frequency based on battery level
+        val interval = if (battery != -1 && battery < BATTERY_SAVER_THRESHOLD) {
+            TRACKING_INTERVAL_MS * 5 // Slow down tracking to save battery
+        } else {
+            TRACKING_INTERVAL_MS
+        }
+
+        val request = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, interval)
             .setMinUpdateIntervalMillis(MIN_TRACKING_INTERVAL_MS)
             .build()
         
