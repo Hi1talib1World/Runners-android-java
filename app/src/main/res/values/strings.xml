@@ -111,6 +111,7 @@
 
     <string name="label_athlete_profile">ATHLETE PROFILE</string>
     <string name="label_lifetime_km">LIFETIME KM</string>
+    <string name="label_total_km">TOTAL KM</string>
     <string name="label_total_runs">TOTAL RUNS</string>
     <string name="label_achievements">ACHIEVEMENTS</string>
     <string name="label_training_intelligence">TRAINING INTELLIGENCE</string>
