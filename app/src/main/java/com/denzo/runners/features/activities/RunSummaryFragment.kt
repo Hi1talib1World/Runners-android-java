@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -18,10 +19,10 @@ import com.denzo.runners.core.utils.UnitConverter
 import com.denzo.runners.data.local.entities.RunEntity
 import com.denzo.runners.databinding.FragmentRunSummaryBinding
 import com.github.mikephil.charting.data.*
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
-import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Polyline
 import java.util.Locale
 
@@ -49,11 +50,25 @@ class RunSummaryFragment : Fragment() {
 
     private fun setupInteractions() {
         binding.btnBack.setOnClickListener { findNavController().popBackStack() }
-        binding.btnShare.setOnClickListener { shareRun() }
+        
+        binding.btnShare.setOnClickListener {
+            if (currentRun != null) {
+                shareRun()
+            } else {
+                Toast.makeText(requireContext(), "Activity data loading...", Toast.LENGTH_SHORT).show()
+            }
+        }
         
         binding.btnDelete.setOnClickListener {
-            currentRun?.let { viewModel.deleteRun(it) }
-            findNavController().popBackStack()
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Delete Activity")
+                .setMessage("This action cannot be undone. Permanent deletion from cloud and local storage.")
+                .setPositiveButton("DELETE PERMANENTLY") { _, _ ->
+                    currentRun?.let { viewModel.deleteRun(it) }
+                    findNavController().popBackStack()
+                }
+                .setNegativeButton("KEEP", null)
+                .show()
         }
 
         binding.chipGroupMetrics.setOnCheckedStateChangeListener { _, checkedIds ->
@@ -76,7 +91,12 @@ class RunSummaryFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
-                    state.run?.let { displayRun(it, state.isMetric) }
+                    if (state.run != null) {
+                        displayRun(state.run, state.isMetric)
+                    } else if (!state.isLoading) {
+                        Toast.makeText(requireContext(), "Error: Activity not found", Toast.LENGTH_LONG).show()
+                        findNavController().popBackStack()
+                    }
                 }
             }
         }
@@ -91,12 +111,11 @@ class RunSummaryFragment : Fragment() {
         binding.textPaceValue.text = UnitConverter.formatPace(run.avgPace, isMetric).split(" ")[0]
         binding.textCaloriesValue.text = String.format(Locale.getDefault(), "%.0f kcal", run.caloriesBurned)
 
-        // Environmental Context
-        run.temperature?.let { 
+        if (run.temperature != null) { 
             binding.weatherBadge.visibility = View.VISIBLE
-            binding.tvWeatherTemp.text = String.format(Locale.getDefault(), "%.0f°C", it)
+            binding.tvWeatherTemp.text = String.format(Locale.getDefault(), "%.0f°C", run.temperature)
             binding.tvEnvironmentLabel.text = run.environment ?: "ROAD"
-        } ?: run {
+        } else {
             binding.weatherBadge.visibility = View.GONE
         }
 
@@ -115,25 +134,17 @@ class RunSummaryFragment : Fragment() {
 
     private fun setupZoneChart(run: RunEntity) {
         val entries = mutableListOf<BarEntry>()
-        val labels = listOf("Z1", "Z2", "Z3", "Z4", "Z5")
         
         if (run.zoneBreakdown.isNotEmpty()) {
             run.zoneBreakdown.forEachIndexed { index, seconds ->
                 entries.add(BarEntry(index.toFloat(), (seconds / 60).toFloat()))
             }
         } else {
-            // Mock data for visual consistency if zones missing
-            entries.add(BarEntry(0f, 5f))
-            entries.add(BarEntry(1f, 15f))
-            entries.add(BarEntry(2f, 25f))
-            entries.add(BarEntry(3f, 10f))
-            entries.add(BarEntry(4f, 2f))
+            for (i in 0..4) entries.add(BarEntry(i.toFloat(), 0f))
         }
 
         val dataSet = BarDataSet(entries, "Minutes in Zone")
-        dataSet.colors = listOf(
-            Color.GRAY, Color.BLUE, Color.GREEN, Color.YELLOW, Color.RED
-        )
+        dataSet.colors = listOf(Color.GRAY, Color.BLUE, Color.GREEN, Color.YELLOW, Color.RED)
         dataSet.valueTextColor = Color.WHITE
         
         binding.zoneChart.data = BarData(dataSet)
@@ -150,7 +161,7 @@ class RunSummaryFragment : Fragment() {
         val points = when(metric) {
             "HR" -> if (run.heartRatePoints.isNotEmpty()) run.heartRatePoints else simulatePoints(140, 180)
             "CADENCE" -> if (run.cadencePoints.isNotEmpty()) run.cadencePoints else simulatePoints(160, 190)
-            else -> simulatePoints(4, 7) // Pace simulation
+            else -> simulatePoints(4, 7)
         }
 
         points.forEachIndexed { index, value ->
@@ -163,7 +174,13 @@ class RunSummaryFragment : Fragment() {
         dataSet.setDrawValues(false)
         dataSet.lineWidth = 2f
         dataSet.setDrawFilled(true)
-        dataSet.fillDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.fade_volt)
+        
+        val fillDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.fade_volt)
+        if (fillDrawable != null) {
+            dataSet.fillDrawable = fillDrawable
+        } else {
+            dataSet.fillColor = Color.GREEN
+        }
 
         binding.summaryChart.data = LineData(dataSet)
         binding.summaryChart.description.isEnabled = false
@@ -179,7 +196,14 @@ class RunSummaryFragment : Fragment() {
 
     private fun shareRun() {
         val run = currentRun ?: return
-        val shareText = "Just finished a ${UnitConverter.formatDistance(run.distanceMeters, isMetricPref)} run at ${UnitConverter.formatPace(run.avgPace, isMetricPref)} pace! #RunnersApp"
+        val dist = UnitConverter.formatDistance(run.distanceMeters, isMetricPref)
+        val pace = UnitConverter.formatPace(run.avgPace, isMetricPref)
+        
+        val shareText = if (run.distanceMeters > 10000) {
+            "Big session! Just crushed $dist at $pace pace with Runners. #Performance"
+        } else {
+            "Just finished a $dist run at $pace pace! #RunnersApp"
+        }
         
         val intent = Intent(Intent.ACTION_SEND).apply {
             type = "text/plain"
