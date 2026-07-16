@@ -4,7 +4,10 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -19,7 +22,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.denzo.runners.R
-import com.denzo.runners.core.utils.DateTimeUtils
 import com.denzo.runners.databinding.FragmentHomeBinding
 import com.denzo.runners.services.LocationService
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -45,14 +47,24 @@ class HomeFragment : Fragment() {
     private var ghostMarker: Marker? = null
     private val liveMarkers = mutableMapOf<String, Marker>()
     private var holdJob: Job? = null
+    private var lastPlottedPoint: GeoPoint? = null
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
-        if (permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true) {
-            startTracking()
+        val fineLocation = permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false
+        val coarseLocation = permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false
+        
+        if (fineLocation) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                checkBackgroundLocation()
+            } else {
+                startTracking()
+            }
+        } else if (coarseLocation) {
+            Toast.makeText(requireContext(), "Precision tracking requires Fine Location", Toast.LENGTH_LONG).show()
         } else {
-            Toast.makeText(requireContext(), "Location permission required", Toast.LENGTH_SHORT).show()
+            showPermissionDeniedDialog()
         }
     }
 
@@ -111,15 +123,9 @@ class HomeFragment : Fragment() {
             showHelpDialog()
         }
 
-        binding.cardTodayWorkout.setOnClickListener {
-            viewModel.onTodayWorkoutClicked()
-        }
-
         binding.chipGroupGoals.setOnCheckedStateChangeListener { _, checkedIds ->
             val goal = when (checkedIds.firstOrNull()) {
                 R.id.chip_5k -> RunGoal.DISTANCE_5K
-                R.id.chip_10k -> RunGoal.DISTANCE_10K
-                R.id.chip_30m -> RunGoal.TIME_30M
                 R.id.chip_route -> {
                     showRouteSelector()
                     RunGoal.ROUTE
@@ -137,7 +143,7 @@ class HomeFragment : Fragment() {
             }
             viewModel.onEnvironmentSelected(env)
         }
-
+        
         setupHoldToFinish()
     }
 
@@ -146,13 +152,44 @@ class HomeFragment : Fragment() {
             .setTitle("Runner Assistant")
             .setMessage("""
                 - Real-time Tracking: Precision GPS for your activities.
+                - Auto-Pause: Automatically stops when you wait at lights.
                 - Ghost Mode: Race against your previous best on saved routes.
                 - Live Sessions: Join the community map and send cheers to friends.
-                - Training Plans: Follow guided workouts with audio coaching.
                 - Hold to Finish: Prevent accidental stops by holding the button for 2 seconds.
             """.trimIndent())
             .setPositiveButton("GOT IT", null)
             .show()
+    }
+
+    private fun showPermissionDeniedDialog() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Permissions Required")
+            .setMessage("Location access is essential for tracking your runs. Please enable it in app settings.")
+            .setPositiveButton("SETTINGS") { _, _ ->
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = Uri.fromParts("package", requireContext().packageName, null)
+                }
+                startActivity(intent)
+            }
+            .setNegativeButton("CANCEL", null)
+            .show()
+    }
+
+    private fun checkBackgroundLocation() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("Background Tracking")
+                    .setMessage("To track your run while the screen is off, please select 'Allow all the time' in the next screen.")
+                    .setPositiveButton("GRANT") { _, _ ->
+                        requestPermissionLauncher.launch(arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION))
+                    }
+                    .setNegativeButton("SKIP (Not Recommended)") { _, _ -> startTracking() }
+                    .show()
+            } else {
+                startTracking()
+            }
+        }
     }
 
     private fun showRouteSelector() {
@@ -224,8 +261,8 @@ class HomeFragment : Fragment() {
     }
 
     private fun checkPermissionsAndToggle() {
-        val permissions = mutableListOf(Manifest.permission.ACCESS_FINE_LOCATION)
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+        val permissions = mutableListOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             permissions.add(Manifest.permission.POST_NOTIFICATIONS)
         }
 
@@ -288,17 +325,6 @@ class HomeFragment : Fragment() {
         b.dataLength.text = state.currentActivity.distance
         b.dataPace.text = state.currentActivity.pace
         b.dataBpm.text = getString(R.string.hr_display, state.currentActivity.heartRate)
-        b.dataCadence.text = getString(R.string.cadence_display, state.currentActivity.cadence)
-
-        if (state.isTracking && state.currentHr > 0) {
-            b.hrZoneCard.visibility = View.VISIBLE
-            b.textLiveHr.text = getString(R.string.hr_display, state.currentHr.toString())
-            b.textHrZone.text = getString(R.string.hr_zone_display, state.currentHrZone)
-            b.textHrZone.setTextColor(getZoneColor(state.currentHrZone))
-            b.textHrZoneLabel.text = getZoneLabel(state.currentHrZone)
-        } else {
-            b.hrZoneCard.visibility = View.GONE
-        }
     }
 
     private fun updateLiveStatus(b: FragmentHomeBinding, state: HomeUiState) {
@@ -312,33 +338,10 @@ class HomeFragment : Fragment() {
 
     private fun updateTrackingOverlays(b: FragmentHomeBinding, state: HomeUiState) {
         if (state.isTracking) {
-            b.buttonLeft.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.runners_accent_red))
+            b.buttonLeft.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.runners_red))
             b.pauseIcon.setImageResource(android.R.drawable.ic_media_pause)
             b.goalSelector.visibility = View.GONE
             b.environmentSelector.visibility = View.GONE
-            
-            if (state.selectedGoal != RunGoal.FREE && state.selectedGoal != RunGoal.WORKOUT) {
-                b.goalProgressTop.visibility = View.VISIBLE
-                b.goalProgressTop.progress = state.goalProgress
-            }
-
-            if (state.selectedGoal == RunGoal.ROUTE && state.ghostPosition != null) {
-                b.cardPacerDelta.visibility = View.VISIBLE
-                b.textPacerDelta.text = getString(R.string.ghost_active) 
-                
-                ghostMarker?.position = state.ghostPosition
-                if (!b.map.overlays.contains(ghostMarker)) {
-                    b.map.overlays.add(ghostMarker)
-                }
-            }
-
-            if (state.activeWorkoutStep != null) {
-                b.cardActiveWorkoutStep.visibility = View.VISIBLE
-                b.tvStepInstruction.text = state.activeWorkoutStep.instruction.uppercase()
-                b.tvStepTimer.text = getString(R.string.step_remaining, DateTimeUtils.formatDuration(state.stepRemainingSeconds))
-            } else {
-                b.cardActiveWorkoutStep.visibility = View.GONE
-            }
             
             updateLiveAthletes(state.liveAthletes)
         } else {
@@ -346,17 +349,18 @@ class HomeFragment : Fragment() {
             b.pauseIcon.setImageResource(android.R.drawable.ic_media_play)
             b.goalSelector.visibility = View.VISIBLE
             b.environmentSelector.visibility = View.VISIBLE
-            b.goalProgressTop.visibility = View.GONE
-            b.cardPacerDelta.visibility = View.GONE
-            b.cardActiveWorkoutStep.visibility = View.GONE
             b.map.overlays.remove(ghostMarker)
             clearLiveAthletes()
         }
 
         if (state.pathPoints.isNotEmpty()) {
-            trackPolyline?.setPoints(state.pathPoints)
-            b.map.controller.animateTo(state.pathPoints.last())
-            b.map.invalidate()
+            val lastPoint = state.pathPoints.last()
+            if (lastPlottedPoint != lastPoint) {
+                trackPolyline?.setPoints(state.pathPoints)
+                b.map.controller.animateTo(lastPoint)
+                b.map.invalidate()
+                lastPlottedPoint = lastPoint
+            }
         }
     }
 
@@ -396,35 +400,12 @@ class HomeFragment : Fragment() {
             .show()
     }
 
-    private fun getZoneColor(zone: Int): Int {
-        val colorRes = when (zone) {
-            1 -> android.R.color.darker_gray
-            2 -> android.R.color.holo_blue_light
-            3 -> android.R.color.holo_green_light
-            4 -> android.R.color.holo_orange_light
-            5 -> android.R.color.holo_red_light
-            else -> android.R.color.white
-        }
-        return ContextCompat.getColor(requireContext(), colorRes)
-    }
-
-    private fun getZoneLabel(zone: Int): String {
-        return when (zone) {
-            1 -> "RECOVERY"
-            2 -> "AEROBIC"
-            3 -> "STAMINA"
-            4 -> "THRESHOLD"
-            5 -> "MAXIMUM"
-            else -> "--"
-        }
-    }
-
     private fun handleEvent(event: UiEvent) {
         val view = view ?: return
         when (event) {
             is UiEvent.RunSaved -> Snackbar.make(view, "Run Saved Successfully!", Snackbar.LENGTH_SHORT).show()
             is UiEvent.ShowError -> Snackbar.make(view, event.message, Snackbar.LENGTH_LONG)
-                .setBackgroundTint(ContextCompat.getColor(requireContext(), R.color.runners_accent_red))
+                .setBackgroundTint(ContextCompat.getColor(requireContext(), R.color.runners_red))
                 .setTextColor(ContextCompat.getColor(requireContext(), android.R.color.white))
                 .show()
             is UiEvent.ReceivedCheer -> {
@@ -442,11 +423,13 @@ class HomeFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         binding.map.onResume()
+        viewModel.onVisibilityChanged(true)
     }
 
     override fun onPause() {
         super.onPause()
         binding.map.onPause()
+        viewModel.onVisibilityChanged(false)
     }
 
     override fun onDestroyView() {
