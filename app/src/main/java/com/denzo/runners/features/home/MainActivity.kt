@@ -6,8 +6,10 @@ import android.os.Bundle
 import android.preference.PreferenceManager
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -20,6 +22,7 @@ import com.denzo.runners.features.auth.LoginActivity
 import com.denzo.runners.features.auth.SignUpActivity
 import com.denzo.runners.features.settings.SettingsRepository
 import com.denzo.runners.features.subscription.BillingManager
+import com.google.android.material.navigationrail.NavigationRailView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -67,11 +70,15 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setSupportActionBar(binding.toolbar)
+        // Find toolbar safely
+        val toolbarView = findViewById<Toolbar>(R.id.toolbar)
+        toolbarView?.let {
+            setSupportActionBar(it)
+        }
 
         billingManager.startConnection()
 
-        setupNavigation()
+        setupNavigation(toolbarView)
     }
 
     private fun applyTheme(isDarkMode: Boolean) {
@@ -85,7 +92,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupNavigation() {
+    private fun setupNavigation(toolbar: Toolbar?) {
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
@@ -100,8 +107,16 @@ class MainActivity : AppCompatActivity() {
             )
         )
 
-        setupActionBarWithNavController(navController, appBarConfiguration)
+        toolbar?.let {
+            setupActionBarWithNavController(navController, appBarConfiguration)
+        }
+
+        // Adaptive Navigation: Handle both BottomNav (phone) and NavRail (tablet)
         NavigationUI.setupWithNavController(binding.bottomNavigation, navController)
+        
+        findViewById<NavigationRailView>(R.id.navigation_rail)?.let { rail ->
+            NavigationUI.setupWithNavController(rail, navController)
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
