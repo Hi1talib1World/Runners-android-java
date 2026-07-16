@@ -87,7 +87,11 @@ class HomeViewModel @Inject constructor(
     companion object {
         private const val MOCK_JOIN_DELAY = 1500L
         private const val ATHLETE_UPDATE_DELAY = 3000L
-        private const val CALORIE_FACTOR = 0.06
+        
+        private const val MET_ROAD = 0.062
+        private const val MET_TRAIL = 0.085
+        private const val MET_TREADMILL = 0.055
+
         private const val DISTANCE_5K_METERS = 5000.0
         private const val DISTANCE_10K_METERS = 10000.0
         private const val TIME_30M_SECONDS = 1800L
@@ -151,7 +155,11 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             TrackingManager.liveRunState.collect { liveState ->
                 _uiState.update { state ->
-                    val progress = calculateGoalProgress(liveState, state.selectedGoal)
+                    val progress = if (state.selectedGoal != RunGoal.FREE) {
+                        calculateGoalProgress(liveState, state.selectedGoal)
+                    } else {
+                        0
+                    }
                     
                     if (state.selectedGoal == RunGoal.WORKOUT) {
                         checkWorkoutProgression(liveState.durationSeconds)
@@ -253,6 +261,16 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun onVisibilityChanged(isVisible: Boolean) {
+        if (isVisible) {
+            if (_uiState.value.isLiveGroupJoined) {
+                startLiveAthleteSimulation()
+            }
+        } else {
+            liveAthleteJob?.cancel()
+        }
+    }
+
     fun joinSession() {
         if (_uiState.value.isLiveGroupJoined) return
         
@@ -292,18 +310,6 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun toggleTracking() {
-        if (_uiState.value.isTracking) {
-            // Handled by Hold to Finish
-        } else {
-            startTracking()
-        }
-    }
-
-    private fun startTracking() {
-        // Handled by Fragment
-    }
-
     fun discardRun() {
         _uiState.update { it.copy(isTracking = false, isLiveGroupJoined = false, activeWorkoutStep = null) }
         liveAthleteJob?.cancel()
@@ -317,16 +323,21 @@ class HomeViewModel @Inject constructor(
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                // Simulation: Fetching weather
                 val temp = (12..28).random().toDouble()
                 val hum = (40..70).random().toDouble()
+
+                val metabolicFactor = when(currentState.selectedEnvironment) {
+                    "TRAIL" -> MET_TRAIL
+                    "TREADMILL" -> MET_TREADMILL
+                    else -> MET_ROAD
+                }
 
                 val runRecord = RunEntity(
                     timestamp = System.currentTimeMillis(),
                     avgPace = currentState.currentPace,
                     distanceMeters = currentState.distanceMeters,
                     durationSeconds = currentState.durationSeconds,
-                    caloriesBurned = currentState.distanceMeters * CALORIE_FACTOR,
+                    caloriesBurned = currentState.distanceMeters * metabolicFactor,
                     pathPoints = currentState.pathPoints,
                     zoneBreakdown = currentState.zoneBreakdown,
                     temperature = temp,
@@ -334,9 +345,11 @@ class HomeViewModel @Inject constructor(
                     environment = currentState.selectedEnvironment,
                     isSynced = false
                 )
-                repository.saveRun(runRecord)
                 
-                healthConnectManager.writeRunToHealthConnect(runRecord)
+                if (runRecord.distanceMeters > 0) {
+                    repository.saveRun(runRecord)
+                    healthConnectManager.writeRunToHealthConnect(runRecord)
+                }
 
                 if (currentState.selectedGoal == RunGoal.WORKOUT) {
                     currentState.todayWorkout?.let { workoutRepository.completeWorkout(it) }
