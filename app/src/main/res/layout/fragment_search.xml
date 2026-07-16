@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/runners_dark_bg">
+    android:background="?attr/colorSurface">
 
     <!-- Header -->
     <LinearLayout
         android:id="@+id/search_header"
         android:layout_width="match_parent"
         android:layout_height="64dp"
-        android:background="@color/runners_surface"
+        android:background="?attr/colorSurface"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingHorizontal="20dp"
@@ -19,19 +19,20 @@
 
         <ImageView
             android:id="@+id/btn_back"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:contentDescription="@string/onboarding_back"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="12dp"
+            android:contentDescription="Navigate Back"
             android:src="@android:drawable/ic_menu_revert"
-            app:tint="@color/runners_volt" />
+            app:tint="?attr/colorPrimary" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="4dp"
             android:fontFamily="sans-serif-condensed"
             android:text="DISCOVERY"
-            android:textColor="@color/runners_volt"
+            android:textColor="?attr/colorPrimary"
             android:textSize="20sp"
             android:textStyle="bold|italic" />
     </LinearLayout>
@@ -44,11 +45,11 @@
         android:layout_marginHorizontal="20dp"
         android:layout_marginTop="24dp"
         android:hint="@string/desc_search"
-        app:boxStrokeColor="@color/runners_volt"
-        app:hintTextColor="@color/runners_volt"
+        app:boxStrokeColor="?attr/colorPrimary"
+        app:hintTextColor="?attr/colorPrimary"
         app:layout_constraintTop_toBottomOf="@id/search_header"
         app:startIconDrawable="@android:drawable/ic_menu_search"
-        app:startIconTint="@color/runners_volt">
+        app:startIconTint="?attr/colorPrimary">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_search"
@@ -56,7 +57,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif"
             android:inputType="text"
-            android:textColor="@color/runners_text_primary" />
+            android:textColor="?attr/colorOnSurface" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.progressindicator.LinearProgressIndicator
@@ -65,9 +66,9 @@
         android:layout_height="wrap_content"
         android:indeterminate="true"
         android:visibility="gone"
-        app:indicatorColor="@color/runners_volt"
+        app:indicatorColor="?attr/colorPrimary"
         app:layout_constraintTop_toBottomOf="@id/search_layout"
-        app:trackColor="#33FFFFFF" />
+        app:trackColor="#00000000" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_search_results"
@@ -87,7 +88,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="monospace"
         android:text="NO RESULTS FOUND"
-        android:textColor="@color/runners_text_muted"
+        android:textColor="?attr/colorOnSurfaceVariant"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
