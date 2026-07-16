@@ -37,7 +37,9 @@ data class ProfileUiState(
     val totalRuns: Int = 0,
     val achievements: List<Achievement> = emptyList(),
     val predictions: List<RacePrediction> = emptyList(),
-    val trainingLoad: Int = 0 // Monthly effort score
+    val trainingLoad: Int = 0, // Monthly effort score
+    val loadStatus: String = "OPTIMAL",
+    val gearWearStatus: String? = null
 )
 
 data class RunRecord(val label: String, val value: String)
@@ -82,6 +84,14 @@ class ProfileViewModel @Inject constructor(
                 val achievements = achievementManager.calculateAchievements(runs)
                 val activeGear = gearList.find { it.isActive }
                 
+                // If/Else Logic: Gear Wear Detection
+                val gearStatus = if (activeGear != null && activeGear.maxMileageMeters > 0) {
+                    val wearPercent = (activeGear.currentMileageMeters / activeGear.maxMileageMeters) * 100
+                    if (wearPercent > 90) "REPLACE SOON"
+                    else if (wearPercent > 75) "MODERATE WEAR"
+                    else "GOOD CONDITION"
+                } else null
+
                 val records = mutableListOf<RunRecord>()
                 runs.maxByOrNull { it.distanceMeters }?.let {
                     records.add(RunRecord("LONGEST RUN", UnitConverter.formatDistance(it.distanceMeters, settings.isMetric)))
@@ -94,6 +104,12 @@ class ProfileViewModel @Inject constructor(
 
                 val predictions = calculatePredictions(runs)
                 val trainingLoad = calculateTrainingLoad(runs)
+                
+                // If/Else Logic: Load Status Classification
+                val loadStatusText = if (trainingLoad > 500) "OVERREACHING"
+                else if (trainingLoad > 300) "OPTIMAL"
+                else if (trainingLoad > 100) "MAINTAINING"
+                else "RECOVERY"
 
                 _uiState.update { it.copy(
                     name = name ?: "Runner",
@@ -105,14 +121,15 @@ class ProfileViewModel @Inject constructor(
                     totalRuns = runCount,
                     achievements = achievements,
                     predictions = predictions,
-                    trainingLoad = trainingLoad
+                    trainingLoad = trainingLoad,
+                    loadStatus = loadStatusText,
+                    gearWearStatus = gearStatus
                 ) }
             }.collect()
         }
     }
 
     private fun calculatePredictions(runs: List<RunEntity>): List<RacePrediction> {
-        // Find best run (distance >= 1km) to base predictions on
         val bestRun = runs.filter { it.distanceMeters >= 1000 }.minByOrNull { it.avgPace } ?: return emptyList()
         
         val t1 = bestRun.durationSeconds.toDouble()
@@ -131,7 +148,6 @@ class ProfileViewModel @Inject constructor(
     }
 
     private fun calculateTrainingLoad(runs: List<RunEntity>): Int {
-        // Calculate TRIMP-like score for last 30 days
         val thirtyDaysAgo = System.currentTimeMillis() - (30L * 24 * 60 * 60 * 1000)
         val recentRuns = runs.filter { it.timestamp > thirtyDaysAgo }
         
@@ -142,8 +158,7 @@ class ProfileViewModel @Inject constructor(
                     totalLoad += (seconds / 60.0) * (index + 1)
                 }
             } else {
-                // Fallback to duration if no zones
-                totalLoad += (run.durationSeconds / 60.0) * 2.0 // Assume moderate Z2
+                totalLoad += (run.durationSeconds / 60.0) * 2.0
             }
         }
         return totalLoad.toInt()
@@ -156,30 +171,42 @@ class ProfileViewModel @Inject constructor(
         return if (h > 0) String.format("%d:%02d:%02d", h, m, s) else String.format("%d:%02d", m, s)
     }
 
-    /**
-     * Pillar 2: Atomic State Mutations
-     */
     fun retireGear() {
-        val currentGear = _uiState.value.gear ?: return
+        val currentState = _uiState.value
+        if (currentState.gear == null) {
+            _uiState.update { it.copy(errorEvent = "No active gear to retire") }
+            return
+        }
+
         executeAtomicAction(successMsg = "Gear retired successfully") {
-            repository.updateGear(currentGear.copy(isActive = false, isRetired = true))
+            repository.updateGear(currentState.gear.copy(isActive = false, isRetired = true))
         }
     }
 
     fun updateProfileName(newName: String) {
-        if (newName.isBlank()) return
+        if (newName.isBlank()) {
+            _uiState.update { it.copy(errorEvent = "Name cannot be empty") }
+            return
+        }
+        
+        if (newName.length < 2) {
+            _uiState.update { it.copy(errorEvent = "Name too short") }
+            return
+        }
+
         executeAtomicAction(successMsg = "Profile updated") {
             authRepository.updateDisplayName(newName).getOrThrow()
         }
     }
 
     fun goPro(activity: android.app.Activity) {
+        if (_uiState.value.isPro) {
+            _uiState.update { it.copy(successMessage = "You are already a Pro member!") }
+            return
+        }
         billingManager.purchasePro(activity)
     }
 
-    /**
-     * Pillar 3 & 4: Micro-Feedback & Safeguards
-     */
     private fun executeAtomicAction(
         successMsg: String? = null,
         action: suspend () -> Unit
