@@ -5,7 +5,7 @@
     android:id="@+id/onboarding_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/runners_dark_bg"
+    android:background="?attr/colorSurface"
     android:padding="32dp">
 
     <com.google.android.material.button.MaterialButton
@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="monospace"
         android:text="@string/onboarding_skip"
-        android:textColor="@color/runners_text_muted"
+        android:textColor="?attr/colorOnSurfaceVariant"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -26,8 +26,9 @@
         android:layout_marginTop="64dp"
         android:scaleType="centerInside"
         android:src="@android:drawable/ic_menu_mylocation"
+        android:contentDescription="Feature Illustration"
         app:layout_constraintTop_toBottomOf="@id/btn_skip"
-        app:tint="@color/runners_text_muted" />
+        app:tint="?attr/colorPrimary" />
 
     <TextView
         android:id="@+id/tv_onboarding_title"
@@ -36,7 +37,7 @@
         android:layout_marginTop="32dp"
         android:fontFamily="sans-serif-condensed"
         android:gravity="center"
-        android:textColor="@color/runners_volt"
+        android:textColor="?attr/colorPrimary"
         android:textSize="28sp"
         android:textStyle="bold"
         app:layout_constraintTop_toBottomOf="@id/iv_onboarding_illustration"
@@ -48,7 +49,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:gravity="center"
-        android:textColor="@color/runners_text_primary"
+        android:textColor="?attr/colorOnSurface"
         android:textSize="16sp"
         app:layout_constraintTop_toBottomOf="@id/tv_onboarding_title"
         tools:text="High-frequency telemetry ensures your pace and distance are tracked with professional accuracy." />
@@ -70,9 +71,9 @@
         android:layout_height="64dp"
         android:fontFamily="monospace"
         android:text="@string/onboarding_next"
-        android:textColor="@color/onPrimary"
+        android:textColor="?attr/colorOnPrimary"
         android:textStyle="bold"
-        app:backgroundTint="@color/runners_volt"
+        app:backgroundTint="?attr/colorPrimary"
         app:cornerRadius="12dp"
         app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -83,7 +84,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="monospace"
         android:text="@string/onboarding_back"
-        android:textColor="@color/runners_text_muted"
+        android:textColor="?attr/colorOnSurfaceVariant"
         app:layout_constraintBottom_toBottomOf="@id/btn_next"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/btn_next" />
