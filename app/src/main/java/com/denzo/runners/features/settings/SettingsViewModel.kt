@@ -2,18 +2,15 @@ package com.denzo.runners.features.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.denzo.runners.BuildConfig
 import com.denzo.runners.data.repository.AuthRepository
 import com.denzo.runners.data.repository.RunRepository
+import com.denzo.runners.services.TrackingManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-/**
- * Pillar 1: Single Source of Truth for UI State
- */
 data class SettingsUiState(
     val isDarkMode: Boolean = true,
     val isMetric: Boolean = true,
@@ -21,7 +18,7 @@ data class SettingsUiState(
     val isSocialNotificationsEnabled: Boolean = true,
     val maxHeartRate: Int = 190,
     val syncFrequencyMinutes: Int = 15,
-    val username: String = "Runner",
+    val username: String = "",
     val isProcessing: Boolean = false,
     val errorEvent: String? = null,
     val successMessage: String? = null,
@@ -36,21 +33,20 @@ class SettingsViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _transientState = MutableStateFlow(SettingsUiState())
-    
-    // Combine persistent repository state with transient UI state and Auth name
+
     val uiState: StateFlow<SettingsUiState> = combine(
         repository.settingsFlow,
-        _transientState,
-        authRepository.displayName
-    ) { persisted, transient, name ->
+        authRepository.displayName,
+        _transientState
+    ) { settings, authName, transient ->
         transient.copy(
-            isDarkMode = persisted.isDarkMode,
-            isMetric = persisted.isMetric,
-            isTelemetryEnabled = persisted.isTelemetryEnabled,
-            isSocialNotificationsEnabled = persisted.isSocialNotificationsEnabled,
-            maxHeartRate = persisted.maxHeartRate,
-            syncFrequencyMinutes = persisted.syncFrequencyMinutes,
-            username = name ?: "Runner"
+            isDarkMode = settings.isDarkMode,
+            isMetric = settings.isMetric,
+            isTelemetryEnabled = settings.isTelemetryEnabled,
+            isSocialNotificationsEnabled = settings.isSocialNotificationsEnabled,
+            maxHeartRate = settings.maxHeartRate,
+            syncFrequencyMinutes = settings.syncFrequencyMinutes,
+            username = authName ?: "Unknown Runner"
         )
     }.stateIn(
         scope = viewModelScope,
@@ -58,88 +54,99 @@ class SettingsViewModel @Inject constructor(
         initialValue = SettingsUiState()
     )
 
-    /**
-     * Pillar 2: Atomic State Mutations
-     */
-    fun toggleTheme(enabled: Boolean) {
-        executeAtomicAction("Syncing Theme...") {
-            repository.updateTheme(enabled)
+    fun toggleTheme(isDark: Boolean) {
+        executeAtomicAction("Theme updated") {
+            repository.updateTheme(isDark)
             simulateCloudSync()
         }
     }
 
     fun toggleTelemetry(enabled: Boolean) {
-        executeAtomicAction("Updating Telemetry...") {
+        executeAtomicAction("Telemetry status changed") {
             repository.updateTelemetry(enabled)
-            simulateCloudSync()
         }
     }
 
     fun toggleUnitSystem(isMetric: Boolean) {
-        executeAtomicAction("Updating Unit System...") {
+        executeAtomicAction("Units updated") {
             repository.updateUnitSystem(isMetric)
-            simulateCloudSync()
         }
     }
 
     fun toggleSocialNotifications(enabled: Boolean) {
-        executeAtomicAction("Updating Social Alerts...") {
+        executeAtomicAction("Social alerts updated") {
             repository.updateSocialNotifications(enabled)
-            simulateCloudSync()
         }
     }
 
     fun updateSyncFrequency(minutes: Int) {
-        executeAtomicAction("Adjusting Sync Frequency...") {
+        executeAtomicAction("Sync window updated") {
             repository.updateSyncFrequency(minutes)
-            simulateCloudSync()
         }
     }
 
-    fun updateUsername(newUsername: String) {
-        if (newUsername.isBlank()) return
-        executeAtomicAction("Updating Profile...") {
-            authRepository.updateDisplayName(newUsername).getOrThrow()
-            simulateCloudSync()
+    fun updateUsername(newName: String) {
+        if (newName.isBlank()) {
+            _transientState.update { it.copy(errorEvent = "Username cannot be empty") }
+            return
+        }
+        if (newName.length < 3) {
+            _transientState.update { it.copy(errorEvent = "Username too short (min 3 chars)") }
+            return
+        }
+        if (!newName.all { it.isLetterOrDigit() || it == '_' }) {
+            _transientState.update { it.copy(errorEvent = "Only letters, digits, and underscores allowed") }
+            return
+        }
+
+        executeAtomicAction("Profile synced to cloud") {
+            authRepository.updateDisplayName(newName)
         }
     }
 
-    fun updateMaxHr(maxHr: Int) {
-        if (maxHr < 100) return
-        executeAtomicAction("Updating Bio Data...") {
-            repository.updateMaxHr(maxHr)
-            simulateCloudSync()
+    fun updateMaxHr(hr: Int) {
+        if (hr < 100) {
+            _transientState.update { it.copy(errorEvent = "Max HR must be at least 100 BPM") }
+            return
+        } else if (hr > 230) {
+            _transientState.update { it.copy(errorEvent = "Max HR exceeded physiological safety (max 230)") }
+            return
+        }
+
+        executeAtomicAction("Telemetry refined") {
+            repository.updateMaxHr(hr)
         }
     }
 
     fun clearLocalData() {
-        executeAtomicAction("Cleaning Local Storage...") {
+        executeAtomicAction("Local database purged") {
             runRepository.clearAllHistory()
-            delay(500)
         }
     }
 
     fun logout() {
-        executeAtomicAction("Terminating Session...") {
+        if (TrackingManager.liveRunState.value.isTracking) {
+            _transientState.update { it.copy(errorEvent = "Cannot logout while tracking is active. Stop run first.") }
+            return
+        }
+
+        executeAtomicAction("Session terminated safely") {
             authRepository.logout()
-            _transientState.update { it.copy(isLoggedOut = true, successMessage = "Logged out successfully") }
+            _transientState.update { it.copy(isLoggedOut = true) }
         }
     }
 
-    /**
-     * Pillar 3 & 4: Micro-Feedback & Failure Safeguards
-     */
     private fun executeAtomicAction(
-        logMessage: String,
+        successMsg: String,
         action: suspend () -> Unit
     ) {
         viewModelScope.launch {
             try {
                 _transientState.update { it.copy(isProcessing = true, errorEvent = null, successMessage = null) }
                 action()
-                _transientState.update { it.copy(successMessage = "Changes saved successfully") }
+                _transientState.update { it.copy(successMessage = successMsg) }
             } catch (e: Exception) {
-                _transientState.update { it.copy(errorEvent = "Failed: ${e.message ?: "Unknown error"}") }
+                _transientState.update { it.copy(errorEvent = "System sync failed: ${e.message}") }
             } finally {
                 _transientState.update { it.copy(isProcessing = false) }
             }
@@ -147,11 +154,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     private suspend fun simulateCloudSync() {
-        if (BuildConfig.DEBUG) {
-            delay(300)
-        } else {
-            delay(1000)
-        }
+        delay(800)
     }
 
     fun clearError() {
