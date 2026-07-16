@@ -7,6 +7,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import com.denzo.runners.BuildConfig
 import com.denzo.runners.R
 import com.denzo.runners.data.repository.AuthRepository
 import com.denzo.runners.databinding.ActivityLoginBinding
@@ -55,6 +56,16 @@ class LoginActivity : AppCompatActivity() {
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
         setupClickListeners()
+        setupDebugFeatures()
+    }
+
+    private fun setupDebugFeatures() {
+        if (BuildConfig.DEBUG) {
+            binding.btnDebugSkip.visibility = View.VISIBLE
+            binding.btnDebugSkip.setOnClickListener {
+                navigateToMain()
+            }
+        }
     }
 
     private fun setupClickListeners() {
