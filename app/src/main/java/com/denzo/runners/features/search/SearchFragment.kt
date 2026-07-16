@@ -6,7 +6,6 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -14,7 +13,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import com.denzo.runners.R
 import com.denzo.runners.databinding.FragmentSearchBinding
 import com.denzo.runners.databinding.ItemSearchResultBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -38,20 +36,17 @@ class SearchFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
         setupInteractions()
         observeUiState()
     }
 
     private fun setupInteractions() {
-        binding.btnBack.setOnClickListener {
-            findNavController().popBackStack()
-        }
-
+        binding.btnBack.setOnClickListener { findNavController().popBackStack() }
+        
         binding.etSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                viewModel.onQueryChanged(s?.toString() ?: "")
+                viewModel.onQueryChanged(s.toString())
             }
             override fun afterTextChanged(s: Editable?) {}
         })
@@ -70,14 +65,16 @@ class SearchFragment : Fragment() {
     private fun updateUi(state: SearchUiState) {
         binding.searchLoading.visibility = if (state.isLoading) View.VISIBLE else View.GONE
         
-        val displayList = if (state.query.isEmpty()) state.featured else state.results
-        
-        binding.tvEmptyState.visibility = if (displayList.isEmpty() && !state.isLoading) View.VISIBLE else View.GONE
-        
-        val adapter = SearchResultAdapter(displayList) { result ->
+        val adapter = SearchResultAdapter(state.results) { result ->
             viewModel.onActionClicked(result)
         }
         binding.rvSearchResults.adapter = adapter
+        
+        binding.tvNoResults.visibility = if (state.results.isEmpty() && !state.isLoading && state.query.isNotEmpty()) {
+            View.VISIBLE
+        } else {
+            View.GONE
+        }
     }
 
     override fun onDestroyView() {
@@ -96,38 +93,26 @@ class SearchFragment : Fragment() {
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val item = items[position]
-            holder.bind(item)
+            holder.bind(items[position])
         }
 
         override fun getItemCount() = items.size
 
-        inner class ViewHolder(private val itemBinding: ItemSearchResultBinding) :
-            RecyclerView.ViewHolder(itemBinding.root) {
+        inner class ViewHolder(private val b: ItemSearchResultBinding) : RecyclerView.ViewHolder(b.root) {
             
-            fun bind(item: SearchResult) {
-                itemBinding.tvName.text = item.name
-                itemBinding.tvDescription.text = item.description
+            fun bind(result: SearchResult) {
+                b.tvResultName.text = result.name
+                b.tvResultSub.text = result.description
                 
-                if (item.type == SearchResultType.CLUB) {
-                    itemBinding.ivAvatar.setImageResource(android.R.drawable.ic_menu_myplaces)
-                    itemBinding.btnAction.text = if (item.isActionTaken) "JOINED" else "JOIN"
+                if (result.isActionTaken) {
+                    b.btnAction.text = "FOLLOWING"
+                    b.btnAction.alpha = 0.5f
                 } else {
-                    itemBinding.ivAvatar.setImageResource(android.R.drawable.ic_menu_gallery)
-                    itemBinding.btnAction.text = if (item.isActionTaken) "FOLLOWING" else "FOLLOW"
+                    b.btnAction.text = "FOLLOW"
+                    b.btnAction.alpha = 1.0f
                 }
 
-                if (item.isActionTaken) {
-                    itemBinding.btnAction.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.runners_card_bg))
-                    itemBinding.btnAction.setTextColor(ContextCompat.getColor(requireContext(), R.color.runners_text_secondary))
-                } else {
-                    itemBinding.btnAction.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.runners_volt))
-                    itemBinding.btnAction.setTextColor(ContextCompat.getColor(requireContext(), R.color.onPrimary))
-                }
-
-                itemBinding.btnAction.setOnClickListener {
-                    onActionClick(item)
-                }
+                b.btnAction.setOnClickListener { onActionClick(result) }
             }
         }
     }
