@@ -3,8 +3,10 @@ package com.denzo.runners.features.search
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -31,65 +33,56 @@ data class SearchUiState(
 class SearchViewModel @Inject constructor() : ViewModel() {
 
     private val _uiState = MutableStateFlow(SearchUiState())
-    val uiState = _uiState.asStateFlow()
+    val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 
     private val allAthletes = listOf(
-        SearchResult("1", "Marcus Thorne", "Elite Marathoner", SearchResultType.ATHLETE),
-        SearchResult("2", "Sarah Miller", "Trail Runner", SearchResultType.ATHLETE),
-        SearchResult("3", "David K.", "City Squad Member", SearchResultType.ATHLETE),
-        SearchResult("4", "Jessica Wu", "Velocity Elite", SearchResultType.ATHLETE)
+        SearchResult("1", "Marcus Thorne", "Level 42 Athlete", SearchResultType.ATHLETE),
+        SearchResult("2", "Sarah Miller", "Marathon Finisher", SearchResultType.ATHLETE),
+        SearchResult("3", "David K.", "Trail Running Specialist", SearchResultType.ATHLETE)
     )
 
     private val allClubs = listOf(
-        SearchResult("c1", "CITY SQUAD", "Urban running community", SearchResultType.CLUB),
-        SearchResult("c2", "VELOCITY ELITE", "Competitive racing club", SearchResultType.CLUB),
-        SearchResult("c3", "TRAILBLAZERS", "Off-road & mountain runners", SearchResultType.CLUB),
-        SearchResult("c4", "INDEPENDENT RUNNERS", "Join for solo motivation", SearchResultType.CLUB)
+        SearchResult("c1", "Velocity Elite", "High-performance running club", SearchResultType.CLUB),
+        SearchResult("c2", "City Squad", "Community morning runs", SearchResultType.CLUB)
     )
+
+    private var searchJob: Job? = null
 
     init {
         loadFeatured()
     }
 
     private fun loadFeatured() {
-        _uiState.update { it.copy(
-            featured = listOf(allClubs[0], allAthletes[0], allClubs[2])
-        ) }
+        _uiState.update { it.copy(featured = allAthletes.take(2)) }
     }
 
     fun onQueryChanged(newQuery: String) {
         _uiState.update { it.copy(query = newQuery) }
-        if (newQuery.length >= 2) {
-            performSearch(newQuery)
-        } else {
+        searchJob?.cancel()
+        if (newQuery.isBlank()) {
             _uiState.update { it.copy(results = emptyList(), isLoading = false) }
+        } else {
+            searchJob = viewModelScope.launch {
+                delay(300)
+                performSearch(newQuery)
+            }
         }
     }
 
-    private fun performSearch(query: String) {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            delay(500) // Mock network delay
-            
-            val filtered = (allAthletes + allClubs).filter {
-                it.name.contains(query, ignoreCase = true) || 
-                it.description.contains(query, ignoreCase = true)
-            }
-            
-            _uiState.update { it.copy(results = filtered, isLoading = false) }
+    private fun performSearch(q: String) {
+        _uiState.update { it.copy(isLoading = true) }
+        val filtered = (allAthletes + allClubs).filter { 
+            it.name.contains(q, ignoreCase = true) || it.description.contains(q, ignoreCase = true)
         }
+        _uiState.update { it.copy(isLoading = false, results = filtered) }
     }
 
     fun onActionClicked(result: SearchResult) {
-        // Toggle follow/join state
         _uiState.update { state ->
-            val updatedResults = state.results.map {
-                if (it.id == result.id) it.copy(isActionTaken = !it.isActionTaken) else it
+            val newResults = state.results.map { 
+                if (it.id == result.id) it.copy(isActionTaken = !it.isActionTaken) else it 
             }
-            val updatedFeatured = state.featured.map {
-                if (it.id == result.id) it.copy(isActionTaken = !it.isActionTaken) else it
-            }
-            state.copy(results = updatedResults, featured = updatedFeatured)
+            state.copy(results = newResults)
         }
     }
 }
