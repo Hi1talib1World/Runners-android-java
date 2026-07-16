@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/runners_dark_bg">
+    android:background="?attr/colorSurface">
 
     <!-- Header -->
     <LinearLayout
@@ -24,18 +24,20 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-condensed"
                 android:text="RANKS"
-                android:textColor="@color/runners_volt"
+                android:textColor="?attr/colorPrimary"
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
             <ImageView
                 android:id="@+id/btn_search"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:padding="12dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
+                android:contentDescription="Search Athletes"
                 android:src="@android:drawable/ic_menu_search"
-                app:tint="@color/runners_volt" />
+                app:tint="?attr/colorPrimary" />
         </RelativeLayout>
 
         <TextView
@@ -44,7 +46,7 @@
             android:layout_marginTop="4dp"
             android:fontFamily="monospace"
             android:text="WEEKLY TELEMETRY LEADERBOARD"
-            android:textColor="@color/runners_text_secondary"
+            android:textColor="?attr/colorOnSurfaceVariant"
             android:textSize="10sp" />
     </LinearLayout>
 
@@ -54,7 +56,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
-        android:background="@color/runners_surface"
+        android:background="?attr/colorSurfaceVariant"
         android:orientation="horizontal"
         android:padding="4dp"
         app:layout_constraintTop_toBottomOf="@id/ranks_header">
@@ -64,11 +66,11 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@color/runners_volt"
+            android:background="?attr/colorPrimary"
             android:gravity="center"
             android:padding="8dp"
             android:text="GLOBAL"
-            android:textColor="@color/onPrimary"
+            android:textColor="?attr/colorOnPrimary"
             android:textSize="12sp"
             android:textStyle="bold" />
 
@@ -80,7 +82,7 @@
             android:gravity="center"
             android:padding="8dp"
             android:text="CLUBS"
-            android:textColor="@color/runners_text_secondary"
+            android:textColor="?attr/colorOnSurfaceVariant"
             android:textSize="12sp" />
 
         <TextView
@@ -91,7 +93,7 @@
             android:gravity="center"
             android:padding="8dp"
             android:text="FRIENDS"
-            android:textColor="@color/runners_text_secondary"
+            android:textColor="?attr/colorOnSurfaceVariant"
             android:textSize="12sp" />
 
         <TextView
@@ -102,145 +104,25 @@
             android:gravity="center"
             android:padding="8dp"
             android:text="CHALLENGES"
-            android:textColor="@color/runners_text_secondary"
+            android:textColor="?attr/colorOnSurfaceVariant"
             android:textSize="12sp" />
     </LinearLayout>
 
-    <ScrollView
-        android:id="@+id/ranks_content"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:clipToPadding="false"
-        android:paddingBottom="100dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tab_layout">
 
-        <LinearLayout
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view_ranks"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <!-- Podium -->
-            <LinearLayout
-                android:id="@+id/podium_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="bottom"
-                android:orientation="horizontal"
-                android:paddingVertical="32dp">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        app:cardBackgroundColor="@color/runners_card_bg"
-                        app:cardCornerRadius="8dp"
-                        app:strokeColor="@color/runners_text_muted"
-                        app:strokeWidth="1dp">
-
-                        <ImageView
-                            android:id="@+id/avatar2"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:scaleType="centerCrop"
-                            android:src="@android:drawable/ic_menu_gallery" />
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <TextView
-                        android:id="@+id/name2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:fontFamily="monospace"
-                        android:text="ELARA_V"
-                        android:textColor="@color/runners_text_primary"
-                        android:textSize="10sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1.2"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        app:cardBackgroundColor="@color/runners_card_bg"
-                        app:cardCornerRadius="8dp"
-                        app:strokeColor="@color/runners_volt"
-                        app:strokeWidth="2dp">
-
-                        <ImageView
-                            android:id="@+id/avatar1"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:scaleType="centerCrop"
-                            android:src="@android:drawable/ic_menu_gallery" />
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <TextView
-                        android:id="@+id/name1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:fontFamily="monospace"
-                        android:text="J_WOLFF"
-                        android:textColor="@color/runners_volt"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        app:cardBackgroundColor="@color/runners_card_bg"
-                        app:cardCornerRadius="8dp"
-                        app:strokeColor="@color/runners_text_muted"
-                        app:strokeWidth="1dp">
-
-                        <ImageView
-                            android:id="@+id/avatar3"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:scaleType="centerCrop"
-                            android:src="@android:drawable/ic_menu_gallery" />
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <TextView
-                        android:id="@+id/name3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:fontFamily="monospace"
-                        android:text="NIA.RUNS"
-                        android:textColor="@color/runners_text_primary"
-                        android:textSize="10sp" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/rankings_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" />
-
-        </LinearLayout>
-    </ScrollView>
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="100dp"
+            tools:listitem="@layout/item_ranking" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/loading_indicator"
@@ -248,7 +130,7 @@
         android:layout_height="wrap_content"
         android:indeterminate="true"
         android:visibility="gone"
-        app:indicatorColor="@color/runners_volt"
+        app:indicatorColor="?attr/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
