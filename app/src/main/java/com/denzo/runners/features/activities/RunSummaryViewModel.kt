@@ -1,5 +1,6 @@
 package com.denzo.runners.features.activities
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.denzo.runners.data.local.entities.RouteEntity
@@ -21,26 +22,32 @@ data class RunSummaryUiState(
 @HiltViewModel
 class RunSummaryViewModel @Inject constructor(
     private val repository: RunRepository,
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RunSummaryUiState())
-    val uiState = _uiState.asStateFlow()
+    val uiState: StateFlow<RunSummaryUiState> = _uiState.asStateFlow()
 
-    fun loadRun(runId: Int) {
+    init {
+        val runId: Int? = savedStateHandle["runId"]
+        if (runId != null && runId != -1) {
+            loadRun(runId)
+        }
+    }
+
+    private fun loadRun(runId: Int) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            
-            combine(
-                flow { emit(repository.getRunById(runId)) },
-                settingsRepository.settingsFlow
-            ) { run, settings ->
-                _uiState.update { it.copy(
-                    isLoading = false,
-                    run = run,
-                    isMetric = settings.isMetric
-                ) }
-            }.collect()
+            val run = repository.getRunById(runId)
+            val settings = settingsRepository.settingsFlow.first()
+            _uiState.update { it.copy(isLoading = false, run = run, isMetric = settings.isMetric) }
+        }
+    }
+
+    fun deleteRun(run: RunEntity) {
+        viewModelScope.launch {
+            repository.deleteRun(run)
         }
     }
 
@@ -51,10 +58,11 @@ class RunSummaryViewModel @Inject constructor(
                 name = name,
                 distanceMeters = run.distanceMeters,
                 bestDurationSeconds = run.durationSeconds,
-                pathPoints = run.pathPoints
+                pathPoints = run.pathPoints,
+                timestamp = System.currentTimeMillis()
             )
             repository.saveRoute(route)
-            _uiState.update { it.copy(successMessage = "Route saved successfully!") }
+            _uiState.update { it.copy(successMessage = "Route saved for Ghost Mode!") }
         }
     }
 
