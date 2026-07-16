@@ -48,6 +48,7 @@
 
     <string name="label_athlete_profile">PERFIL DE ATLETA</string>
     <string name="label_lifetime_km">KM TOTALES</string>
+    <string name="label_total_km">KM TOTALES</string>
     <string name="label_total_runs">CARRERAS TOTALES</string>
     <string name="label_achievements">LOGROS</string>
     <string name="label_training_intelligence">INTELIGENCIA DE ENTRENAMIENTO</string>
