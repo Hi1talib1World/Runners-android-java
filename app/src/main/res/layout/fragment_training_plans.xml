@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/runners_dark_bg">
+    android:background="?attr/colorSurface">
 
     <!-- Header -->
     <LinearLayout
         android:id="@+id/plans_header"
         android:layout_width="match_parent"
         android:layout_height="64dp"
-        android:background="@color/runners_surface"
+        android:background="?attr/colorSurface"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingHorizontal="20dp"
@@ -19,19 +19,20 @@
 
         <ImageView
             android:id="@+id/btn_back"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:contentDescription="@string/onboarding_back"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="12dp"
+            android:contentDescription="Return to Previous Screen"
             android:src="@android:drawable/ic_menu_revert"
-            app:tint="@color/runners_volt" />
+            app:tint="?attr/colorPrimary" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="4dp"
             android:fontFamily="sans-serif-condensed"
             android:text="TRAINING"
-            android:textColor="@color/runners_volt"
+            android:textColor="?attr/colorPrimary"
             android:textSize="20sp"
             android:textStyle="bold|italic" />
 
@@ -47,7 +48,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="monospace"
             android:text="CREATE"
-            android:textColor="@color/runners_volt"
+            android:textColor="?attr/colorPrimary"
             android:textStyle="bold" />
     </LinearLayout>
 
@@ -68,8 +69,8 @@
         android:layout_height="wrap_content"
         android:indeterminate="true"
         android:visibility="gone"
-        app:indicatorColor="@color/runners_volt"
+        app:indicatorColor="?attr/colorPrimary"
         app:layout_constraintTop_toBottomOf="@id/plans_header"
-        app:trackColor="#33FFFFFF" />
+        app:trackColor="#00000000" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
