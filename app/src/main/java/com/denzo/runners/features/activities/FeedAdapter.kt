@@ -25,17 +25,14 @@ class FeedAdapter(
         holder.bind(getItem(position))
     }
 
-    inner class ViewHolder(private val binding: ItemFeedActivityBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-
+    inner class ViewHolder(private val b: ItemFeedActivityBinding) : RecyclerView.ViewHolder(b.root) {
         fun bind(item: FeedActivity) {
-            binding.tvAthleteName.text = item.athleteName
-            binding.tvMetrics.text = "${item.distanceKm} KM • ${item.duration}"
-            binding.tvKudosCount.text = item.kudosCount.toString()
+            b.tvAthleteName.text = item.athleteName
+            b.tvMetrics.text = "${item.distanceKm} KM • ${item.duration}"
+            b.tvKudosCount.text = item.kudosCount.toString()
+            b.btnKudos.setOnClickListener { onKudosClick(item.id) }
             
-            binding.btnKudos.setOnClickListener { onKudosClick(item.id) }
-            
-            binding.liveBadge.visibility = if (item.isLive) View.VISIBLE else View.GONE
+            b.liveBadge.visibility = if (item.isLive) View.VISIBLE else View.GONE
         }
     }
 
