@@ -35,11 +35,7 @@ object UnitConverter {
         val minutes = actualPace.toInt()
         val seconds = ((actualPace - minutes) * 60).toInt()
         
-        return if (isMetric) {
-            String.format(Locale.getDefault(), "%d:%02d /km", minutes, seconds)
-        } else {
-            String.format(Locale.getDefault(), "%d:%02d /mi", minutes, seconds)
-        }
+        return String.format(Locale.getDefault(), "%d'%02d''", minutes, seconds)
     }
 
     /**
