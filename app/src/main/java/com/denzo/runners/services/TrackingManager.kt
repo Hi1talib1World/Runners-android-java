@@ -160,11 +160,9 @@ object TrackingManager {
         }
     }
 
-    fun updateDuration(totalSeconds: Long) {
-        // The timer should always advance if we are not manually paused, 
-        // but if auto-paused, we might want to freeze the duration.
+    fun tickDuration() {
         if (_liveRunState.value.isTracking) {
-            _liveRunState.update { it.copy(durationSeconds = totalSeconds) }
+            _liveRunState.update { it.copy(durationSeconds = it.durationSeconds + 1) }
         }
     }
 }
