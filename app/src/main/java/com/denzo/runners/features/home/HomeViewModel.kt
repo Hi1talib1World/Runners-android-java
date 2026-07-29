@@ -70,7 +70,9 @@ data class ActivityMetrics(
 
 sealed class UiEvent {
     object RunSaved : UiEvent()
+    object RunDiscarded : UiEvent()
     data class ShowError(val message: String) : UiEvent()
+    data class ShowSuccess(val message: String) : UiEvent()
     data class ReceivedCheer(val from: String) : UiEvent()
     data class NewStep(val instruction: String) : UiEvent()
 }
@@ -272,7 +274,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun joinSession() {
-        if (_uiState.value.isLiveGroupJoined) return
+        if (_uiState.value.isLiveGroupJoined || _uiState.value.isLoading) return
         
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
@@ -306,7 +308,7 @@ class HomeViewModel @Inject constructor(
 
     fun sendCheer(athleteId: String) {
         viewModelScope.launch {
-            _uiEvent.emit(UiEvent.ShowError("Cheer sent!")) 
+            _uiEvent.emit(UiEvent.ShowSuccess("Cheer sent!")) 
         }
     }
 
@@ -314,6 +316,9 @@ class HomeViewModel @Inject constructor(
         _uiState.update { it.copy(isTracking = false, isLiveGroupJoined = false, activeWorkoutStep = null) }
         liveAthleteJob?.cancel()
         TrackingManager.stopRun()
+        viewModelScope.launch {
+            _uiEvent.emit(UiEvent.RunDiscarded)
+        }
     }
 
     fun stopAndSaveRun() {
