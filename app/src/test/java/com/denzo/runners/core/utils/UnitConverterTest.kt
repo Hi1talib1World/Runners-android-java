@@ -21,14 +21,14 @@ class UnitConverterTest {
     @Test
     fun `formatPace returns min per km for metric`() {
         val result = UnitConverter.formatPace(5.5, true)
-        assertEquals("5.50 /km", result)
+        assertEquals("5'30''", result)
     }
 
     @Test
     fun `formatPace returns min per mile for imperial`() {
-        // 5.5 min/km -> 5.5 * 1.60934 min/mile = 8.85
+        // 5.5 min/km -> 5.5 * 1.60934 min/mile = 8.851...
         val result = UnitConverter.formatPace(5.5, false)
-        assertEquals("8.85 /mi", result)
+        assertEquals("8'51''", result)
     }
 
     @Test
