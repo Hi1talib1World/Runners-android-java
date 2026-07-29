@@ -1,0 +1,10 @@
+- `[ ]` Setup testing dependencies in `libs.versions.toml` and `build.gradle`
+- `[ ]` Fix `UnitConverter.formatPace` and units
+- `[ ]` Fix `TrackingManager` auto-pause duration logic
+- `[ ]` Fix `LocationService` duration tracking and start/stop behavior
+- `[ ]` Fix `HomeViewModel` event handling and session joining
+- `[ ]` Update `HomeFragment` to stop service on completion
+- `[ ]` Update `UnitConverterTest.kt`
+- `[ ]` Create `HomeViewModelTest.kt`
+- `[ ]` Create `TrackingManagerTest.kt`
+- `[ ]` Run all unit tests and verify
