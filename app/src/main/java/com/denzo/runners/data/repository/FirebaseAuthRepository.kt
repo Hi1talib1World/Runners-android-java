@@ -2,7 +2,7 @@ package com.denzo.runners.data.repository
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.auth.userProfileChangeRequest
+import com.google.firebase.auth.UserProfileChangeRequest
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -54,9 +54,9 @@ class FirebaseAuthRepository(
 
     override suspend fun updateDisplayName(name: String): Result<Unit> {
         return try {
-            val profileUpdates = userProfileChangeRequest {
-                displayName = name
-            }
+            val profileUpdates = UserProfileChangeRequest.Builder()
+                .setDisplayName(name)
+                .build()
             auth.currentUser?.updateProfile(profileUpdates)?.await()
             // AuthStateListener will trigger the Flow update
             Result.success(Unit)
