@@ -79,6 +79,8 @@ class LocationService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val routeId = intent?.getIntExtra("routeId", -1) ?: -1
+        runDurationSeconds = 0
+        lastAnnouncedKm = 0
         serviceScope.launch {
             val settings = settingsRepository.settingsFlow.first()
             isSocialAlertsEnabled = settings.isSocialNotificationsEnabled
@@ -159,8 +161,7 @@ class LocationService : Service() {
         durationJob = serviceScope.launch {
             while (isActive) {
                 delay(TRACKING_INTERVAL_MS)
-                runDurationSeconds++
-                TrackingManager.updateDuration(runDurationSeconds)
+                TrackingManager.tickDuration()
             }
         }
     }
