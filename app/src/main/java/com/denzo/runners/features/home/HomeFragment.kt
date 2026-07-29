@@ -403,10 +403,21 @@ class HomeFragment : Fragment() {
     private fun handleEvent(event: UiEvent) {
         val view = view ?: return
         when (event) {
-            is UiEvent.RunSaved -> Snackbar.make(view, "Run Saved Successfully!", Snackbar.LENGTH_SHORT).show()
+            is UiEvent.RunSaved -> {
+                Snackbar.make(view, "Run Saved Successfully!", Snackbar.LENGTH_SHORT).show()
+                stopLocationService()
+            }
+            is UiEvent.RunDiscarded -> {
+                Snackbar.make(view, "Run Discarded", Snackbar.LENGTH_SHORT).show()
+                stopLocationService()
+            }
             is UiEvent.ShowError -> Snackbar.make(view, event.message, Snackbar.LENGTH_LONG)
                 .setBackgroundTint(ContextCompat.getColor(requireContext(), R.color.runners_red))
                 .setTextColor(ContextCompat.getColor(requireContext(), android.R.color.white))
+                .show()
+            is UiEvent.ShowSuccess -> Snackbar.make(view, event.message, Snackbar.LENGTH_SHORT)
+                .setBackgroundTint(ContextCompat.getColor(requireContext(), R.color.runners_volt))
+                .setTextColor(ContextCompat.getColor(requireContext(), R.color.onPrimary))
                 .show()
             is UiEvent.ReceivedCheer -> {
                 Snackbar.make(view, "${event.from} sent you a cheer!", Snackbar.LENGTH_SHORT)
@@ -418,6 +429,10 @@ class HomeFragment : Fragment() {
                 Snackbar.make(view, "New Step: ${event.instruction}", Snackbar.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun stopLocationService() {
+        requireContext().stopService(Intent(requireContext(), LocationService::class.java))
     }
 
     override fun onResume() {
