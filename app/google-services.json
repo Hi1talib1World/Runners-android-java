@@ -1,35 +1,26 @@
 {
   "project_info": {
-    "project_number": "123456789012",
-    "project_id": "runners-placeholder",
-    "storage_bucket": "runners-placeholder.appspot.com"
+    "project_number": "599520277660",
+    "project_id": "running-25e33",
+    "storage_bucket": "running-25e33.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:123456789012:android:0000000000000000",
+        "mobilesdk_app_id": "1:599520277660:android:4e52013635c5c2edfc6959",
         "android_client_info": {
           "package_name": "com.denzo.runners"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "123456789012-placeholder.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "placeholder_api_key"
+          "current_key": "AIzaSyBlY_5XDa_PppSrv1SBzCdMsQFHpUNS7yo"
         }
       ],
       "services": {
         "appinvite_service": {
-          "status": 1,
           "other_platform_oauth_client": []
-        },
-        "ads_service": {
-          "status": 1
         }
       }
     }
