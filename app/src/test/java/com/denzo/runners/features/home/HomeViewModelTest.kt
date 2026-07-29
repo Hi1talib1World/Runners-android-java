@@ -12,6 +12,7 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -43,7 +44,7 @@ class HomeViewModelTest {
         Dispatchers.setMain(testDispatcher)
         
         every { settingsRepository.settingsFlow } returns flowOf(ConfigEntity())
-        every { billingManager.isProUser } returns flowOf(false)
+        every { billingManager.isProUser } returns MutableStateFlow(false)
         every { repository.getAllRoutes() } returns flowOf(emptyList())
         every { workoutRepository.getActivePlan() } returns flowOf(null)
 
