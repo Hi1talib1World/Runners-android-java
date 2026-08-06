@@ -1,13 +1,5 @@
-- `[x]` Update `libs.versions.toml` with Firebase BoM and updated plugin version
-- `[x]` Update `app/build.gradle` to use Firebase BoM and Analytics
-- `[/]` Update `google-services.json` with real configuration
-- `[x]` Setup testing dependencies in `libs.versions.toml` and `build.gradle`
-- `[x]` Fix `UnitConverter.formatPace` and units
-- `[x]` Fix `TrackingManager` auto-pause duration logic
-- `[x]` Fix `LocationService` duration tracking and start/stop behavior
-- `[x]` Fix `HomeViewModel` event handling and session joining
-- `[x]` Update `HomeFragment` to stop service on completion
-- `[x]` Update `UnitConverterTest.kt`
-- `[x]` Create `HomeViewModelTest.kt`
-- `[x]` Create `TrackingManagerTest.kt`
-- `[/]` Run all unit tests and verify
+- `[ ]` Extract interfaces for core dependencies
+- `[ ]` Update Hilt modules to use `@Binds`
+- `[ ]` Implement Fakes in the `test` directory
+- `[ ]` Refactor `HomeViewModelTest.kt` to use Fakes
+- `[ ]` Verify all tests pass and `mockk` can be removed
